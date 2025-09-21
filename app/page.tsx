@@ -7,7 +7,7 @@ import { PricingCard } from "@/components/pricing-card";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       {/* Hero */}
       <section className="container mx-auto px-4 pt-16 pb-12 text-center" aria-labelledby="hero-heading">
         <div className="mx-auto max-w-3xl">

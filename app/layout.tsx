@@ -54,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClerkProvider
           publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -62,6 +62,9 @@ export default function RootLayout({
           signUpUrl={env.CLERK_SIGN_UP_URL}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:text-foreground focus:px-3 focus:py-2 focus:shadow">
+              Saltar al contenido principal
+            </a>
             <SiteHeader />
             {children}
           </ThemeProvider>
