@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CtaAuthLink } from "@/components/cta-auth-link";
 import { FeatureCard } from "@/components/feature-card";
 import { TestimonialCard } from "@/components/testimonial-card";
+import { PricingCard } from "@/components/pricing-card";
 
 export default function Home() {
   return (
@@ -105,20 +106,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing (teaser) */}
-      <section className="container mx-auto px-4 py-12">
+      {/* Pricing */}
+      <section className="container mx-auto px-4 py-16" aria-labelledby="pricing-heading">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold">Comienza gratis</h2>
-          <p className="mt-2 text-muted-foreground">Planes simples. Actualiza cuando lo necesites.</p>
+          <h2 id="pricing-heading" className="text-2xl font-semibold">Planes simples y claros</h2>
+          <p className="mt-2 text-muted-foreground">Empieza gratis y mejora cuando lo necesites.</p>
         </div>
-        <div className="mt-8 grid max-w-3xl mx-auto">
-          <div className="rounded-lg border p-6 text-center">
-            <div className="text-3xl font-bold">Free</div>
-            <p className="mt-2 text-sm text-muted-foreground">Todo lo que necesitas para iniciar</p>
-            <div className="mt-6">
-              <CtaAuthLink>Crear cuenta</CtaAuthLink>
-            </div>
-          </div>
+        <div className="mt-10 grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
+          <PricingCard
+            name="Free"
+            price="$0"
+            period="/mes"
+            description="Ideal para comenzar y validar tu flujo."
+            features={[
+              "Metas ilimitadas",
+              "Actualizaciones de progreso",
+              "Compartir con enlace público",
+            ]}
+            ctaLabel="Crear cuenta"
+          />
+          <PricingCard
+            name="Pro"
+            price="$9"
+            period="/mes"
+            description="Colaboración avanzada y métricas."
+            features={[
+              "Todo en Free",
+              "Colaboradores con permisos",
+              "Historial y recordatorios avanzados",
+            ]}
+            ctaLabel="Probar Pro"
+            popular
+          />
         </div>
       </section>
 
