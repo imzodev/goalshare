@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { CtaAuthLink } from "@/components/cta-auth-link";
+import { FeatureCard } from "@/components/feature-card";
 
 export default function Home() {
   return (
@@ -45,12 +46,36 @@ export default function Home() {
           <p className="mt-2 text-muted-foreground">Funcionalidades clave para definir, medir y compartir.</p>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[1,2,3].map((i) => (
-            <div key={i} className="rounded-lg border p-6">
-              <h3 className="font-medium">Feature {i}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Descripción breve de la funcionalidad {i}.</p>
-            </div>
-          ))}
+          <FeatureCard
+            icon={<span role="img" aria-label="objetivos">🎯</span>}
+            title="Metas e hitos"
+            description="Define objetivos claros, divide en hitos y pon fechas para mantener el ritmo."
+          />
+          <FeatureCard
+            icon={<span role="img" aria-label="seguimiento">📊</span>}
+            title="Seguimiento simple"
+            description="Actualiza tu progreso y visualiza avances con claridad."
+          />
+          <FeatureCard
+            icon={<span role="img" aria-label="compartir">🤝</span>}
+            title="Comparte y colabora"
+            description="Invita a tu comunidad para recibir apoyo y mantenerte responsable."
+          />
+          <FeatureCard
+            icon={<span role="img" aria-label="privacidad">🔒</span>}
+            title="Privado o público"
+            description="Controla la visibilidad de tus objetivos según tu preferencia."
+          />
+          <FeatureCard
+            icon={<span role="img" aria-label="notificaciones">🔔</span>}
+            title="Recordatorios"
+            description="Mantén el foco con recordatorios y resúmenes de actividad."
+          />
+          <FeatureCard
+            icon={<span role="img" aria-label="integraciones">🧩</span>}
+            title="Integraciones"
+            description="Conecta con herramientas clave (próximamente)."
+          />
         </div>
       </section>
 
