@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { env } from "@/config/env";
 import { SiteHeader } from "@/components/site-header";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,15 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClerkProvider
           publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
           signInUrl={env.CLERK_SIGN_IN_URL}
           signUpUrl={env.CLERK_SIGN_UP_URL}
         >
-          <SiteHeader />
-          {children}
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <SiteHeader />
+            {children}
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>

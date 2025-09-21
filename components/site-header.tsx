@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   return (
@@ -13,6 +14,7 @@ export function SiteHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <SignedOut>
             <Button asChild variant="outline" size="sm">
               <SignInButton>Iniciar sesión</SignInButton>
