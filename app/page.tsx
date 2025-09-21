@@ -12,21 +12,21 @@ export default function Home() {
       <section className="container mx-auto px-4 pt-16 pb-12 text-center" aria-labelledby="hero-heading">
         <div className="mx-auto max-w-3xl">
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight">
-            Organiza, comparte y logra tus objetivos
+            Convierte tus metas en progreso real
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            GoalShare te ayuda a convertir metas en progreso medible y visible para tu comunidad.
+            Define objetivos claros, comparte tu avance y mantén la motivación con tu comunidad.
           </p>
           <ul
             className="mt-6 grid gap-2 text-left mx-auto max-w-xl list-disc list-inside text-sm text-muted-foreground"
             aria-label="Beneficios clave"
           >
-            <li>Define objetivos claros con hitos y fechas.</li>
-            <li>Comparte avances para mantenerte responsable.</li>
-            <li>Recibe apoyo y feedback de tu círculo.</li>
+            <li>Establece metas con hitos y fechas límite.</li>
+            <li>Publica avances para rendir cuentas.</li>
+            <li>Recibe apoyo y feedback en cada paso.</li>
           </ul>
           <div className="mt-8 flex items-center justify-center gap-3">
-            <CtaAuthLink>Empezar ahora</CtaAuthLink>
+            <CtaAuthLink>Comenzar gratis</CtaAuthLink>
             <a
               href="#features"
               className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
@@ -44,39 +44,39 @@ export default function Home() {
       {/* Features */}
       <section id="features" className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold">Lo esencial para avanzar</h2>
-          <p className="mt-2 text-muted-foreground">Funcionalidades clave para definir, medir y compartir.</p>
+          <h2 className="text-2xl font-semibold">Todo lo que necesitas para avanzar</h2>
+          <p className="mt-2 text-muted-foreground">Define, mide y comparte tu progreso con claridad.</p>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <FeatureCard
             icon={<span role="img" aria-label="objetivos">🎯</span>}
             title="Metas e hitos"
-            description="Define objetivos claros, divide en hitos y pon fechas para mantener el ritmo."
+            description="Crea objetivos concretos, divídelos en hitos e impulsa tu ritmo con deadlines."
           />
           <FeatureCard
             icon={<span role="img" aria-label="seguimiento">📊</span>}
-            title="Seguimiento simple"
-            description="Actualiza tu progreso y visualiza avances con claridad."
+            title="Seguimiento claro"
+            description="Registra avances y visualiza tu progreso para no perder el foco."
           />
           <FeatureCard
             icon={<span role="img" aria-label="compartir">🤝</span>}
             title="Comparte y colabora"
-            description="Invita a tu comunidad para recibir apoyo y mantenerte responsable."
+            description="Invita a tu comunidad para recibir apoyo y mantener la constancia."
           />
           <FeatureCard
             icon={<span role="img" aria-label="privacidad">🔒</span>}
-            title="Privado o público"
-            description="Controla la visibilidad de tus objetivos según tu preferencia."
+            title="Privacidad flexible"
+            description="Elige quién puede ver tus objetivos: privado, por enlace o público."
           />
           <FeatureCard
             icon={<span role="img" aria-label="notificaciones">🔔</span>}
-            title="Recordatorios"
-            description="Mantén el foco con recordatorios y resúmenes de actividad."
+            title="Recordatorios inteligentes"
+            description="Recibe recordatorios y resúmenes para mantenerte en movimiento."
           />
           <FeatureCard
             icon={<span role="img" aria-label="integraciones">🧩</span>}
-            title="Integraciones"
-            description="Conecta con herramientas clave (próximamente)."
+            title="Integraciones (próximamente)"
+            description="Conecta con tus herramientas favoritas para centralizar tu progreso."
           />
         </div>
       </section>
@@ -110,32 +110,32 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16" aria-labelledby="pricing-heading">
         <div className="mx-auto max-w-3xl text-center">
           <h2 id="pricing-heading" className="text-2xl font-semibold">Planes simples y claros</h2>
-          <p className="mt-2 text-muted-foreground">Empieza gratis y mejora cuando lo necesites.</p>
+          <p className="mt-2 text-muted-foreground">Comienza gratis. Escala a Pro cuando lo necesites.</p>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
           <PricingCard
             name="Free"
             price="$0"
             period="/mes"
-            description="Ideal para comenzar y validar tu flujo."
+            description="Todo lo esencial para empezar y validar tu flujo."
             features={[
               "Metas ilimitadas",
               "Actualizaciones de progreso",
-              "Compartir con enlace público",
+              "Compartir por enlace público",
             ]}
-            ctaLabel="Crear cuenta"
+            ctaLabel="Crear cuenta gratis"
           />
           <PricingCard
             name="Pro"
             price="$9"
             period="/mes"
-            description="Colaboración avanzada y métricas."
+            description="Colaboración avanzada, métricas y automatizaciones."
             features={[
               "Todo en Free",
               "Colaboradores con permisos",
               "Historial y recordatorios avanzados",
             ]}
-            ctaLabel="Probar Pro"
+            ctaLabel="Mejorar a Pro"
             popular
           />
         </div>
@@ -143,10 +143,10 @@ export default function Home() {
 
       {/* Final CTA */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-semibold">¿Listo para compartir tus objetivos?</h2>
-        <p className="mt-2 text-muted-foreground">Únete hoy y mantén tu progreso visible.</p>
+        <h2 className="text-3xl font-semibold">Listo para dar el siguiente paso</h2>
+        <p className="mt-2 text-muted-foreground">Crea tu cuenta y empieza a avanzar hoy.</p>
         <div className="mt-6 flex justify-center">
-          <CtaAuthLink>Empezar ahora</CtaAuthLink>
+          <CtaAuthLink>Comenzar gratis</CtaAuthLink>
         </div>
       </section>
 
