@@ -11,25 +11,31 @@ export default function Home() {
       {/* Hero */}
       <section className="container mx-auto px-4 pt-16 pb-12 text-center" aria-labelledby="hero-heading">
         <div className="mx-auto max-w-3xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-secondary text-secondary-foreground px-3 py-1 text-xs font-medium">
+            Nuevo
+            <span className="hidden sm:inline">· Presentación de GoalShare</span>
+          </span>
           <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight">
             Convierte tus metas en progreso real
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
             Define objetivos claros, comparte tu avance y mantén la motivación con tu comunidad.
           </p>
-          <ul
-            className="mt-6 grid gap-2 text-left mx-auto max-w-xl list-disc list-inside text-sm text-muted-foreground"
-            aria-label="Beneficios clave"
-          >
-            <li>Establece metas con hitos y fechas límite.</li>
-            <li>Publica avances para rendir cuentas.</li>
-            <li>Recibe apoyo y feedback en cada paso.</li>
-          </ul>
+          <div className="mt-6 mx-auto max-w-xl rounded-lg bg-secondary/70 text-secondary-foreground">
+            <ul
+              className="grid gap-2 text-left list-disc list-inside text-sm/6 px-4 py-3"
+              aria-label="Beneficios clave"
+            >
+              <li>Establece metas con hitos y fechas límite.</li>
+              <li>Publica avances para rendir cuentas.</li>
+              <li>Recibe apoyo y feedback en cada paso.</li>
+            </ul>
+          </div>
           <div className="mt-8 flex items-center justify-center gap-3">
             <CtaAuthLink>Comenzar gratis</CtaAuthLink>
             <a
               href="#features"
-              className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
+              className="inline-flex items-center justify-center rounded-md bg-accent text-accent-foreground px-4 py-2 text-sm font-medium hover:opacity-95 transition shadow-sm"
             >
               Ver funciones
             </a>
