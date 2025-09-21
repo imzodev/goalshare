@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { env } from "@/config/env";
+import { SiteHeader } from "@/components/site-header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,18 +33,7 @@ export default function RootLayout({
           signInUrl={env.CLERK_SIGN_IN_URL}
           signUpUrl={env.CLERK_SIGN_UP_URL}
         >
-          <header className="flex items-center justify-between px-4 py-3 border-b">
-            <div className="font-semibold">Goalshare</div>
-            <div className="flex items-center gap-3">
-              <SignedOut>
-                <SignInButton />
-                <SignUpButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
-          </header>
+          <SiteHeader />
           {children}
         </ClerkProvider>
       </body>
