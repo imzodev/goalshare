@@ -42,9 +42,6 @@ export default function Home() {
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Sin tarjeta requerida</p>
         </div>
-        <div className="mt-12 grid place-items-center">
-          <Image src="/next.svg" alt="Ilustración de la app" width={220} height={48} className="opacity-60 dark:invert" />
-        </div>
       </section>
 
       {/* Features */}
