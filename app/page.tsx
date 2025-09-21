@@ -2,6 +2,7 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { CtaAuthLink } from "@/components/cta-auth-link";
 import { FeatureCard } from "@/components/feature-card";
+import { TestimonialCard } from "@/components/testimonial-card";
 
 export default function Home() {
   return (
@@ -80,17 +81,27 @@ export default function Home() {
       </section>
 
       {/* Social Proof */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-12" aria-labelledby="social-proof-heading">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold">Confiado por creadores y equipos</h2>
-          <p className="mt-2 text-muted-foreground">Testimonios/Logos de ejemplo</p>
+          <h2 id="social-proof-heading" className="text-2xl font-semibold">Lo que dice nuestra comunidad</h2>
+          <p className="mt-2 text-muted-foreground">Historias reales de progreso y motivación.</p>
         </div>
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 opacity-70">
-          {["next.svg","vercel.svg","globe.svg","file.svg","next.svg","vercel.svg"].map((src, idx) => (
-            <div key={idx} className="flex items-center justify-center p-4 rounded border">
-              <Image src={`/${src}`} alt="logo" width={72} height={24} className="dark:invert" />
-            </div>
-          ))}
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <TestimonialCard
+            quote="Con GoalShare por fin mantengo mis metas visibles. El simple hecho de compartir avances me mantiene constante."
+            author="María P."
+            role="Creadora de contenido"
+          />
+          <TestimonialCard
+            quote="Nuestro equipo alinea objetivos y ve el progreso en una sola vista. Mucho menos fricción en las dailies."
+            author="Equipo Acme"
+            role="Startup de producto"
+          />
+          <TestimonialCard
+            quote="Me encanta la simplicidad. Crear objetivos, registrar avances y pedir feedback es muy natural."
+            author="Jorge R."
+            role="Indie hacker"
+          />
         </div>
       </section>
 
