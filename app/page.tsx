@@ -6,22 +6,40 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="container mx-auto px-4 pt-16 pb-12 text-center">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Comparte y cumple tus objetivos con tu comunidad</h1>
-          <p className="mt-4 text-lg text-muted-foreground">GoalShare te ayuda a definir metas, hacer seguimiento y compartir progreso para mantenerte motivado.</p>
-          <div className="mt-8 flex items-center justify-center">
+      <section className="container mx-auto px-4 pt-16 pb-12 text-center" aria-labelledby="hero-heading">
+        <div className="mx-auto max-w-3xl">
+          <h1 id="hero-heading" className="text-4xl md:text-5xl font-bold tracking-tight">
+            Organiza, comparte y logra tus objetivos
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            GoalShare te ayuda a convertir metas en progreso medible y visible para tu comunidad.
+          </p>
+          <ul
+            className="mt-6 grid gap-2 text-left mx-auto max-w-xl list-disc list-inside text-sm text-muted-foreground"
+            aria-label="Beneficios clave"
+          >
+            <li>Define objetivos claros con hitos y fechas.</li>
+            <li>Comparte avances para mantenerte responsable.</li>
+            <li>Recibe apoyo y feedback de tu círculo.</li>
+          </ul>
+          <div className="mt-8 flex items-center justify-center gap-3">
             <CtaAuthLink>Empezar ahora</CtaAuthLink>
+            <a
+              href="#features"
+              className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition"
+            >
+              Ver funciones
+            </a>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Sin tarjeta requerida</p>
         </div>
         <div className="mt-12 grid place-items-center">
-          <Image src="/next.svg" alt="Preview" width={220} height={48} className="opacity-60 dark:invert" />
+          <Image src="/next.svg" alt="Ilustración de la app" width={220} height={48} className="opacity-60 dark:invert" />
         </div>
       </section>
 
       {/* Features */}
-      <section className="container mx-auto px-4 py-12">
+      <section id="features" className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-semibold">Lo esencial para avanzar</h2>
           <p className="mt-2 text-muted-foreground">Funcionalidades clave para definir, medir y compartir.</p>
