@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { env } from "@/config/env";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +26,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ClerkProvider
+          publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+          signInUrl={env.CLERK_SIGN_IN_URL}
+          signUpUrl={env.CLERK_SIGN_UP_URL}
+        >
+          <header className="flex items-center justify-between px-4 py-3 border-b">
+            <div className="font-semibold">Goalshare</div>
+            <div className="flex items-center gap-3">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </header>
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );
 }
+
