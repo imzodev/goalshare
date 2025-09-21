@@ -126,3 +126,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .bg-grid-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(var(--foreground), 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+  
+  /* Custom gradient utilities for more sophisticated designs */
+  .gradient-text-rainbow {
+    background: linear-gradient(135deg, 
+      hsl(var(--primary)), 
+      hsl(var(--accent)), 
+      #8b5cf6, 
+      #06b6d4, 
+      hsl(var(--primary))
+    );
+    background-size: 300% 300%;
+    animation: gradient-shift 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .gradient-bg-aurora {
+    background: linear-gradient(135deg, 
+      rgba(var(--primary), 0.1), 
+      rgba(139, 92, 246, 0.1), 
+      rgba(var(--accent), 0.1), 
+      rgba(6, 182, 212, 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}

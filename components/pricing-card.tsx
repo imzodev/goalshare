@@ -1,4 +1,7 @@
 import { CtaAuthLink } from "@/components/cta-auth-link";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 
 type PricingCardProps = {
   name: string;
@@ -12,39 +15,44 @@ type PricingCardProps = {
 
 export function PricingCard({ name, price, period = "/mes", description, features, ctaLabel, popular }: PricingCardProps) {
   return (
-    <article className={`relative rounded-lg border p-6 h-full bg-background ${popular ? "ring-2 ring-primary" : ""}`}>
-      {popular ? (
-        <div className="absolute -top-3 right-4 select-none rounded-full border bg-primary text-primary-foreground px-2 py-0.5 text-xs font-medium shadow">
+    <Card className={`relative h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group ${
+      popular ? "ring-2 ring-primary shadow-lg scale-105" : ""
+    }`}>
+      {popular && (
+        <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-primary via-violet-500 to-accent text-primary-foreground shadow-lg">
           Popular
+        </Badge>
+      )}
+      <CardHeader className="text-center pb-4">
+        <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors duration-300">{name}</h3>
+        <div className="mt-4 flex items-baseline justify-center gap-2">
+          <div className="text-4xl font-bold bg-gradient-to-br from-primary via-blue-600 to-accent bg-clip-text text-transparent">
+            {price}
+          </div>
+          {period && <div className="text-muted-foreground font-medium">{period}</div>}
         </div>
-      ) : null}
-      <header>
-        <h3 className="text-lg font-semibold leading-none tracking-tight">{name}</h3>
-        <div className="mt-3 flex items-baseline gap-2">
-          <div className="text-3xl font-bold">{price}</div>
-          {period ? <div className="text-sm text-muted-foreground">{period}</div> : null}
+        {description && (
+          <p className="mt-3 text-muted-foreground leading-relaxed">{description}</p>
+        )}
+      </CardHeader>
+      <CardContent className="flex flex-col h-full">
+        <ul className="space-y-3 flex-1" aria-label={`Características del plan ${name}`}>
+          {features.map((feature) => (
+            <li key={feature} className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                <Check className="h-3 w-3 text-primary" />
+              </div>
+              <span className="text-muted-foreground leading-relaxed">{feature}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 pt-4 border-t">
+          <CtaAuthLink size="lg" className="w-full">
+            {ctaLabel}
+          </CtaAuthLink>
         </div>
-        {description ? <p className="mt-2 text-sm text-muted-foreground">{description}</p> : null}
-      </header>
-      <ul className="mt-6 space-y-2 text-sm" aria-label={`Características del plan ${name}`}>
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-2">
-            <CheckIcon className="mt-0.5 h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">{f}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-6">
-        <CtaAuthLink>{ctaLabel}</CtaAuthLink>
-      </div>
-    </article>
+      </CardContent>
+    </Card>
   );
 }
 
-function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}

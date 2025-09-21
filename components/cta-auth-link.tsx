@@ -2,25 +2,34 @@
 
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
-export function CtaAuthLink({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CtaAuthLink({ 
+  children, 
+  className, 
+  variant = "default",
+  size = "default" 
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+}) {
   return (
     <div className={className}>
       <SignedIn>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow hover:opacity-90 transition"
-        >
-          {children}
-        </Link>
+        <Button asChild variant={variant} size={size}>
+          <Link href="/dashboard">
+            {children}
+          </Link>
+        </Button>
       </SignedIn>
       <SignedOut>
-        <Link
-          href="/sign-in"
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow hover:opacity-90 transition"
-        >
-          {children}
-        </Link>
+        <Button asChild variant={variant} size={size}>
+          <Link href="/sign-in">
+            {children}
+          </Link>
+        </Button>
       </SignedOut>
     </div>
   );
