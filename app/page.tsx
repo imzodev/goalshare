@@ -53,7 +53,7 @@ export default function Home() {
             </div>
             
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <CtaAuthLink size="lg" className="min-w-[200px] shadow-lg hover:shadow-xl transition-all duration-300">
+              <CtaAuthLink size="lg" className="min-w-[200px] transition-all duration-300">
                 Comenzar gratis
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CtaAuthLink>
@@ -216,7 +216,7 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-              <CtaAuthLink size="lg" className="min-w-[200px] shadow-lg hover:shadow-xl transition-all duration-300">
+              <CtaAuthLink size="lg" className="min-w-[200px] transition-all duration-300">
                 Comenzar gratis
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CtaAuthLink>
