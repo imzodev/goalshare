@@ -26,7 +26,7 @@ export function PricingCard({ name, price, period = "/mes", description, feature
       <CardHeader className="text-center pb-4">
         <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors duration-300">{name}</h3>
         <div className="mt-4 flex items-baseline justify-center gap-2">
-          <div className="text-4xl font-bold bg-gradient-to-br from-primary via-blue-600 to-accent bg-clip-text text-transparent">
+          <div className="text-4xl font-bold">
             {price}
           </div>
           {period && <div className="text-muted-foreground font-medium">{period}</div>}

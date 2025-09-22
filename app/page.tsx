@@ -77,8 +77,7 @@ export default function Home() {
               Funcionalidades
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Todo lo que necesitas para
-              <span className="bg-gradient-to-br from-primary via-blue-500 to-accent bg-clip-text text-transparent"> avanzar</span>
+              Todo lo que necesitas para avanzar
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Define, mide y comparte tu progreso con claridad y mantén la motivación en cada paso.
@@ -127,8 +126,7 @@ export default function Home() {
               Testimonios
             </Badge>
             <h2 id="social-proof-heading" className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Lo que dice nuestra
-              <span className="bg-gradient-to-br from-accent via-pink-500 to-primary bg-clip-text text-transparent"> comunidad</span>
+              Lo que dice nuestra comunidad
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Historias reales de progreso y motivación de personas que han transformado sus metas en realidad.
