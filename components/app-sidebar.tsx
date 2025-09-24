@@ -88,7 +88,11 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" className="z-50" {...props}>
+    <Sidebar
+      variant="sidebar"
+      className="z-40 [&_[data-slot=sidebar-gap]]:hidden [&_[data-slot=sidebar-container]]:z-40"
+      {...props}
+    >
       <SidebarHeader className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <SidebarMenu>
           <SidebarMenuItem>
