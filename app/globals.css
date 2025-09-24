@@ -132,7 +132,7 @@
     background-image: radial-gradient(circle at 1px 1px, rgba(var(--foreground), 0.15) 1px, transparent 0);
     background-size: 20px 20px;
   }
-  
+
   /* Custom gradient utilities for more sophisticated designs */
   .gradient-text-rainbow {
     background: linear-gradient(135deg, 
@@ -148,7 +148,7 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  
+
   .gradient-bg-aurora {
     background: linear-gradient(135deg, 
       rgba(var(--primary), 0.1), 
@@ -159,7 +159,7 @@
     background-size: 400% 400%;
     animation: gradient-shift 8s ease infinite;
   }
-  
+
   @keyframes gradient-shift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }

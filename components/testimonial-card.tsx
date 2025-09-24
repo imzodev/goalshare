@@ -17,9 +17,9 @@ export function TestimonialCard({ quote, author, role, avatarUrl }: Testimonial)
       <CardContent className="p-6">
         <figure className="h-full flex flex-col">
           <blockquote className="flex-1 text-muted-foreground leading-relaxed mb-6 relative">
-            <span className="text-primary text-4xl absolute -top-2 -left-2 opacity-20">"</span>
+            <span className="text-primary text-4xl absolute -top-2 -left-2 opacity-20">&ldquo;</span>
             <span className="relative z-10">{quote}</span>
-            <span className="text-primary text-4xl absolute -bottom-4 -right-2 opacity-20">"</span>
+            <span className="text-primary text-4xl absolute -bottom-4 -right-2 opacity-20">&rdquo;</span>
           </blockquote>
           <figcaption className="flex items-center gap-3 mt-auto">
             <Avatar className="h-12 w-12 border-2 border-primary/10 group-hover:border-primary/30 transition-colors duration-300">
