@@ -1,10 +1,11 @@
-"use client";
-import { SignUp } from "@clerk/nextjs";
+import SignUpClient from "@/components/auth/sign-up-client";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <SignUp routing="path" path="/sign-up" />
-    </div>
-  );
+export default async function Page() {
+  const { userId } = await auth();
+    if (userId) {
+      redirect("/dashboard");
+    }
+  return <SignUpClient />;
 }
