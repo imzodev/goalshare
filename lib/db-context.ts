@@ -1,5 +1,4 @@
 import { db, client } from "@/db";
-import { sql } from "drizzle-orm";
 
 /**
  * withUserContext: setea app.user_id en la conexión Postgres para que RLS funcione por usuario (Clerk).

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { CtaAuthLink } from "@/components/cta-auth-link";
 import { FeatureCard } from "@/components/feature-card";
