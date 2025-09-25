@@ -5,6 +5,7 @@ import { withUserContext } from "@/lib/db-context";
 import type { UserGoalSummary } from "@/types/goals";
 import { calculateDaysLeft, toDate, toISODate } from "@/utils/date-utils";
 import { clampProgress } from "@/utils/progress-utils";
+import { GOAL_STATUS } from "@/constants/goals";
 
 type Database = typeof db;
 
@@ -40,7 +41,6 @@ export class GoalsService {
         const createdAt = toDate(goal.createdAt)!;
         const completedAt = toDate(goal.completedAt);
         const lastUpdateAt = completedAt ?? createdAt;
-        // TODO: Crear constante o enum para "completed"
         return {
           id: goal.id,
           title: goal.title,
@@ -49,7 +49,7 @@ export class GoalsService {
           deadline: deadline ? toISODate(deadline) : null,
           createdAt: createdAt.toISOString(),
           completedAt: completedAt?.toISOString() ?? null,
-          progress: clampProgress(goal.status === "completed" ? 100 : 0),
+          progress: clampProgress(goal.status === GOAL_STATUS.COMPLETED ? 100 : 0),
           daysLeft: deadline ? calculateDaysLeft(deadline, now) : null,
           topicCommunity: goal.topicCommunityId
             ? {
@@ -61,6 +61,95 @@ export class GoalsService {
           lastUpdateAt: lastUpdateAt.toISOString(),
         };
       });
+    });
+  }
+
+  async updateGoal(userId: string, goalId: string, updates: {
+    title?: string;
+    description?: string;
+    deadline?: string | null;
+    status?: "pending" | "completed";
+    topicCommunityId?: string;
+  }): Promise<UserGoalSummary> {
+    if (!userId || !goalId) {
+      throw new Error("userId y goalId son requeridos para actualizar una meta");
+    }
+
+    return withUserContext(userId, async () => {
+      // Primero verificar que el goal pertenece al usuario
+      const existingGoal = await this.dbInstance
+        .select()
+        .from(goals)
+        .where(eq(goals.id, goalId))
+        .limit(1);
+
+      if (!existingGoal.length || existingGoal[0].ownerId !== userId) {
+        throw new Error("Meta no encontrada o no tienes permisos para editarla");
+      }
+
+      const updateData: any = {};
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.deadline !== undefined) updateData.deadline = updates.deadline ? sql`${updates.deadline}::date` : null;
+      if (updates.status !== undefined) updateData.status = updates.status;
+      if (updates.topicCommunityId !== undefined) updateData.topicCommunityId = updates.topicCommunityId;
+
+      // Si se marca como completada, actualizar completedAt
+      if (updates.status === GOAL_STATUS.COMPLETED && existingGoal[0].status !== GOAL_STATUS.COMPLETED) {
+        updateData.completedAt = sql`NOW()`;
+      } else if (updates.status === GOAL_STATUS.PENDING && existingGoal[0].status === GOAL_STATUS.COMPLETED) {
+        updateData.completedAt = null;
+      }
+
+      await this.dbInstance
+        .update(goals)
+        .set(updateData)
+        .where(eq(goals.id, goalId));
+
+      // Retornar el goal actualizado
+      const updatedGoals = await this.listUserGoals(userId);
+      const updatedGoal = updatedGoals.find(g => g.id === goalId);
+
+      if (!updatedGoal) {
+        throw new Error("Error al recuperar la meta actualizada");
+      }
+
+      return updatedGoal;
+    });
+  }
+
+  async deleteGoal(userId: string, goalId: string): Promise<void> {
+    if (!userId || !goalId) {
+      throw new Error("userId y goalId son requeridos para eliminar una meta");
+    }
+
+    return withUserContext(userId, async () => {
+      // Primero verificar que el goal pertenece al usuario
+      const existingGoal = await this.dbInstance
+        .select()
+        .from(goals)
+        .where(eq(goals.id, goalId))
+        .limit(1);
+
+      if (!existingGoal.length || existingGoal[0].ownerId !== userId) {
+        throw new Error("Meta no encontrada o no tienes permisos para eliminarla");
+      }
+
+      // Eliminar el goal (las entradas relacionadas se eliminarán automáticamente por CASCADE)
+      await this.dbInstance
+        .delete(goals)
+        .where(eq(goals.id, goalId));
+    });
+  }
+
+  async getGoalById(userId: string, goalId: string): Promise<UserGoalSummary | null> {
+    if (!userId || !goalId) {
+      throw new Error("userId y goalId son requeridos para obtener una meta");
+    }
+
+    return withUserContext(userId, async () => {
+      const goals = await this.listUserGoals(userId);
+      return goals.find(g => g.id === goalId) || null;
     });
   }
 }

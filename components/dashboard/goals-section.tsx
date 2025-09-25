@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Target, Calendar, Clock, RefreshCw, Loader2, MoreHorizontal, AlertCircle } from "lucide-react"
 import type { UserGoalSummary } from "@/types/goals"
 import { CreateGoalSheet } from "./create-goal-sheet"
+import { formatDeadline, formatRelativeTime } from "@/utils/date-utils"
+import { getDaysLeftLabel } from "@/utils/goals-ui-utils"
+import { GOAL_STATUS_LABELS } from "@/constants/goals"
+import { GoalsSectionSkeleton } from "@/components/skeletons/goals-section-skeleton"
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -16,11 +20,6 @@ const colorPalette = [
   "from-amber-500/50 via-amber-500/20 to-transparent",
   "from-pink-500/50 via-pink-500/20 to-transparent",
 ]
-
-const statusLabels: Record<UserGoalSummary["status"], string> = {
-  pending: "En progreso",
-  completed: "Completada",
-}
 
 export function GoalsSection() {
   const [open, setOpen] = useState(false)
@@ -92,7 +91,7 @@ export function GoalsSection() {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {showSkeleton && <GoalsSkeleton />}
+        {showSkeleton && <GoalsSectionSkeleton />}
 
         {!loading && error && (
           <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm">
@@ -121,7 +120,7 @@ export function GoalsSection() {
           <div className="space-y-4">
             {goals.map((goal, index) => {
               const gradient = colorPalette[index % colorPalette.length]
-              const statusLabel = statusLabels[goal.status]
+              const statusLabel = GOAL_STATUS_LABELS[goal.status]
               const deadlineLabel = formatDeadline(goal.deadline)
               const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft)
               const lastUpdateLabel = formatRelativeTime(goal.lastUpdateAt)
@@ -193,98 +192,4 @@ export function GoalsSection() {
       <CreateGoalSheet open={open} onOpenChange={setOpen} onCreated={handleGoalCreated} />
     </Card>
   )
-}
-
-function GoalsSkeleton() {
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className="rounded-lg border bg-white/40 dark:bg-gray-800/40 px-4 py-4 animate-pulse"
-        >
-          <div className="h-4 w-1/3 rounded bg-muted" />
-          <div className="mt-2 h-3 w-2/3 rounded bg-muted/70" />
-          <div className="mt-4 h-2 rounded bg-muted" />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function formatDeadline(deadline: string | null): string {
-  if (!deadline) {
-    return "Sin fecha límite"
-  }
-
-  const [year, month, day] = deadline.split("-").map((value) => Number.parseInt(value, 10))
-  if (!year || !month || !day) {
-    return "Sin fecha límite"
-  }
-
-  const date = new Date(Date.UTC(year, month - 1, day))
-  if (Number.isNaN(date.getTime())) {
-    return "Sin fecha límite"
-  }
-
-  return new Intl.DateTimeFormat("es-MX", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(date)
-}
-
-function getDaysLeftLabel(status: UserGoalSummary["status"], daysLeft: number | null): string {
-  if (status === "completed") {
-    return "Meta completada"
-  }
-
-  if (daysLeft === null) {
-    return "Sin fecha límite"
-  }
-
-  if (daysLeft <= 0) {
-    return "Finaliza hoy"
-  }
-
-  if (daysLeft === 1) {
-    return "1 día restante"
-  }
-
-  return `${daysLeft} días restantes`
-}
-
-function formatRelativeTime(timestamp: string): string {
-  const date = new Date(timestamp)
-  if (Number.isNaN(date.getTime())) {
-    return ""
-  }
-
-  const diffMs = Date.now() - date.getTime()
-  if (diffMs < 60_000) {
-    return "Actualizado hace instantes"
-  }
-
-  const minutes = Math.round(diffMs / 60_000)
-  if (minutes < 60) {
-    return `Actualizado hace ${minutes} min`
-  }
-
-  const hours = Math.round(minutes / 60)
-  if (hours < 24) {
-    return `Actualizado hace ${hours} h`
-  }
-
-  const days = Math.round(hours / 24)
-  if (days < 30) {
-    return `Actualizado hace ${days} d`
-  }
-
-  const months = Math.round(days / 30)
-  if (months < 12) {
-    return `Actualizado hace ${months} m`
-  }
-
-  const years = Math.round(months / 12)
-  return `Actualizado hace ${years} a`
 }
