@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import * as schema from "@/db/schema";
 
 // Nota: Usa SOLO en el servidor (server actions, route handlers, etc.).
 // Requiere que SUPABASE_DB_URL esté definida en .env.local (URL de conexión a Postgres de Supabase).
@@ -18,4 +19,4 @@ export const client = postgres(connectionString as string, {
   max: 1, // Conexión ligera para serverless; ajusta si usas funciones largas o jobs
 });
 
-export const db = drizzle(client);
+export const db = drizzle(client, { schema });

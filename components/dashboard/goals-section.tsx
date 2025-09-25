@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Target, Calendar, Users, MoreHorizontal } from "lucide-react"
+import { CreateGoalSheet } from "./create-goal-sheet"
 
 const goals = [
   {
@@ -40,6 +42,7 @@ const goals = [
 ]
 
 export function GoalsSection() {
+  const [open, setOpen] = useState(false)
   return (
     <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -47,9 +50,14 @@ export function GoalsSection() {
           <Target className="h-5 w-5 text-blue-600" />
           Mis Metas
         </CardTitle>
-        <Button variant="outline" size="sm">
-          Ver todas
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            Ver todas
+          </Button>
+          <Button size="sm" onClick={() => setOpen(true)}>
+            Crear meta
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {goals.map((goal) => (
@@ -100,6 +108,7 @@ export function GoalsSection() {
           </div>
         ))}
       </CardContent>
+      <CreateGoalSheet open={open} onOpenChange={setOpen} onCreated={() => console.log("goal created")}/>
     </Card>
   )
 }
