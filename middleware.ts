@@ -1,6 +1,43 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-export default clerkMiddleware();
+// Sencillo rate limiting en memoria (por IP/usuario) para /api/*
+type Counter = { count: number; resetAt: number };
+const WINDOW_MS = 60_000; // 1 minuto
+const LIMIT = 60; // 60 req por minuto
+const store: Map<string, Counter> = (globalThis as any).__rateLimitStore || new Map();
+(globalThis as any).__rateLimitStore = store;
+
+function getClientKey(req: Request, userId?: string | null): string {
+  const ipHeader = req.headers.get("x-forwarded-for");
+  const ip = ipHeader?.split(",")[0].trim() || "unknown";
+  return userId ? `uid:${userId}` : `ip:${ip}`;
+}
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+  const url = new URL(req.url);
+
+  // Solo rate limit para /api/*
+  if (url.pathname.startsWith("/api/")) {
+    const key = getClientKey(req, userId);
+    const now = Date.now();
+    const current = store.get(key);
+    if (!current || current.resetAt <= now) {
+      store.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    } else {
+      current.count += 1;
+      if (current.count > LIMIT) {
+        const retryAfter = Math.ceil((current.resetAt - now) / 1000);
+        return NextResponse.json(
+          { error: "Too Many Requests" },
+          { status: 429, headers: { "Retry-After": String(retryAfter) } }
+        );
+      }
+      store.set(key, current);
+    }
+  }
+});
 
 export const config = {
   matcher: [
