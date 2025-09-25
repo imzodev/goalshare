@@ -6,6 +6,7 @@ import { goals, profiles } from "@/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import { env } from "@/config/env";
+import { GoalsService } from "@/services/goals-service";
 
 const CreateGoalSchema = z.object({
   title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(120),
@@ -100,5 +101,23 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[POST /api/goals]", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
+    const goalsService = new GoalsService();
+    const data = await goalsService.listUserGoals(userId);
+
+    return NextResponse.json({ goals: data }, { status: 200 });
+  } catch (err) {
+    console.error("[GET /api/goals]", err);
+    const message = err instanceof Error ? err.message : "Error interno";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

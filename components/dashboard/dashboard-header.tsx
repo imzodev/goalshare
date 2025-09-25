@@ -1,13 +1,22 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, TrendingUp, Target, Clock } from "lucide-react"
 
+function resolveGreetingByHour(hour: number) {
+  if (hour < 12) return "Buenos días"
+  if (hour < 18) return "Buenas tardes"
+  return "Buenas noches"
+}
+
 export function DashboardHeader() {
-  const currentHour = new Date().getHours()
-  const greeting = 
-    currentHour < 12 ? "Buenos días" :
-    currentHour < 18 ? "Buenas tardes" : "Buenas noches"
+  const [greeting, setGreeting] = useState("Hola")
+
+  useEffect(() => {
+    const currentHour = new Date().getHours()
+    setGreeting(resolveGreetingByHour(currentHour))
+  }, [])
 
   const userName = "Irving" // En una app real, esto vendría del contexto de usuario
 
