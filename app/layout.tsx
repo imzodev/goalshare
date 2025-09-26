@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { env } from "@/config/env";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
             </a>
             <SiteHeader />
             {children}
+            <Toaster />
           </ThemeProvider>
         </ClerkProvider>
       </body>
