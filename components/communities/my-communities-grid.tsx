@@ -1,9 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, MessageCircle, Loader2, TrendingUp, Crown } from "lucide-react"
+import { Users, MessageCircle, Loader2, TrendingUp, Crown, ArrowUpRight } from "lucide-react"
 import type { CommunitySummary } from "@/types/communities"
 
 interface MyCommunitiesGridProps {
@@ -116,20 +117,33 @@ export function MyCommunitiesGrid({ communities, onCommunityAction, getCommunity
                 <span>Te uniste el {new Date(community.createdAt).toLocaleDateString('es-ES')}</span>
               </div>
 
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={isLeaving}
-                onClick={() => handleLeaveCommunity(community)}
-                className="w-full border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/20 transition-all disabled:opacity-50"
-              >
-                {isLeaving ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                ) : (
-                  <MessageCircle className="h-3 w-3 mr-1" />
-                )}
-                {isLeaving ? 'Saliendo...' : 'Salir de la comunidad'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  asChild
+                  size="sm"
+                  className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:shadow-xl"
+                >
+                  <Link href={`/dashboard/communities/${community.id}`}>
+                    <ArrowUpRight className="h-3 w-3" />
+                    <span className="ml-1">Ir a la comunidad</span>
+                  </Link>
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isLeaving}
+                  onClick={() => handleLeaveCommunity(community)}
+                  className="flex-1 border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/20 transition-all disabled:opacity-50"
+                >
+                  {isLeaving ? (
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  ) : (
+                    <MessageCircle className="h-3 w-3 mr-1" />
+                  )}
+                  {isLeaving ? 'Saliendo...' : 'Salir'}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )
