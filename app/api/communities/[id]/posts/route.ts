@@ -45,7 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 })
     }
-
+    // TODO: Refactorizar, esto no deberia estar aqui, esto debe ser manejado por un middleware
     const origin = request.headers.get("origin") || ""
     if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
       return NextResponse.json({ error: "Origin no permitido" }, { status: 403 })
