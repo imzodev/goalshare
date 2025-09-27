@@ -1,9 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, MessageCircle, Loader2, TrendingUp } from "lucide-react"
+import { ArrowUpRight, Users, MessageCircle, Loader2, TrendingUp } from "lucide-react"
 import type { CommunitySummary } from "@/types/communities"
 
 interface CommunitiesGridProps {
@@ -103,19 +104,31 @@ export function CommunitiesGrid({ communities, onCommunityAction, getCommunityGr
                 <span>Comunidad {community.kind}</span>
               </div>
 
-              <Button
-                size="sm"
-                disabled={isJoining || community.isMember}
-                onClick={() => handleJoinCommunity(community)}
-                className={`w-full bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`}
-              >
-                {isJoining ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                ) : (
-                  <MessageCircle className="h-3 w-3 mr-1" />
-                )}
-                {isJoining ? 'Uniéndose...' : community.isMember ? 'Ya miembro' : 'Unirse'}
-              </Button>
+              {community.isMember ? (
+                <Button
+                  asChild
+                  size="sm"
+                  className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:shadow-xl"
+                >
+                  <Link href={`/dashboard/communities/${community.id}`}>
+                    <ArrowUpRight className="mr-1 h-3 w-3" /> Ver comunidad
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  disabled={isJoining}
+                  onClick={() => handleJoinCommunity(community)}
+                  className={`w-full bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`}
+                >
+                  {isJoining ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                  ) : (
+                    <MessageCircle className="mr-1 h-3 w-3" />
+                  )}
+                  {isJoining ? "Uniéndose..." : "Unirse"}
+                </Button>
+              )}
             </CardContent>
           </Card>
         )
