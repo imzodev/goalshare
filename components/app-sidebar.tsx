@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Calendar,
   Bell,
+  PanelLeftClose,
 } from "lucide-react"
 import { UserButton } from "@clerk/nextjs"
 import Link from "next/link"
@@ -29,9 +30,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 // Datos de navegación
 const getNavigationData = (pathname: string) => {
@@ -105,6 +108,7 @@ const userData = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { navMain, quickActions } = getNavigationData(pathname);
+  const { toggleSidebar } = useSidebar();
   return (
     <Sidebar
       variant="sidebar"
@@ -112,21 +116,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {...props}
     >
       <SidebarHeader className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-xs">
-                GS
+        <div className="flex items-center gap-2">
+          <SidebarMenu className="flex-1">
+            <SidebarMenuItem>
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-xs">
+                  GS
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">GoalShare</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    Alcanza tus metas
+                  </span>
+                </div>
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">GoalShare</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  Alcanza tus metas
-                </span>
-              </div>
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={toggleSidebar}
+          >
+            <PanelLeftClose className="h-4 w-4" />
+            <span className="sr-only">Ocultar navegación</span>
+          </Button>
+        </div>
       </SidebarHeader>
       
       <SidebarContent>
