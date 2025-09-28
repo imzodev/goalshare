@@ -3,6 +3,32 @@
 
 begin;
 
+-- Subscription plans
+insert into goalshare_subscription_plans (id, display_name, description, stripe_price_id, billing_period)
+values
+  ('free', 'Plan Gratuito', 'Acceso básico con límites en interacción social.', null, null),
+  -- NOTA: sustituir `stripe_price_id` tras desplegar con el price real de Stripe (ver docs)
+  ('premium', 'Plan Premium', 'Acceso completo con todas las funciones sociales.', null, 'monthly')
+on conflict (id) do update
+set
+  display_name = excluded.display_name,
+  description = excluded.description,
+  stripe_price_id = excluded.stripe_price_id,
+  billing_period = excluded.billing_period;
+
+-- Plan permissions (bool/int/text values según necesidad)
+insert into goalshare_plan_permissions (plan_id, permission_key, bool_value, int_value, text_value)
+values
+  ('free', 'can_comment_global', false, null, null),
+  ('free', 'max_active_goals', null, 5, null),
+  ('premium', 'can_comment_global', true, null, null),
+  ('premium', 'max_active_goals', null, null, 'unlimited')
+on conflict (plan_id, permission_key) do update
+set
+  bool_value = excluded.bool_value,
+  int_value = excluded.int_value,
+  text_value = excluded.text_value;
+
 -- Domain: Languages y Fitness usando CTEs para capturar IDs
 with lang as (
   insert into goalshare_communities (kind, slug, name, description)

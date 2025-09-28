@@ -11,14 +11,15 @@ import {
   date,
   timestamp,
   unique,
+  uniqueIndex,
   index,
   numeric,
   primaryKey,
+  boolean,
   AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 // Enums
-export const planEnum = pgEnum("plan", ["free", "premium"]);
 export const communityKindEnum = pgEnum("community_kind", ["domain", "topic", "cohort"]);
 export const goalStatusEnum = pgEnum("goal_status", ["pending", "completed"]);
 export const memberRoleEnum = pgEnum("member_role", ["member", "admin"]);
@@ -36,6 +37,45 @@ export const entryVisibilityEnum = pgEnum("entry_visibility", ["private", "frien
 // Utilidades comunes
 // Nota: evitamos helpers que introduzcan tipos implícitos para mejorar la DX con TS.
 
+// subscription plans & permissions
+export const subscriptionPlans = pgTable(
+  "goalshare_subscription_plans",
+  {
+    id: text("id").primaryKey(),
+    displayName: text("display_name").notNull(),
+    description: text("description"),
+    stripePriceId: text("stripe_price_id"),
+    billingPeriod: text("billing_period"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("subscription_plans_stripe_price_unique")
+      .on(t.stripePriceId)
+      .where(sql`${t.stripePriceId} is not null`),
+  ]
+);
+
+export const planPermissions = pgTable(
+  "goalshare_plan_permissions",
+  {
+    planId: text("plan_id")
+      .notNull()
+      .references(() => subscriptionPlans.id, { onDelete: "cascade" }),
+    permissionKey: text("permission_key").notNull(),
+    boolValue: boolean("bool_value"),
+    intValue: integer("int_value"),
+    textValue: text("text_value"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .defaultNow()
+      .$onUpdate(() => sql`now()`)
+      .notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.planId, t.permissionKey], name: "plan_permissions_pk" }),
+  ]
+);
+
 // profiles
 export const profiles = pgTable(
   "goalshare_profiles",
@@ -44,7 +84,10 @@ export const profiles = pgTable(
     username: text("username").unique(),
     displayName: text("display_name"),
     imageUrl: text("image_url"),
-    plan: planEnum("plan").notNull().default("free"),
+    planId: text("plan_id")
+      .notNull()
+      .default("free")
+      .references(() => subscriptionPlans.id, { onDelete: "restrict" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
   () => []
@@ -221,6 +264,9 @@ export const subscriptions = pgTable(
   {
     id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
     userId: text("user_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    planId: text("plan_id")
+      .notNull()
+      .references(() => subscriptionPlans.id, { onDelete: "restrict" }),
     stripeCustomerId: text("stripe_customer_id").notNull(),
     stripeSubscriptionId: text("stripe_subscription_id").notNull(),
     status: subscriptionStatusEnum("status").notNull(),
@@ -231,9 +277,14 @@ export const subscriptions = pgTable(
     unique("subscriptions_stripe_sub_id_unique").on(t.stripeSubscriptionId),
     index("subscriptions_user_idx").on(t.userId),
     index("subscriptions_status_idx").on(t.status),
+    uniqueIndex("subscriptions_user_active_unique")
+      .on(t.userId)
+      .where(sql`${t.status} in ('active', 'trialing', 'incomplete')`),
   ]
 );
 
+export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
+export type PlanPermission = typeof planPermissions.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
 export type Community = typeof communities.$inferSelect;
 export type Goal = typeof goals.$inferSelect;
