@@ -9,8 +9,28 @@ erDiagram
     text username
     text display_name
     text image_url
-    plan plan
+    text plan_id FK
     timestamptz created_at
+  }
+
+  goalshare_subscription_plans {
+    text id PK
+    text display_name
+    text description
+    text stripe_price_id
+    text billing_period
+    timestamptz created_at
+  }
+
+  goalshare_plan_permissions {
+    text plan_id FK
+    text permission_key
+    bool bool_value
+    int int_value
+    text text_value
+    timestamptz created_at
+    timestamptz updated_at
+    PK "(plan_id, permission_key)"
   }
 
   goalshare_communities {
@@ -108,6 +128,7 @@ erDiagram
   goalshare_subscriptions {
     uuid id PK
     text user_id FK
+    text plan_id FK
     text stripe_customer_id
     text stripe_subscription_id
     subscription_status status
@@ -137,4 +158,7 @@ erDiagram
 
   goalshare_profiles ||--o{ goalshare_friendships : links
   goalshare_profiles ||--o{ goalshare_subscriptions : has
+  goalshare_subscription_plans ||--o{ goalshare_profiles : active_plan
+  goalshare_subscription_plans ||--o{ goalshare_subscriptions : billed_plan
+  goalshare_subscription_plans ||--o{ goalshare_plan_permissions : defines
 ```

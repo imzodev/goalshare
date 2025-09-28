@@ -5,21 +5,21 @@ Este documento describe el modelo relacional propuesto para GoalShare, optimizad
 - Postgres (Supabase) con RLS real y contexto de usuario.
 - Drizzle ORM para definir el esquema y ejecutar migraciones (cuando corresponda).
 - Comunidades jerárquicas (Domain → Topic → Cohort) y plantillas de metas para mapeo automático.
-
 ## Enfoque de Autenticación y RLS
 - Clerk gestiona la identidad. En Postgres no tenemos `auth.uid()`, por lo que proponemos:
   - Establecer por conexión una variable `app.user_id = '<clerk_user_id>'` mediante `set_config` desde el servidor (Next.js server actions/route handlers) en cada request autenticada.
   - Las políticas RLS referencian `current_setting('app.user_id', true)` para identificar al usuario.
 
 ## Enums
-- `plan`: `free` | `premium`
-- `community_kind`: `domain` | `topic` | `cohort`
 - `goal_status`: `pending` | `completed`
 - `member_role`: `member` | `admin`
 - `friendship_status`: `pending` | `accepted` | `blocked`
 - `subscription_status`: `active` | `past_due` | `canceled` | `incomplete` | `trialing`
 - `entry_kind`: `progress` | `note` | `tip` | `checkin` | `milestone_update`
 - `entry_visibility`: `private` | `friends` | `public`
+## Catálogo de Planes
+- `goalshare_subscription_plans`: catálogo de planes (free, premium) con metadatos de Stripe.
+- `goalshare_plan_permissions`: permisos normalizados por plan.
 
 ## Tablas
 
@@ -28,16 +28,34 @@ Este documento describe el modelo relacional propuesto para GoalShare, optimizad
 - `username` text unique
 - `display_name` text
 - `image_url` text
-- `plan` plan not null default `free`
+- `plan_id` text not null FK → `goalshare_subscription_plans.id` (default `free`)
 - `created_at` timestamptz not null default now()
 - Índices: unique(`username`)
+
+### subscription_plans
+- `id` text PK (ej: `free`, `premium`)
+- `display_name` text not null
+- `description` text null
+- `stripe_price_id` text null (null = plan gratuito o pendiente de asignar tras crear el price en Stripe)
+- `billing_period` text null (ej. `monthly`)
+- `created_at` timestamptz not null default now()
+- Índices: unique parcial en `stripe_price_id` cuando no es null
+
+### plan_permissions
+- `plan_id` text not null FK → `goalshare_subscription_plans.id`
+- `permission_key` text not null (ej: `can_comment`, `max_goals`)
+- `bool_value` boolean null
+- `int_value` int null
+- `text_value` text null
+- `created_at` timestamptz not null default now()
+- `updated_at` timestamptz not null default now()
+- PK (`plan_id`, `permission_key`)
 
 ### communities (jerárquica Domain → Topic → Cohort)
 - `id` uuid PK default gen_random_uuid()
 - `parent_id` uuid null FK → communities.id
 - `kind` community_kind not null
 - `slug` text unique not null (ej: `languages`, `languages-english`)
-- `name` text not null
 - `description` text null
 - `created_at` timestamptz not null default now()
 - Índices: unique(`slug`), index(`parent_id`), index(`kind`)
@@ -129,12 +147,13 @@ Este documento describe el modelo relacional propuesto para GoalShare, optimizad
 ### subscriptions (suscripciones Stripe)
 - `id` uuid PK default gen_random_uuid()
 - `user_id` text not null FK → profiles.user_id
+- `plan_id` text not null FK → goalshare_subscription_plans.id
 - `stripe_customer_id` text not null
 - `stripe_subscription_id` text not null unique
 - `status` subscription_status not null
 - `current_period_end` timestamptz not null
 - `created_at` timestamptz not null default now()
-- Índices: index(`user_id`), index(`status`)
+- Índices: index(`user_id`), index(`status`), unique parcial (`user_id`) donde status ∈ {active, trialing, incomplete}
 
 ## Relaciones (diagrama lógico)
 ```mermaid
