@@ -10,7 +10,19 @@ function resolveGreetingByHour(hour: number) {
   return "Buenas noches"
 }
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  activeGoals?: number;
+  averageProgress?: number;
+  daysRemaining?: number;
+  loading?: boolean;
+}
+
+export function DashboardHeader({ 
+  activeGoals, 
+  averageProgress, 
+  daysRemaining,
+  loading = false 
+}: DashboardHeaderProps) {
   const [greeting, setGreeting] = useState("Hola")
 
   useEffect(() => {
@@ -60,17 +72,23 @@ export function DashboardHeader() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center border border-white/20">
               <Target className="h-5 w-5 mx-auto mb-1 text-blue-200" />
-              <div className="text-lg font-bold">3</div>
+              <div className="text-lg font-bold">
+                {loading ? "..." : activeGoals ?? "0"}
+              </div>
               <div className="text-xs text-blue-200">Metas activas</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center border border-white/20">
               <TrendingUp className="h-5 w-5 mx-auto mb-1 text-green-200" />
-              <div className="text-lg font-bold">67%</div>
+              <div className="text-lg font-bold">
+                {loading ? "..." : `${averageProgress ?? 0}%`}
+              </div>
               <div className="text-xs text-green-200">Progreso</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center border border-white/20 col-span-2 md:col-span-1">
               <Clock className="h-5 w-5 mx-auto mb-1 text-orange-200" />
-              <div className="text-lg font-bold">12</div>
+              <div className="text-lg font-bold">
+                {loading ? "..." : daysRemaining ?? "–"}
+              </div>
               <div className="text-xs text-orange-200">Días restantes</div>
             </div>
           </div>
@@ -80,12 +98,14 @@ export function DashboardHeader() {
         <div className="mt-6 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-blue-100">Progreso general del mes</span>
-            <span className="font-medium">67%</span>
+            <span className="font-medium">
+              {loading ? "..." : `${averageProgress ?? 0}%`}
+            </span>
           </div>
           <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
             <div 
               className="bg-gradient-to-r from-yellow-400 to-orange-400 h-full rounded-full transition-all duration-1000 ease-out shadow-lg"
-              style={{ width: "67%" }}
+              style={{ width: `${averageProgress ?? 0}%` }}
             />
           </div>
         </div>

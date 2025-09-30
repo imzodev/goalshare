@@ -1,12 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { StatsCards } from "@/components/dashboard/stats-cards";
-import { QuickActions } from "@/components/dashboard/quick-actions";
-import { GoalsSection } from "@/components/dashboard/goals-section";
-import { CommunitiesSection } from "@/components/dashboard/communities-section";
-import { MobileNav } from "@/components/dashboard/mobile-nav";
-import { FloatingActionButton } from "@/components/dashboard/floating-action-button";
+import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
 export default async function DashboardPage() {
   // Server-side auth info
@@ -38,39 +32,5 @@ export default async function DashboardPage() {
     );
   }
 
-  return (
-    <>
-      <div className="space-y-6 pb-20 md:pb-6 min-w-0">
-        {/* Header dinámico con gradientes */}
-        <DashboardHeader />
-        
-        {/* Tarjetas de estadísticas */}
-        <StatsCards />
-        
-        {/* Layout principal */}
-        <div className="grid gap-6 md:grid-cols-2 min-w-0">
-          {/* Acciones rápidas */}
-          <div className="min-w-0">
-            <QuickActions />
-          </div>
-          
-          {/* Sección de metas */}
-          <div className="min-w-0">
-            <GoalsSection />
-          </div>
-        </div>
-        
-        {/* Sección de comunidades */}
-        <div className="min-w-0">
-          <CommunitiesSection />
-        </div>
-      </div>
-      
-      {/* Navegación móvil */}
-      <MobileNav />
-      
-      {/* FAB flotante */}
-      <FloatingActionButton />
-    </>
-  );
+  return <DashboardContent />;
 }

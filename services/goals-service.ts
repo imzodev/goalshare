@@ -152,4 +152,33 @@ export class GoalsService {
       return goals.find(g => g.id === goalId) || null;
     });
   }
+
+  async getUserGoalsSummary(userId: string): Promise<{
+    total: number;
+    completed: number;
+    pending: number;
+  }> {
+    if (!userId) {
+      throw new Error("userId es requerido para obtener el resumen de metas");
+    }
+
+    return withUserContext(userId, async () => {
+      const result = await this.dbInstance
+        .select({
+          total: sql<number>`cast(count(*) as integer)`,
+          completed: sql<number>`cast(sum(case when ${goals.status} = ${GOAL_STATUS.COMPLETED} then 1 else 0 end) as integer)`,
+          pending: sql<number>`cast(sum(case when ${goals.status} = ${GOAL_STATUS.PENDING} then 1 else 0 end) as integer)`,
+        })
+        .from(goals)
+        .where(eq(goals.ownerId, userId));
+
+      const summary = result[0];
+      
+      return {
+        total: summary?.total ?? 0,
+        completed: summary?.completed ?? 0,
+        pending: summary?.pending ?? 0,
+      };
+    });
+  }
 }
