@@ -16,6 +16,11 @@ const UpdateGoalSchema = z.object({
     .optional(),
   topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }).optional(),
   status: z.enum(["pending", "completed"]).optional(),
+  goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional(),
+  targetValue: z.number().positive().nullish(),
+  targetUnit: z.string().max(50).nullish(),
+  currentValue: z.number().min(0).nullish(),
+  currentProgress: z.number().min(0).max(100).int().nullish(),
 });
 
 export async function PUT(

@@ -22,6 +22,7 @@ import {
 // Enums
 export const communityKindEnum = pgEnum("community_kind", ["domain", "topic", "cohort"]);
 export const goalStatusEnum = pgEnum("goal_status", ["pending", "completed"]);
+export const goalTypeEnum = pgEnum("goal_type", ["metric", "milestone", "checkin", "manual"]);
 export const memberRoleEnum = pgEnum("member_role", ["member", "admin"]);
 export const friendshipStatusEnum = pgEnum("friendship_status", ["pending", "accepted", "blocked"]);
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
@@ -31,7 +32,7 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "incomplete",
   "trialing",
 ]);
-export const entryKindEnum = pgEnum("entry_kind", ["progress", "note", "tip", "checkin", "milestone_update"]);
+export const entryKindEnum = pgEnum("entry_kind", ["note", "checkin", "milestone_update", "progress_update", "metric_update"]);
 export const entryVisibilityEnum = pgEnum("entry_visibility", ["private", "friends", "public"]);
 
 // Utilidades comunes
@@ -156,12 +157,20 @@ export const goals = pgTable(
     description: text("description").notNull(),
     deadline: date("deadline"),
     status: goalStatusEnum("status").notNull().default("pending"),
+    goalType: goalTypeEnum("goal_type").notNull().default("manual"),
+    // For "metric" and "checkin" types
+    targetValue: numeric("target_value"),
+    targetUnit: text("target_unit"),
+    currentValue: numeric("current_value").default("0"),
+    // For "manual" type
+    currentProgress: integer("current_progress").default(0),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }),
   },
   (t) => [
     index("goals_owner_status_created_idx").on(t.ownerId, t.status, t.createdAt),
     index("goals_topic_created_idx").on(t.topicCommunityId, t.createdAt),
+    index("goals_type_idx").on(t.goalType),
   ]
 );
 
@@ -174,6 +183,7 @@ export const goalMilestones = pgTable(
     title: text("title").notNull(),
     description: text("description"),
     sortOrder: integer("sort_order").notNull().default(0),
+    weight: integer("weight").notNull().default(0), // Percentage weight (0-100)
     targetDate: date("target_date"),
     completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
@@ -193,11 +203,9 @@ export const goalEntries = pgTable(
     authorId: text("author_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
     kind: entryKindEnum("kind").notNull(),
     content: text("content"),
-    progressValue: integer("progress_value"), // 0-100 (validar en app/DB según necesidad)
-    metricValue: numeric("metric_value"),
-    metricUnit: text("metric_unit"),
     imagePath: text("image_path"),
     milestoneId: uuid("milestone_id").references(() => goalMilestones.id, { onDelete: "set null" }),
+    progressSnapshot: integer("progress_snapshot"), // Snapshot of progress at time of entry (for history)
     visibility: entryVisibilityEnum("visibility").notNull().default("private"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },

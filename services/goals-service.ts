@@ -1,10 +1,10 @@
 import { db } from "@/db";
-import { goals, goalEntries, communities } from "@/db/schema";
+import { goals, goalEntries, communities, goalMilestones } from "@/db/schema";
 import { desc, eq, sql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import type { UserGoalSummary } from "@/types/goals";
 import { calculateDaysLeft, toDate, toISODate } from "@/utils/date-utils";
-import { clampProgress } from "@/utils/progress-utils";
+import { calculateGoalProgress } from "@/utils/progress-utils";
 import { GOAL_STATUS } from "@/constants/goals";
 
 type Database = typeof db;
@@ -34,6 +34,23 @@ export class GoalsService {
 
       const now = new Date();
 
+      // Fetch milestones for all goals to calculate progress
+      const goalIds = rows.map((row) => row.goal.id);
+      const allMilestones = goalIds.length > 0
+        ? await this.dbInstance
+            .select()
+            .from(goalMilestones)
+            .where(sql`${goalMilestones.goalId} = ANY(${goalIds})`)
+        : [];
+
+      // Group milestones by goalId
+      const milestonesByGoalId = new Map<string, typeof allMilestones>();
+      for (const milestone of allMilestones) {
+        const existing = milestonesByGoalId.get(milestone.goalId) || [];
+        existing.push(milestone);
+        milestonesByGoalId.set(milestone.goalId, existing);
+      }
+
       return rows.map((row) => {
         const { goal, topic } = row;
 
@@ -41,15 +58,21 @@ export class GoalsService {
         const createdAt = toDate(goal.createdAt)!;
         const completedAt = toDate(goal.completedAt);
         const lastUpdateAt = completedAt ?? createdAt;
+        
+        // Calculate progress based on goal type
+        const milestonesForGoal = milestonesByGoalId.get(goal.id) || [];
+        const progress = calculateGoalProgress(goal, milestonesForGoal);
+
         return {
           id: goal.id,
           title: goal.title,
           description: goal.description,
           status: goal.status,
+          goalType: goal.goalType,
           deadline: deadline ? toISODate(deadline) : null,
           createdAt: createdAt.toISOString(),
           completedAt: completedAt?.toISOString() ?? null,
-          progress: clampProgress(goal.status === GOAL_STATUS.COMPLETED ? 100 : 0),
+          progress,
           daysLeft: deadline ? calculateDaysLeft(deadline, now) : null,
           topicCommunity: goal.topicCommunityId
             ? {
@@ -59,6 +82,10 @@ export class GoalsService {
               }
             : null,
           lastUpdateAt: lastUpdateAt.toISOString(),
+          targetValue: goal.targetValue ? Number(goal.targetValue) : null,
+          targetUnit: goal.targetUnit,
+          currentValue: goal.currentValue ? Number(goal.currentValue) : null,
+          currentProgress: goal.currentProgress,
         };
       });
     });
@@ -70,6 +97,11 @@ export class GoalsService {
     deadline?: string | null;
     status?: "pending" | "completed";
     topicCommunityId?: string;
+    goalType?: "metric" | "milestone" | "checkin" | "manual";
+    targetValue?: number | null;
+    targetUnit?: string | null;
+    currentValue?: number | null;
+    currentProgress?: number | null;
   }): Promise<UserGoalSummary> {
     if (!userId || !goalId) {
       throw new Error("userId y goalId son requeridos para actualizar una meta");
@@ -93,6 +125,11 @@ export class GoalsService {
       if (updates.deadline !== undefined) updateData.deadline = updates.deadline ? sql`${updates.deadline}::date` : null;
       if (updates.status !== undefined) updateData.status = updates.status;
       if (updates.topicCommunityId !== undefined) updateData.topicCommunityId = updates.topicCommunityId;
+      if (updates.goalType !== undefined) updateData.goalType = updates.goalType;
+      if (updates.targetValue !== undefined) updateData.targetValue = updates.targetValue;
+      if (updates.targetUnit !== undefined) updateData.targetUnit = updates.targetUnit;
+      if (updates.currentValue !== undefined) updateData.currentValue = updates.currentValue;
+      if (updates.currentProgress !== undefined) updateData.currentProgress = updates.currentProgress;
 
       // Si se marca como completada, actualizar completedAt
       if (updates.status === GOAL_STATUS.COMPLETED && existingGoal[0].status !== GOAL_STATUS.COMPLETED) {

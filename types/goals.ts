@@ -1,3 +1,5 @@
+export type GoalType = "metric" | "milestone" | "checkin" | "manual";
+
 export interface TopicSummary {
   id: string;
   name: string;
@@ -9,6 +11,7 @@ export interface UserGoalSummary {
   title: string;
   description: string;
   status: "pending" | "completed";
+  goalType: GoalType;
   deadline: string | null;
   createdAt: string;
   completedAt: string | null;
@@ -16,4 +19,10 @@ export interface UserGoalSummary {
   daysLeft: number | null;
   topicCommunity: TopicSummary | null;
   lastUpdateAt: string;
+  // For "metric" and "checkin" types
+  targetValue?: number | null;
+  targetUnit?: string | null;
+  currentValue?: number | null;
+  // For "manual" type
+  currentProgress?: number | null;
 }

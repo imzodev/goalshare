@@ -6,10 +6,34 @@ export const GOAL_STATUS = {
   COMPLETED: "completed",
 } as const;
 
+// Tipos de meta
+export const GOAL_TYPE = {
+  METRIC: "metric",
+  MILESTONE: "milestone",
+  CHECKIN: "checkin",
+  MANUAL: "manual",
+} as const;
+
 // Etiquetas para estados de meta
 export const GOAL_STATUS_LABELS = {
   [GOAL_STATUS.PENDING]: "En progreso",
   [GOAL_STATUS.COMPLETED]: "Completada",
+} as const;
+
+// Etiquetas para tipos de meta
+export const GOAL_TYPE_LABELS = {
+  [GOAL_TYPE.METRIC]: "Métrica",
+  [GOAL_TYPE.MILESTONE]: "Hitos",
+  [GOAL_TYPE.CHECKIN]: "Check-in",
+  [GOAL_TYPE.MANUAL]: "Manual",
+} as const;
+
+// Descripciones para tipos de meta
+export const GOAL_TYPE_DESCRIPTIONS = {
+  [GOAL_TYPE.METRIC]: "Meta cuantificable con un objetivo numérico (ej: leer 12 libros)",
+  [GOAL_TYPE.MILESTONE]: "Meta dividida en hitos o pasos (ej: aprender inglés)",
+  [GOAL_TYPE.CHECKIN]: "Meta de hábito con repeticiones (ej: meditar 30 días)",
+  [GOAL_TYPE.MANUAL]: "Meta subjetiva con progreso manual (ej: aumentar autoestima)",
 } as const;
 
 // Etiquetas para días restantes
@@ -59,3 +83,4 @@ export const TIME_THRESHOLDS = {
 } as const;
 
 export type GoalStatus = typeof GOAL_STATUS[keyof typeof GOAL_STATUS];
+export type GoalType = typeof GOAL_TYPE[keyof typeof GOAL_TYPE];

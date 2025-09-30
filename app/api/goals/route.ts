@@ -20,6 +20,11 @@ const CreateGoalSchema = z.object({
     .transform((v) => (v ? v : null)),
   topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }),
   templateId: z.string().uuid().nullish(),
+  goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional().default("manual"),
+  targetValue: z.number().positive().nullish(),
+  targetUnit: z.string().max(50).nullish(),
+  currentValue: z.number().min(0).nullish(),
+  currentProgress: z.number().min(0).max(100).int().nullish(),
 });
 
 export async function POST(req: NextRequest) {
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { title, description, deadline, topicCommunityId, templateId } = parsed.data;
+    const { title, description, deadline, topicCommunityId, templateId, goalType, targetValue, targetUnit, currentValue, currentProgress } = parsed.data;
 
     // Ejecutar con contexto de usuario para que apliquen políticas RLS si existieran
     const created = await withUserContext(userId, async (dbCtx) => {
@@ -84,6 +89,11 @@ export async function POST(req: NextRequest) {
           deadline: deadline ?? null,
           topicCommunityId,
           templateId: templateId ?? null,
+          goalType: goalType ?? "manual",
+          targetValue: targetValue !== null && targetValue !== undefined ? String(targetValue) : null,
+          targetUnit: targetUnit ?? null,
+          currentValue: currentValue !== null && currentValue !== undefined ? String(currentValue) : null,
+          currentProgress: currentProgress ?? null,
         })
         .returning();
 

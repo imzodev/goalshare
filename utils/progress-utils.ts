@@ -1,3 +1,5 @@
+import type { Goal, GoalMilestone } from "@/db/schema";
+
 /**
  * Clamps a given value between 0 and 100.
  * If the value is not a finite number, returns 0.
@@ -10,4 +12,40 @@ export function clampProgress(value: unknown): number {
     return 0;
   }
   return Math.min(Math.max(Math.round(numeric), 0), 100);
+}
+
+/**
+ * Calculates the progress of a goal based on its type.
+ * @param goal - The goal to calculate progress for.
+ * @param milestones - The milestones associated with the goal (for milestone type).
+ * @returns The progress percentage (0-100).
+ */
+export function calculateGoalProgress(
+  goal: Goal,
+  milestones: GoalMilestone[] = []
+): number {
+  switch (goal.goalType) {
+    case "metric":
+    case "checkin": {
+      const target = Number(goal.targetValue ?? 0);
+      const current = Number(goal.currentValue ?? 0);
+      if (target === 0) return 0;
+      return clampProgress((current / target) * 100);
+    }
+
+    case "milestone": {
+      if (milestones.length === 0) return 0;
+      const completedWeight = milestones
+        .filter((m) => m.completedAt !== null)
+        .reduce((sum, m) => sum + (m.weight || 0), 0);
+      return clampProgress(completedWeight);
+    }
+
+    case "manual": {
+      return clampProgress(goal.currentProgress ?? 0);
+    }
+
+    default:
+      return 0;
+  }
 }
