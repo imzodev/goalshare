@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { communities, communityMembers, profiles } from "@/db/schema";
-import { desc, eq, sql, count } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import type { Community } from "@/db/schema";
 import type { CommunitySummary, CommunityWithMembers } from "@/types/communities";
@@ -21,7 +21,7 @@ export class CommunitiesService {
         name: communities.name,
         description: communities.description,
         createdAt: communities.createdAt,
-        memberCount: count(communityMembers.userId),
+        memberCount: sql<number>`cast(count(${communityMembers.userId}) as integer)`,
       })
       .from(communities)
       .leftJoin(communityMembers, eq(communityMembers.communityId, communities.id))
@@ -93,7 +93,7 @@ export class CommunitiesService {
           name: communities.name,
           description: communities.description,
           createdAt: communities.createdAt,
-          memberCount: count(communityMembers.userId),
+          memberCount: sql<number>`cast(count(${communityMembers.userId}) as integer)`,
           userRole: communityMembers.role,
         })
         .from(communities)
@@ -159,7 +159,7 @@ export class CommunitiesService {
 
       // Contar miembros totales
       const memberCountResult = await this.dbInstance
-        .select({ count: count(communityMembers.userId) })
+        .select({ count: sql<number>`cast(count(${communityMembers.userId}) as integer)` })
         .from(communityMembers)
         .where(eq(communityMembers.communityId, communityId));
 
