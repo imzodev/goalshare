@@ -54,13 +54,13 @@ export async function POST(req: NextRequest) {
       // Leer plan del perfil; si no existe, crear uno mínimo
       const existing = await dbCtx.query.profiles.findFirst({
         where: eq(profiles.userId, userId),
-        columns: { plan: true },
+        columns: { planId: true },
       });
-      let plan = existing?.plan ?? "free";
+      let plan = existing?.planId ?? "free";
       if (!existing) {
         await dbCtx
           .insert(profiles)
-          .values({ userId, plan: "free" })
+          .values({ userId, planId: "free" })
           .onConflictDoNothing({ target: profiles.userId });
         plan = "free";
       }
