@@ -4,42 +4,55 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Target, TrendingUp, Users, Trophy } from "lucide-react"
 
-const stats = [
-  {
-    title: "Metas Activas",
-    value: "3",
-    change: "+2 esta semana",
-    icon: Target,
-    gradient: "from-blue-500 to-cyan-500",
-    bgGradient: "from-blue-50 to-cyan-50",
-  },
-  {
-    title: "Progreso Promedio",
-    value: "67%",
-    change: "+12% este mes",
-    icon: TrendingUp,
-    gradient: "from-green-500 to-emerald-500",
-    bgGradient: "from-green-50 to-emerald-50",
-  },
-  {
-    title: "Comunidades",
-    value: "2",
-    change: "Activo en ambas",
-    icon: Users,
-    gradient: "from-purple-500 to-pink-500",
-    bgGradient: "from-purple-50 to-pink-50",
-  },
-  {
-    title: "Logros",
-    value: "8",
-    change: "+3 este mes",
-    icon: Trophy,
-    gradient: "from-orange-500 to-red-500",
-    bgGradient: "from-orange-50 to-red-50",
-  },
-]
+interface StatsCardsProps {
+  activeGoals?: number;
+  averageProgress?: number;
+  communitiesCount?: number;
+  achievementsCount?: number;
+  loading?: boolean;
+}
 
-export function StatsCards() {
+export function StatsCards({
+  activeGoals,
+  averageProgress,
+  communitiesCount = 2,
+  achievementsCount = 8,
+  loading = false
+}: StatsCardsProps) {
+  const stats = [
+    {
+      title: "Metas Activas",
+      value: loading ? "..." : String(activeGoals ?? 0),
+      change: "+2 esta semana",
+      icon: Target,
+      gradient: "from-blue-500 to-cyan-500",
+      bgGradient: "from-blue-50 to-cyan-50",
+    },
+    {
+      title: "Progreso Promedio",
+      value: loading ? "..." : `${averageProgress ?? 0}%`,
+      change: "+12% este mes",
+      icon: TrendingUp,
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-50 to-emerald-50",
+    },
+    {
+      title: "Comunidades",
+      value: loading ? "..." : String(communitiesCount),
+      change: "Activo en ambas",
+      icon: Users,
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-purple-50 to-pink-50",
+    },
+    {
+      title: "Logros",
+      value: loading ? "..." : String(achievementsCount),
+      change: "+3 este mes",
+      icon: Trophy,
+      gradient: "from-orange-500 to-red-500",
+      bgGradient: "from-orange-50 to-red-50",
+    },
+  ]
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
