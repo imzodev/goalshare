@@ -16,7 +16,9 @@ if (!connectionString) {
 
 export const client = postgres(connectionString as string, {
   ssl: "require",
-  max: 1, // Conexión ligera para serverless; ajusta si usas funciones largas o jobs
+  max: 10, // Pool de conexiones para manejar requests concurrentes
+  idle_timeout: 20, // Cerrar conexiones inactivas después de 20 segundos
+  max_lifetime: 60 * 30, // Máximo tiempo de vida de una conexión: 30 minutos
 });
 
 export const db = drizzle(client, { schema });
