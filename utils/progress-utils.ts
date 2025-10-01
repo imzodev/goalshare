@@ -1,4 +1,5 @@
 import type { Goal, GoalMilestone } from "@/db/schema";
+import { logger } from "@/utils/logger";
 
 /**
  * Clamps a given value between 0 and 100.
@@ -29,7 +30,17 @@ export function calculateGoalProgress(
     case "checkin": {
       const target = Number(goal.targetValue ?? 0);
       const current = Number(goal.currentValue ?? 0);
-      if (target === 0) return 0;
+      
+      if (target <= 0) {
+        logger.warn(`[calculateGoalProgress] Goal ${goal.id} has invalid targetValue: ${target}`);
+        return 0;
+      }
+      
+      if (current < 0) {
+        logger.warn(`[calculateGoalProgress] Goal ${goal.id} has negative currentValue: ${current}`);
+        return 0;
+      }
+      
       return clampProgress((current / target) * 100);
     }
 
