@@ -1,17 +1,11 @@
-"use client"
+"use client";
 
 import { useEffect, useState, useTransition } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 type Props = {
   open: boolean;
@@ -103,49 +97,86 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
   };
 
   return (
-    <Sheet open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
+    <Sheet
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) reset();
+      }}
+    >
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle>Crear nueva meta</SheetTitle>
           <SheetDescription>
-            Define un título, una descripción y (opcional) una fecha límite. Por ahora, debes indicar el UUID de la comunidad (topic) a la que pertenece la meta.
+            Define un título, una descripción y (opcional) una fecha límite. Por ahora, debes indicar el UUID de la
+            comunidad (topic) a la que pertenece la meta.
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Título</label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej: Correr 5K diarios" />
+            <label htmlFor="goal-title" className="text-sm font-medium">
+              Título
+            </label>
+            <Input
+              id="goal-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ej: Correr 5K diarios"
+            />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Descripción</label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe tu meta y cómo la medirás" rows={4} />
+            <label htmlFor="goal-description" className="text-sm font-medium">
+              Descripción
+            </label>
+            <Textarea
+              id="goal-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe tu meta y cómo la medirás"
+              rows={4}
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Fecha límite (opcional)</label>
-              <Input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+              <label htmlFor="goal-deadline" className="text-sm font-medium">
+                Fecha límite (opcional)
+              </label>
+              <Input id="goal-deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Template ID (opcional)</label>
-              <Input value={templateId} onChange={(e) => setTemplateId(e.target.value)} placeholder="UUID de plantilla (si aplica)" />
+              <label htmlFor="goal-template" className="text-sm font-medium">
+                Template ID (opcional)
+              </label>
+              <Input
+                id="goal-template"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+                placeholder="UUID de plantilla (si aplica)"
+              />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Comunidad (topic)</label>
+            <label htmlFor="goal-community" className="text-sm font-medium">
+              Comunidad (topic)
+            </label>
             <Select value={topicCommunityId} onValueChange={setTopicCommunityId}>
               <SelectTrigger>
-                <SelectValue placeholder={loadingCommunities ? "Cargando comunidades..." : "Selecciona una comunidad"} />
+                <SelectValue
+                  placeholder={loadingCommunities ? "Cargando comunidades..." : "Selecciona una comunidad"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {communities.length === 0 && !loadingCommunities ? (
                   <div className="px-2 py-1.5 text-sm text-muted-foreground">No hay comunidades disponibles</div>
                 ) : (
                   communities.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
                   ))
                 )}
               </SelectContent>
@@ -153,15 +184,15 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
             <p className="text-xs text-muted-foreground">Elige la comunidad temática a la que pertenece tu meta.</p>
           </div>
 
-          {error && (
-            <div className="text-sm text-red-600 dark:text-red-500">{error}</div>
-          )}
+          {error && <div className="text-sm text-red-600 dark:text-red-500">{error}</div>}
 
           <div className="pt-2 flex items-center gap-2">
             <Button onClick={handleSubmit} disabled={pending}>
               {pending ? "Creando..." : "Crear meta"}
             </Button>
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>Cancelar</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
+              Cancelar
+            </Button>
           </div>
         </div>
       </SheetContent>

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,85 +8,79 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
-import { Loader2, AlertCircle } from "lucide-react"
-import type { UserGoalSummary } from "@/types/goals"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Loader2, AlertCircle } from "lucide-react";
+import type { UserGoalSummary } from "@/types/goals";
 
 type Props = {
-  goal: UserGoalSummary | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onGoalUpdated?: () => void
-}
+  goal: UserGoalSummary | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onGoalUpdated?: () => void;
+};
 
 export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Props) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [deadline, setDeadline] = useState<string>("")
-  const [topicCommunityId, setTopicCommunityId] = useState("")
-  const [status, setStatus] = useState<"pending" | "completed">("pending")
-  const [error, setError] = useState<string | null>(null)
-  const [pending, startTransition] = useTransition()
-  const [communities, setCommunities] = useState<Array<{ id: string; name: string; slug: string }>>([])
-  const [loadingCommunities, setLoadingCommunities] = useState(false)
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState<string>("");
+  const [topicCommunityId, setTopicCommunityId] = useState("");
+  const [status, setStatus] = useState<"pending" | "completed">("pending");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const [communities, setCommunities] = useState<Array<{ id: string; name: string; slug: string }>>([]);
+  const [loadingCommunities, setLoadingCommunities] = useState(false);
 
   // Cargar datos del goal cuando se abre el diálogo
   useEffect(() => {
     if (goal && open) {
-      setTitle(goal.title)
-      setDescription(goal.description)
-      setDeadline(goal.deadline || "")
-      setTopicCommunityId(goal.topicCommunity?.id || "")
-      setStatus(goal.status)
-      setError(null)
+      setTitle(goal.title);
+      setDescription(goal.description);
+      setDeadline(goal.deadline || "");
+      setTopicCommunityId(goal.topicCommunity?.id || "");
+      setStatus(goal.status);
+      setError(null);
     }
-  }, [goal, open])
+  }, [goal, open]);
 
   // Cargar comunidades disponibles
   useEffect(() => {
-    if (!open) return
-    setLoadingCommunities(true)
+    if (!open) return;
+    setLoadingCommunities(true);
     fetch("/api/communities/topics", { method: "GET" })
       .then(async (res) => {
-        const data = await res.json()
+        const data = await res.json();
         if (res.ok) {
-          setCommunities(data.communities ?? [])
+          setCommunities(data.communities ?? []);
         } else {
-          console.warn("No se pudieron cargar comunidades", data?.error)
-          setCommunities([])
+          console.warn("No se pudieron cargar comunidades", data?.error);
+          setCommunities([]);
         }
       })
       .catch(() => setCommunities([]))
-      .finally(() => setLoadingCommunities(false))
-  }, [open])
+      .finally(() => setLoadingCommunities(false));
+  }, [open]);
 
   const handleSubmit = () => {
-    setError(null)
+    setError(null);
 
-    if (!goal) return
+    if (!goal) return;
 
     if (!title || title.length < 3) {
-      setError("El título debe tener al menos 3 caracteres")
-      return
+      setError("El título debe tener al menos 3 caracteres");
+      return;
     }
     if (!description || description.length < 10) {
-      setError("La descripción debe tener al menos 10 caracteres")
-      return
+      setError("La descripción debe tener al menos 10 caracteres");
+      return;
     }
     if (!topicCommunityId) {
-      setError("Debes seleccionar una comunidad (topic)")
-      return
+      setError("Debes seleccionar una comunidad (topic)");
+      return;
     }
 
     startTransition(async () => {
@@ -101,30 +95,30 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
             topicCommunityId,
             status,
           }),
-        })
+        });
 
-        const data = await res.json()
+        const data = await res.json();
         if (!res.ok) {
-          const msg = data?.error?.message || data?.error || "No se pudo actualizar la meta"
-          setError(typeof msg === "string" ? msg : "No se pudo actualizar la meta")
-          return
+          const msg = data?.error?.message || data?.error || "No se pudo actualizar la meta";
+          setError(typeof msg === "string" ? msg : "No se pudo actualizar la meta");
+          return;
         }
 
         // éxito
-        onOpenChange(false)
-        onGoalUpdated?.()
+        onOpenChange(false);
+        onGoalUpdated?.();
       } catch (e) {
-        setError("Error de red")
+        setError("Error de red");
       }
-    })
-  }
+    });
+  };
 
   const handleCancel = () => {
-    onOpenChange(false)
-    setError(null)
-  }
+    onOpenChange(false);
+    setError(null);
+  };
 
-  if (!goal) return null
+  if (!goal) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -186,7 +180,11 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
 
             <div className="space-y-2">
               <Label htmlFor="status">Estado</Label>
-              <Select value={status} onValueChange={(value: "pending" | "completed") => setStatus(value)} disabled={pending}>
+              <Select
+                value={status}
+                onValueChange={(value: "pending" | "completed") => setStatus(value)}
+                disabled={pending}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -200,7 +198,11 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
 
           <div className="space-y-2">
             <Label htmlFor="community">Comunidad</Label>
-            <Select value={topicCommunityId} onValueChange={setTopicCommunityId} disabled={pending || loadingCommunities}>
+            <Select
+              value={topicCommunityId}
+              onValueChange={setTopicCommunityId}
+              disabled={pending || loadingCommunities}
+            >
               <SelectTrigger>
                 <SelectValue placeholder={loadingCommunities ? "Cargando..." : "Selecciona una comunidad"} />
               </SelectTrigger>
@@ -232,5 +234,5 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,29 +1,18 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import {
-  Target,
-  Calendar,
-  Clock,
-  RefreshCw,
-  Loader2,
-  AlertCircle,
-  Edit,
-  Trash2,
-  Sparkles,
-  Plus
-} from "lucide-react"
-import type { UserGoalSummary } from "@/types/goals"
-import { EditGoalDialog } from "./components/edit-goal-dialog"
-import { DeleteGoalDialog } from "./components/delete-goal-dialog"
-import { formatDeadline } from "@/utils/date-utils"
-import { getDaysLeftLabel } from "@/utils/goals-ui-utils"
-import { GoalsManagementSkeleton } from "@/components/skeletons/goals-management-skeleton"
-import { GOAL_STATUS_LABELS } from "@/constants/goals"
+import { useCallback, useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Target, Calendar, Clock, RefreshCw, Loader2, AlertCircle, Edit, Trash2, Sparkles, Plus } from "lucide-react";
+import type { UserGoalSummary } from "@/types/goals";
+import { EditGoalDialog } from "./components/edit-goal-dialog";
+import { DeleteGoalDialog } from "./components/delete-goal-dialog";
+import { formatDeadline } from "@/utils/date-utils";
+import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
+import { GoalsManagementSkeleton } from "@/components/skeletons/goals-management-skeleton";
+import { GOAL_STATUS_LABELS } from "@/constants/goals";
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -34,85 +23,84 @@ const colorPalette = [
   "from-rose-500/50 via-rose-500/20 to-transparent",
   "from-cyan-500/50 via-cyan-500/20 to-transparent",
   "from-violet-500/50 via-violet-500/20 to-transparent",
-]
+];
 
 export default function GoalsManagementPage() {
-  const [goals, setGoals] = useState<UserGoalSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
+  const [goals, setGoals] = useState<UserGoalSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Estados para edición
-  const [editingGoal, setEditingGoal] = useState<UserGoalSummary | null>(null)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [editingGoal, setEditingGoal] = useState<UserGoalSummary | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   // Estados para eliminación
-  const [deletingGoal, setDeletingGoal] = useState<UserGoalSummary | null>(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deletingGoal, setDeletingGoal] = useState<UserGoalSummary | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchGoals = useCallback(async ({ silent = false } = {}) => {
-    console.log("[GoalsManagement] fetchGoals:start", { silent })
+    console.log("[GoalsManagement] fetchGoals:start", { silent });
     if (silent) {
-      setRefreshing(true)
+      setRefreshing(true);
     } else {
-      setLoading(true)
+      setLoading(true);
     }
-    setError(null)
+    setError(null);
 
     try {
       const response = await fetch("/api/goals", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error ?? "No se pudieron cargar las metas")
+        throw new Error(data?.error ?? "No se pudieron cargar las metas");
       }
 
-      const nextGoals = Array.isArray(data?.goals) ? data.goals : []
-      setGoals(nextGoals)
+      const nextGoals = Array.isArray(data?.goals) ? data.goals : [];
+      setGoals(nextGoals);
     } catch (err) {
-      console.error("[GoalsManagement]", err)
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas")
-      setGoals([])
+      console.error("[GoalsManagement]", err);
+      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas");
+      setGoals([]);
     } finally {
-      setLoading(false)
-      setRefreshing(false)
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchGoals()
-  }, [fetchGoals])
+    fetchGoals();
+  }, [fetchGoals]);
 
-  const handleRefresh = () => fetchGoals({ silent: true })
+  const handleRefresh = () => fetchGoals({ silent: true });
 
   const handleEditGoal = (goal: UserGoalSummary) => {
-    setEditingGoal(goal)
-    setEditDialogOpen(true)
-  }
+    setEditingGoal(goal);
+    setEditDialogOpen(true);
+  };
 
   const handleDeleteGoal = (goal: UserGoalSummary) => {
-    setDeletingGoal(goal)
-    setDeleteDialogOpen(true)
-  }
+    setDeletingGoal(goal);
+    setDeleteDialogOpen(true);
+  };
 
   const handleGoalUpdated = () => {
-    fetchGoals({ silent: true })
-    setEditDialogOpen(false)
-    setEditingGoal(null)
-  }
+    fetchGoals({ silent: true });
+    setEditDialogOpen(false);
+    setEditingGoal(null);
+  };
 
   const handleGoalDeleted = () => {
-    fetchGoals({ silent: true })
-    setDeleteDialogOpen(false)
-    setDeletingGoal(null)
-  }
+    fetchGoals({ silent: true });
+    setDeleteDialogOpen(false);
+    setDeletingGoal(null);
+  };
 
-  const showSkeleton = loading && !refreshing
+  const showSkeleton = loading && !refreshing;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
@@ -126,9 +114,7 @@ export default function GoalsManagementPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Gestión de Metas
             </h1>
-            <p className="text-muted-foreground">
-              Administra todas tus metas: edita, elimina y sigue tu progreso
-            </p>
+            <p className="text-muted-foreground">Administra todas tus metas: edita, elimina y sigue tu progreso</p>
           </div>
         </div>
 
@@ -137,7 +123,7 @@ export default function GoalsManagementPage() {
           <Sparkles className="h-16 w-16 text-purple-500 animate-pulse" />
         </div>
         <div className="absolute top-32 left-16 opacity-10">
-          <Sparkles className="h-12 w-12 text-blue-500 animate-pulse" style={{ animationDelay: '1s' }} />
+          <Sparkles className="h-12 w-12 text-blue-500 animate-pulse" style={{ animationDelay: "1s" }} />
         </div>
       </div>
 
@@ -154,11 +140,11 @@ export default function GoalsManagementPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  <span>{goals.filter(g => g.status === 'completed').length} completadas</span>
+                  <span>{goals.filter((g) => g.status === "completed").length} completadas</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                  <span>{goals.filter(g => g.status === 'pending').length} en progreso</span>
+                  <span>{goals.filter((g) => g.status === "pending").length} en progreso</span>
                 </div>
               </div>
 
@@ -202,7 +188,10 @@ export default function GoalsManagementPage() {
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Crea tu primera meta para comenzar a gestionar tus objetivos y compartir tu progreso con la comunidad.
                 </p>
-                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Crear mi primera meta
                 </Button>
@@ -215,33 +204,33 @@ export default function GoalsManagementPage() {
         {!loading && !error && goals.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {goals.map((goal, index) => {
-              const gradient = colorPalette[index % colorPalette.length]
-              const statusLabel = GOAL_STATUS_LABELS[goal.status]
-              const deadlineLabel = formatDeadline(goal.deadline)
-              const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft)
+              const gradient = colorPalette[index % colorPalette.length];
+              const statusLabel = GOAL_STATUS_LABELS[goal.status];
+              const deadlineLabel = formatDeadline(goal.deadline);
+              const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft);
 
               return (
                 <Card
                   key={goal.id}
                   className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
                 >
-                  <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  <div
+                    className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
+                  />
 
                   <CardHeader className="relative pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">
-                          {goal.title}
-                        </CardTitle>
+                        <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{goal.title}</CardTitle>
                         <div className="flex flex-wrap gap-2 mb-3">
                           <Badge variant="secondary" className="text-xs">
                             {goal.topicCommunity?.name || "Sin categoría"}
                           </Badge>
                           <Badge
                             className={`text-xs capitalize ${
-                              goal.status === 'completed'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                              goal.status === "completed"
+                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                             }`}
                           >
                             {statusLabel}
@@ -272,9 +261,7 @@ export default function GoalsManagementPage() {
                   </CardHeader>
 
                   <CardContent className="relative space-y-4">
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {goal.description}
-                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-3">{goal.description}</p>
 
                     {/* Información temporal */}
                     <div className="space-y-2 text-xs text-muted-foreground">
@@ -294,14 +281,11 @@ export default function GoalsManagementPage() {
                         <span className="text-muted-foreground">Progreso</span>
                         <span className="font-medium">{goal.progress}%</span>
                       </div>
-                      <Progress
-                        value={goal.progress}
-                        className="h-2"
-                      />
+                      <Progress value={goal.progress} className="h-2" />
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
@@ -322,5 +306,5 @@ export default function GoalsManagementPage() {
         onGoalDeleted={handleGoalDeleted}
       />
     </div>
-  )
+  );
 }

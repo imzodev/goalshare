@@ -82,5 +82,5 @@ export const TIME_THRESHOLDS = {
   YEAR_MS: 12 * 30 * 24 * 60 * 60_000, // 1 año
 } as const;
 
-export type GoalStatus = typeof GOAL_STATUS[keyof typeof GOAL_STATUS];
-export type GoalType = typeof GOAL_TYPE[keyof typeof GOAL_TYPE];
+export type GoalStatus = (typeof GOAL_STATUS)[keyof typeof GOAL_STATUS];
+export type GoalType = (typeof GOAL_TYPE)[keyof typeof GOAL_TYPE];

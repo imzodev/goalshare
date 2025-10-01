@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Users, MessageCircle, TrendingUp, Plus, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import type { CommunitySummary } from "@/types/communities"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Users, MessageCircle, TrendingUp, Plus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import type { CommunitySummary } from "@/types/communities";
 
 // Gradientes disponibles para las comunidades
 const gradients = [
@@ -18,11 +18,11 @@ const gradients = [
   "from-indigo-500 to-purple-600",
   "from-red-500 to-pink-600",
   "from-yellow-500 to-orange-600",
-]
+];
 
 // Función para obtener gradiente basado en el ID de la comunidad
 function getCommunityGradient(communityId: string): string {
-  const index = communityId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length;
+  const index = communityId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length;
   return gradients[index];
 }
 
@@ -38,14 +38,14 @@ export function CommunitiesSection() {
 
   const fetchCommunities = async () => {
     try {
-      const response = await fetch('/api/communities');
-      if (!response.ok) throw new Error('Error al cargar comunidades');
+      const response = await fetch("/api/communities");
+      if (!response.ok) throw new Error("Error al cargar comunidades");
 
       const data = await response.json();
       setCommunities(data.communities);
     } catch (error) {
-      console.error('Error fetching communities:', error);
-      toast.error('Error al cargar las comunidades');
+      console.error("Error fetching communities:", error);
+      toast.error("Error al cargar las comunidades");
     } finally {
       setLoading(false);
     }
@@ -57,17 +57,17 @@ export function CommunitiesSection() {
       try {
         setJoiningCommunity(community.id);
         const response = await fetch(`/api/communities/${community.id}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
 
-        if (!response.ok) throw new Error('Error al salir de la comunidad');
+        if (!response.ok) throw new Error("Error al salir de la comunidad");
 
         toast.success(`Has salido de ${community.name}`);
         // Recargar comunidades para actualizar el estado
         await fetchCommunities();
       } catch (error) {
-        console.error('Error leaving community:', error);
-        toast.error('Error al salir de la comunidad');
+        console.error("Error leaving community:", error);
+        toast.error("Error al salir de la comunidad");
       } finally {
         setJoiningCommunity(null);
       }
@@ -76,17 +76,17 @@ export function CommunitiesSection() {
       try {
         setJoiningCommunity(community.id);
         const response = await fetch(`/api/communities/${community.id}`, {
-          method: 'POST',
+          method: "POST",
         });
 
-        if (!response.ok) throw new Error('Error al unirte a la comunidad');
+        if (!response.ok) throw new Error("Error al unirte a la comunidad");
 
         toast.success(`Te has unido a ${community.name}!`);
         // Recargar comunidades para actualizar el estado
         await fetchCommunities();
       } catch (error) {
-        console.error('Error joining community:', error);
-        toast.error('Error al unirte a la comunidad');
+        console.error("Error joining community:", error);
+        toast.error("Error al unirte a la comunidad");
       } finally {
         setJoiningCommunity(null);
       }
@@ -143,9 +143,7 @@ export function CommunitiesSection() {
                         <Users className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm truncate">
-                          {community.name}
-                        </h3>
+                        <h3 className="font-semibold text-sm truncate">{community.name}</h3>
                         <p className="text-xs text-muted-foreground truncate">
                           {community.description || "Sin descripción"}
                         </p>
@@ -166,9 +164,13 @@ export function CommunitiesSection() {
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                       <TrendingUp className="h-3 w-3" />
                       <span className="truncate">
-                        {community.kind === 'topic' ? 'Comunidad de tema' :
-                         community.kind === 'domain' ? 'Comunidad de dominio' :
-                         community.kind === 'cohort' ? 'Cohorte' : 'Comunidad'}
+                        {community.kind === "topic"
+                          ? "Comunidad de tema"
+                          : community.kind === "domain"
+                            ? "Comunidad de dominio"
+                            : community.kind === "cohort"
+                              ? "Cohorte"
+                              : "Comunidad"}
                       </span>
                     </div>
 
@@ -183,7 +185,7 @@ export function CommunitiesSection() {
                       ) : (
                         <MessageCircle className="h-3 w-3 mr-1" />
                       )}
-                      {isJoining ? 'Procesando...' : community.isMember ? 'Salir' : 'Unirse'}
+                      {isJoining ? "Procesando..." : community.isMember ? "Salir" : "Unirse"}
                     </Button>
                   </CardContent>
                 </Card>

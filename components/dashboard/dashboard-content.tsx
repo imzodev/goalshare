@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { StatsCards } from "@/components/dashboard/stats-cards";
@@ -16,42 +16,33 @@ export function DashboardContent() {
     <>
       <div className="space-y-6 pb-20 md:pb-6 min-w-0">
         {/* Header dinámico con gradientes */}
-        <DashboardHeader 
-          activeGoals={summary?.pending}
-          averageProgress={67}
-          daysRemaining={12}
-          loading={loading}
-        />
-        
+        <DashboardHeader activeGoals={summary?.pending} averageProgress={67} daysRemaining={12} loading={loading} />
+
         {/* Tarjetas de estadísticas */}
-        <StatsCards 
-          activeGoals={summary?.pending}
-          averageProgress={67}
-          loading={loading}
-        />
-        
+        <StatsCards activeGoals={summary?.pending} averageProgress={67} loading={loading} />
+
         {/* Layout principal */}
         <div className="grid gap-6 md:grid-cols-2 min-w-0">
           {/* Acciones rápidas */}
           <div className="min-w-0">
             <QuickActions />
           </div>
-          
+
           {/* Sección de metas */}
           <div className="min-w-0">
             <GoalsSection />
           </div>
         </div>
-        
+
         {/* Sección de comunidades */}
         <div className="min-w-0">
           <CommunitiesSection />
         </div>
       </div>
-      
+
       {/* Navegación móvil */}
       <MobileNav />
-      
+
       {/* FAB flotante */}
       <FloatingActionButton />
     </>

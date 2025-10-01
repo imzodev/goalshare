@@ -7,7 +7,5 @@ export default async function Page() {
   if (userId) {
     redirect("/dashboard");
   }
-  return (
-    <SignInClient />
-  );
+  return <SignInClient />;
 }

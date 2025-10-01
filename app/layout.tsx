@@ -30,18 +30,14 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "GoalShare",
     title: "GoalShare — Comparte y cumple tus objetivos",
-    description:
-      "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
-    images: [
-      { url: "/og.svg", width: 1200, height: 630, alt: "GoalShare" },
-    ],
+    description: "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
+    images: [{ url: "/og.svg", width: 1200, height: 630, alt: "GoalShare" }],
     locale: "es_MX",
   },
   twitter: {
     card: "summary_large_image",
     title: "GoalShare — Comparte y cumple tus objetivos",
-    description:
-      "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
+    description: "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
     images: ["/og.svg"],
   },
   alternates: {
@@ -63,7 +59,10 @@ export default function RootLayout({
           signUpUrl={env.CLERK_SIGN_UP_URL}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:text-foreground focus:px-3 focus:py-2 focus:shadow">
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:text-foreground focus:px-3 focus:py-2 focus:shadow"
+            >
               Saltar al contenido principal
             </a>
             <SiteHeader />
@@ -75,4 +74,3 @@ export default function RootLayout({
     </html>
   );
 }
-

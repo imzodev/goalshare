@@ -14,12 +14,7 @@ export function ThemeToggle() {
   const isDark = (resolvedTheme ?? theme) === "dark";
 
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      aria-label="Toggle theme"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-   >
+    <Button variant="outline" size="icon" aria-label="Toggle theme" onClick={() => setTheme(isDark ? "light" : "dark")}>
       {/* Render both icons to avoid layout shift, control visibility */}
       <Sun className={`h-4 w-4 ${mounted && isDark ? "hidden" : ""}`} />
       <Moon className={`h-4 w-4 ${mounted && !isDark ? "hidden" : ""}`} />

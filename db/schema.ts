@@ -2,6 +2,7 @@
 // Aquí definiremos tablas: users (ref a auth), goals, groups, memberships, friendships,
 // posts, comments, subscriptions, etc. Por ahora lo dejamos vacío, sin migraciones.
 import { sql } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import {
   pgEnum,
   pgTable,
@@ -16,7 +17,6 @@ import {
   numeric,
   primaryKey,
   boolean,
-  AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 // Enums
@@ -32,7 +32,13 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "incomplete",
   "trialing",
 ]);
-export const entryKindEnum = pgEnum("entry_kind", ["note", "checkin", "milestone_update", "progress_update", "metric_update"]);
+export const entryKindEnum = pgEnum("entry_kind", [
+  "note",
+  "checkin",
+  "milestone_update",
+  "progress_update",
+  "metric_update",
+]);
 export const entryVisibilityEnum = pgEnum("entry_visibility", ["private", "friends", "public"]);
 
 // Utilidades comunes
@@ -72,9 +78,7 @@ export const planPermissions = pgTable(
       .$onUpdate(() => sql`now()`)
       .notNull(),
   },
-  (t) => [
-    primaryKey({ columns: [t.planId, t.permissionKey], name: "plan_permissions_pk" }),
-  ]
+  (t) => [primaryKey({ columns: [t.planId, t.permissionKey], name: "plan_permissions_pk" })]
 );
 
 // profiles
@@ -98,27 +102,29 @@ export const profiles = pgTable(
 export const communities = pgTable(
   "goalshare_communities",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    parentId: uuid("parent_id").references((
-      ): AnyPgColumn => communities.id, { onDelete: "set null" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    parentId: uuid("parent_id").references((): AnyPgColumn => communities.id, { onDelete: "set null" }),
     kind: communityKindEnum("kind").notNull(),
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
     description: text("description"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
-  (t) => [
-    index("communities_parent_idx").on(t.parentId),
-    index("communities_kind_idx").on(t.kind),
-  ]
+  (t) => [index("communities_parent_idx").on(t.parentId), index("communities_kind_idx").on(t.kind)]
 );
 
 // community_members
 export const communityMembers = pgTable(
   "goalshare_community_members",
   {
-    communityId: uuid("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
-    userId: text("user_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    communityId: uuid("community_id")
+      .notNull()
+      .references(() => communities.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     role: memberRoleEnum("role").notNull().default("member"),
     joinedAt: timestamp("joined_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
@@ -132,7 +138,9 @@ export const communityMembers = pgTable(
 export const goalTemplates = pgTable(
   "goalshare_goal_templates",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
     description: text("description"),
@@ -149,10 +157,16 @@ export const goalTemplates = pgTable(
 export const goals = pgTable(
   "goalshare_goals",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    ownerId: text("owner_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     templateId: uuid("template_id").references(() => goalTemplates.id, { onDelete: "set null" }),
-    topicCommunityId: uuid("topic_community_id").notNull().references(() => communities.id, { onDelete: "restrict" }),
+    topicCommunityId: uuid("topic_community_id")
+      .notNull()
+      .references(() => communities.id, { onDelete: "restrict" }),
     title: text("title").notNull(),
     description: text("description").notNull(),
     deadline: date("deadline"),
@@ -184,8 +198,12 @@ export const goals = pgTable(
 export const goalMilestones = pgTable(
   "goalshare_goal_milestones",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    goalId: uuid("goal_id").notNull().references(() => goals.id, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    goalId: uuid("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -204,9 +222,15 @@ export const goalMilestones = pgTable(
 export const goalEntries = pgTable(
   "goalshare_goal_entries",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    goalId: uuid("goal_id").notNull().references(() => goals.id, { onDelete: "cascade" }),
-    authorId: text("author_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    goalId: uuid("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     kind: entryKindEnum("kind").notNull(),
     content: text("content"),
     imagePath: text("image_path"),
@@ -226,9 +250,15 @@ export const goalEntries = pgTable(
 export const posts = pgTable(
   "goalshare_posts",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    communityId: uuid("community_id").notNull().references(() => communities.id, { onDelete: "cascade" }),
-    authorId: text("author_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    communityId: uuid("community_id")
+      .notNull()
+      .references(() => communities.id, { onDelete: "cascade" }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     body: text("body").notNull(),
     imagePath: text("image_path"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
@@ -243,9 +273,15 @@ export const posts = pgTable(
 export const comments = pgTable(
   "goalshare_comments",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    postId: uuid("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
-    authorId: text("author_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     body: text("body").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
@@ -259,8 +295,12 @@ export const comments = pgTable(
 export const friendships = pgTable(
   "goalshare_friendships",
   {
-    userId: text("user_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
-    friendId: text("friend_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
+    friendId: text("friend_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     status: friendshipStatusEnum("status").notNull().default("pending"),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
     // Nota: el unique simétrico LEAST/GREATEST es más complejo en Drizzle. Por ahora, unique directo.
@@ -276,8 +316,12 @@ export const friendships = pgTable(
 export const subscriptions = pgTable(
   "goalshare_subscriptions",
   {
-    id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
-    userId: text("user_id").notNull().references(() => profiles.userId, { onDelete: "cascade" }),
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => profiles.userId, { onDelete: "cascade" }),
     planId: text("plan_id")
       .notNull()
       .references(() => subscriptionPlans.id, { onDelete: "restrict" }),

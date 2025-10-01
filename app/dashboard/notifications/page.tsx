@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bell, Construction } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bell, Construction } from "lucide-react";
 
 export default function NotificationsPage() {
   return (
@@ -15,9 +15,7 @@ export default function NotificationsPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Notificaciones
             </h1>
-            <p className="text-muted-foreground">
-              Mantente al día con recordatorios y actualizaciones
-            </p>
+            <p className="text-muted-foreground">Mantente al día con recordatorios y actualizaciones</p>
           </div>
         </div>
       </div>
@@ -31,10 +29,11 @@ export default function NotificationsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            El sistema de notificaciones está en desarrollo. Pronto podrás recibir recordatorios sobre tus metas y actualizaciones de la comunidad.
+            El sistema de notificaciones está en desarrollo. Pronto podrás recibir recordatorios sobre tus metas y
+            actualizaciones de la comunidad.
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

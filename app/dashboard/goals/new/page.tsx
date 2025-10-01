@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function NewGoalPage() {
   return (
@@ -17,9 +17,7 @@ export default function NewGoalPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Crear Nueva Meta
             </h1>
-            <p className="text-muted-foreground">
-              Define una nueva meta y comienza tu camino hacia el éxito
-            </p>
+            <p className="text-muted-foreground">Define una nueva meta y comienza tu camino hacia el éxito</p>
           </div>
         </div>
       </div>
@@ -44,5 +42,5 @@ export default function NewGoalPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

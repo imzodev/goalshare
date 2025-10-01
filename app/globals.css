@@ -89,13 +89,13 @@
   --card-foreground: var(--foreground);
   --popover: oklch(0.26 0.04 265);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.83 0.10 265);
+  --primary: oklch(0.83 0.1 265);
   --primary-foreground: oklch(0.22 0.01 255);
   /* Secondary: slightly elevated neutral on dark */
   --secondary: oklch(0.33 0.02 265);
   --secondary-foreground: var(--foreground);
   --muted: oklch(0.28 0.02 265);
-  --muted-foreground: oklch(0.80 0.01 265);
+  --muted-foreground: oklch(0.8 0.01 265);
   /* Accent: vibrant orange matching light mode */
   --accent: oklch(0.72 0.17 55);
   --accent-foreground: oklch(0.22 0.01 255);
@@ -135,13 +135,7 @@
 
   /* Custom gradient utilities for more sophisticated designs */
   .gradient-text-rainbow {
-    background: linear-gradient(135deg, 
-      hsl(var(--primary)), 
-      hsl(var(--accent)), 
-      #8b5cf6, 
-      #06b6d4, 
-      hsl(var(--primary))
-    );
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), #8b5cf6, #06b6d4, hsl(var(--primary)));
     background-size: 300% 300%;
     animation: gradient-shift 6s ease infinite;
     -webkit-background-clip: text;
@@ -150,10 +144,11 @@
   }
 
   .gradient-bg-aurora {
-    background: linear-gradient(135deg, 
-      rgba(var(--primary), 0.1), 
-      rgba(139, 92, 246, 0.1), 
-      rgba(var(--accent), 0.1), 
+    background: linear-gradient(
+      135deg,
+      rgba(var(--primary), 0.1),
+      rgba(139, 92, 246, 0.1),
+      rgba(var(--accent), 0.1),
       rgba(6, 182, 212, 0.1)
     );
     background-size: 400% 400%;
@@ -161,7 +156,12 @@
   }
 
   @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
 }

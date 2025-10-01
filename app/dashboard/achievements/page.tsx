@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, Construction } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trophy, Construction } from "lucide-react";
 
 export default function AchievementsPage() {
   return (
@@ -15,9 +15,7 @@ export default function AchievementsPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Logros
             </h1>
-            <p className="text-muted-foreground">
-              Desbloquea logros mientras alcanzas tus metas
-            </p>
+            <p className="text-muted-foreground">Desbloquea logros mientras alcanzas tus metas</p>
           </div>
         </div>
       </div>
@@ -31,10 +29,11 @@ export default function AchievementsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            El sistema de logros está en desarrollo. Pronto podrás ganar badges y reconocimientos por completar metas y mantener hábitos.
+            El sistema de logros está en desarrollo. Pronto podrás ganar badges y reconocimientos por completar metas y
+            mantener hábitos.
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

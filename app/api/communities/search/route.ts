@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { CommunitiesService } from "@/services/communities-service";
 import { auth } from "@/auth";
 import { z } from "zod";
@@ -16,10 +17,7 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("q");
 
     if (!query || query.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Parámetro 'q' es requerido para la búsqueda" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Parámetro 'q' es requerido para la búsqueda" }, { status: 400 });
     }
 
     // Validar el esquema
@@ -40,9 +38,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("[API/communities/search]", error);
-    return NextResponse.json(
-      { error: "Error interno del servidor" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }
 }

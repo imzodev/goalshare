@@ -9,9 +9,7 @@ const connectionString = process.env.SUPABASE_DB_URL;
 
 if (!connectionString) {
   // Evitar fallos silenciosos durante el desarrollo
-  console.warn(
-    "[db] Variable de entorno SUPABASE_DB_URL no definida. Define esta variable en .env.local"
-  );
+  console.warn("[db] Variable de entorno SUPABASE_DB_URL no definida. Define esta variable en .env.local");
 }
 
 export const client = postgres(connectionString as string, {
