@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { goals, goalEntries, communities, goalMilestones } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql, inArray } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import type { UserGoalSummary } from "@/types/goals";
 import { calculateDaysLeft, toDate, toISODate } from "@/utils/date-utils";
@@ -40,7 +40,7 @@ export class GoalsService {
         ? await this.dbInstance
             .select()
             .from(goalMilestones)
-            .where(sql`${goalMilestones.goalId} = ANY(${goalIds})`)
+            .where(inArray(goalMilestones.goalId, goalIds))
         : [];
 
       // Group milestones by goalId
