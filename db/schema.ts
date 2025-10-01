@@ -170,6 +170,12 @@ export const goals = pgTable(
   (t) => [
     index("goals_owner_status_created_idx").on(t.ownerId, t.status, t.createdAt),
     index("goals_topic_created_idx").on(t.topicCommunityId, t.createdAt),
+    // Index on goalType for future filtering features (e.g., "Show only metric goals", analytics by type)
+    // While not currently used in queries, it's maintained for:
+    // 1. Future UI filters by goal type
+    // 2. Analytics and reporting queries
+    // 3. Admin dashboards showing goal type distribution
+    // Low overhead due to enum type (4 values) and relatively small table size
     index("goals_type_idx").on(t.goalType),
   ]
 );
