@@ -46,9 +46,40 @@ export function calculateGoalProgress(
 
     case "milestone": {
       if (milestones.length === 0) return 0;
+      
+      // Validar pesos individuales
+      const invalidWeights = milestones.filter(m => {
+        const weight = m.weight || 0;
+        return weight < 0 || weight > 100;
+      });
+      
+      if (invalidWeights.length > 0) {
+        logger.warn(
+          `[calculateGoalProgress] Goal ${goal.id} has ${invalidWeights.length} milestones with invalid weights`,
+          invalidWeights.map(m => ({ id: m.id, weight: m.weight }))
+        );
+      }
+      
+      // Calcular peso total
+      const totalWeight = milestones.reduce((sum, m) => sum + (m.weight || 0), 0);
+      
+      if (totalWeight > 100) {
+        logger.warn(
+          `[calculateGoalProgress] Goal ${goal.id} has milestones with total weight > 100: ${totalWeight}`
+        );
+      }
+      
+      if (totalWeight < 100 && milestones.length > 0) {
+        logger.warn(
+          `[calculateGoalProgress] Goal ${goal.id} has milestones with total weight < 100: ${totalWeight}`
+        );
+      }
+      
+      // Calcular progreso con pesos clampeados
       const completedWeight = milestones
         .filter((m) => m.completedAt !== null)
-        .reduce((sum, m) => sum + (m.weight || 0), 0);
+        .reduce((sum, m) => sum + Math.min(Math.max(m.weight || 0, 0), 100), 0);
+      
       return clampProgress(completedWeight);
     }
 
