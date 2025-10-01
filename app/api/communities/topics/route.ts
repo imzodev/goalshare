@@ -15,7 +15,7 @@ export async function GET() {
       const rows = await dbCtx
         .select({ id: communities.id, name: communities.name, slug: communities.slug })
         .from(communities)
-        .where(eq(communities.kind, "topic" as any));
+        .where(eq(communities.kind, "topic"));
       return rows;
     });
 

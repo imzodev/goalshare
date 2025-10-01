@@ -11,21 +11,21 @@ const fabActions = [
     label: "Nueva Meta",
     icon: Target,
     color: "from-blue-500 to-purple-600",
-    action: () => console.log("Crear nueva meta"),
+    action: () => {}, // TODO: Implementar crear meta
   },
   {
     id: "community",
     label: "Crear Comunidad",
     icon: Users,
     color: "from-green-500 to-teal-600",
-    action: () => console.log("Crear comunidad"),
+    action: () => {}, // TODO: Implementar crear comunidad
   },
   {
     id: "event",
     label: "Programar Evento",
     icon: Calendar,
     color: "from-orange-500 to-red-600",
-    action: () => console.log("Programar evento"),
+    action: () => {}, // TODO: Implementar programar evento
   },
 ];
 

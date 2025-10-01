@@ -5,7 +5,7 @@ import { DashboardContent } from "@/components/dashboard/dashboard-content";
 export default async function DashboardPage() {
   // Server-side auth info
   const { userId } = await auth();
-  const user = await currentUser();
+  const _user = await currentUser();
 
   if (!userId) {
     return (

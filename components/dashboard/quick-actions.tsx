@@ -10,28 +10,28 @@ const actions = [
     description: "Establece una nueva meta personal",
     icon: Plus,
     color: "from-blue-500 to-purple-600",
-    action: () => console.log("Crear meta"),
+    action: () => {}, // TODO: Implementar crear meta
   },
   {
     title: "Compartir Progreso",
     description: "Comparte tu avance con la comunidad",
     icon: Share2,
     color: "from-green-500 to-teal-600",
-    action: () => console.log("Compartir progreso"),
+    action: () => {}, // TODO: Implementar compartir progreso
   },
   {
     title: "Unirse a Comunidad",
     description: "Encuentra personas con metas similares",
     icon: Users,
     color: "from-purple-500 to-pink-600",
-    action: () => console.log("Unirse a comunidad"),
+    action: () => {}, // TODO: Implementar unirse a comunidad
   },
   {
     title: "Programar Recordatorio",
     description: "Configura recordatorios para tus metas",
     icon: Calendar,
     color: "from-orange-500 to-red-600",
-    action: () => console.log("Programar recordatorio"),
+    action: () => {}, // TODO: Implementar programar recordatorio
   },
 ];
 

@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
       const result = await dbCtx.execute(
         dsql`select count(*)::int as count from ${goals} where ${goals.ownerId} = ${userId}`
       );
-      const currentCount = Number((result as any)?.[0]?.count ?? 0);
+      const currentCount = Number((result as Array<{ count?: number }>)?.[0]?.count ?? 0);
 
       if (plan === "free" && currentCount >= 5) {
         return { limitExceeded: true } as const;
@@ -168,11 +168,11 @@ export async function POST(req: NextRequest) {
       return { row } as const;
     });
 
-    if ((created as any).limitExceeded) {
+    if ("limitExceeded" in created && created.limitExceeded) {
       return NextResponse.json({ error: "Límite alcanzado: el plan Free permite hasta 5 metas." }, { status: 403 });
     }
 
-    return NextResponse.json({ goal: (created as any).row }, { status: 201 });
+    return NextResponse.json({ goal: "row" in created ? created.row : null }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/goals]", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });

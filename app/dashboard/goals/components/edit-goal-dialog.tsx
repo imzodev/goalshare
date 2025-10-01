@@ -107,7 +107,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
         // éxito
         onOpenChange(false);
         onGoalUpdated?.();
-      } catch (e) {
+      } catch {
         setError("Error de red");
       }
     });

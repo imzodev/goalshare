@@ -46,7 +46,7 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
         // éxito
         onOpenChange(false);
         onGoalDeleted?.();
-      } catch (e) {
+      } catch {
         setError("Error de red");
       }
     });

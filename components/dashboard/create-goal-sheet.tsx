@@ -90,7 +90,7 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
         onOpenChange(false);
         reset();
         onCreated?.();
-      } catch (e) {
+      } catch {
         setError("Error de red");
       }
     });

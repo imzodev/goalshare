@@ -398,7 +398,7 @@ describe("calculateGoalProgress", () => {
     it("should return 0 for unknown goal type", () => {
       const goal = {
         id: "test-23",
-        goalType: "unknown" as any,
+        goalType: "unknown" as "manual",
       } as Goal;
 
       expect(calculateGoalProgress(goal)).toBe(0);
