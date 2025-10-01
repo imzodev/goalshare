@@ -2,7 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/db";
 import { goals, profiles } from "@/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";

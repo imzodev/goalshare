@@ -40,7 +40,6 @@ export default function GoalsManagementPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchGoals = useCallback(async ({ silent = false } = {}) => {
-    console.log("[GoalsManagement] fetchGoals:start", { silent });
     if (silent) {
       setRefreshing(true);
     } else {

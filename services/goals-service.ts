@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { goals, goalEntries, communities, goalMilestones } from "@/db/schema";
+import { goals, communities, goalMilestones } from "@/db/schema";
 import { desc, eq, sql, inArray } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import type { UserGoalSummary } from "@/types/goals";

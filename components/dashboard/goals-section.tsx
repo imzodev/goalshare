@@ -29,7 +29,6 @@ export function GoalsSection() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchGoals = useCallback(async ({ silent = false } = {}) => {
-    console.log("[GoalsSection] fetchGoals:start", { silent });
     if (silent) {
       setRefreshing(true);
     } else {
