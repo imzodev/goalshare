@@ -119,7 +119,8 @@ export class GoalsService {
         throw new Error("Meta no encontrada o no tienes permisos para editarla");
       }
 
-      const updateData: any = {};
+      // Using Record for flexibility with SQL expressions and type conversions
+      const updateData: Record<string, unknown> = {};
       if (updates.title !== undefined) updateData.title = updates.title;
       if (updates.description !== undefined) updateData.description = updates.description;
       if (updates.deadline !== undefined) updateData.deadline = updates.deadline ? sql`${updates.deadline}::date` : null;
