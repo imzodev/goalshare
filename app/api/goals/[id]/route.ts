@@ -16,6 +16,68 @@ const UpdateGoalSchema = z.object({
     .optional(),
   topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }).optional(),
   status: z.enum(["pending", "completed"]).optional(),
+  goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional(),
+  targetValue: z.number().positive().nullish(),
+  targetUnit: z.string().max(50).nullish(),
+  currentValue: z.number().min(0).nullish(),
+  currentProgress: z.number().min(0).max(100).int().nullish(),
+}).superRefine((data, ctx) => {
+  // Solo validar si se está cambiando el goalType
+  if (data.goalType) {
+    // Validar que metas metric/checkin tengan targetValue y targetUnit
+    if (data.goalType === "metric" || data.goalType === "checkin") {
+      if (data.targetValue !== undefined && !data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Las metas de tipo "${data.goalType}" requieren un valor objetivo (targetValue)`,
+          path: ["targetValue"],
+        });
+      }
+      if (data.targetUnit !== undefined && !data.targetUnit) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Las metas de tipo "${data.goalType}" requieren una unidad (targetUnit)`,
+          path: ["targetUnit"],
+        });
+      }
+    }
+
+    // Validar que metas manual no tengan targetValue ni currentValue
+    if (data.goalType === "manual") {
+      if (data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas manuales no deben tener targetValue",
+          path: ["targetValue"],
+        });
+      }
+      if (data.currentValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas manuales no deben tener currentValue",
+          path: ["currentValue"],
+        });
+      }
+    }
+
+    // Validar que metas milestone no tengan targetValue ni currentProgress
+    if (data.goalType === "milestone") {
+      if (data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas de tipo milestone no deben tener targetValue",
+          path: ["targetValue"],
+        });
+      }
+      if (data.currentProgress) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas de tipo milestone no deben tener currentProgress",
+          path: ["currentProgress"],
+        });
+      }
+    }
+  }
 });
 
 export async function PUT(

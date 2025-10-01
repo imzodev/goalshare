@@ -205,9 +205,10 @@ export class CommunitiesService {
             userId,
             role: "member",
           });
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Manejar error de llave duplicada (PostgreSQL error code 23505)
-        if (error?.code === '23505' || error?.message?.includes('duplicate key')) {
+        const dbError = error as { code?: string; message?: string };
+        if (dbError?.code === '23505' || dbError?.message?.includes('duplicate key')) {
           throw new Error("Ya eres miembro de esta comunidad");
         }
         // Re-lanzar otros errores

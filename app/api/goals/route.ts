@@ -7,6 +7,7 @@ import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import { env } from "@/config/env";
 import { GoalsService } from "@/services/goals-service";
+import { toNumericString } from "@/utils/type-converters";
 
 const CreateGoalSchema = z.object({
   title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(120),
@@ -20,6 +21,65 @@ const CreateGoalSchema = z.object({
     .transform((v) => (v ? v : null)),
   topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }),
   templateId: z.string().uuid().nullish(),
+  goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional().default("manual"),
+  targetValue: z.number().positive().nullish(),
+  targetUnit: z.string().max(50).nullish(),
+  currentValue: z.number().min(0).nullish(),
+  currentProgress: z.number().min(0).max(100).int().nullish(),
+}).superRefine((data, ctx) => {
+  // Validar que metas metric/checkin tengan targetValue y targetUnit
+  if (data.goalType === "metric" || data.goalType === "checkin") {
+    if (!data.targetValue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Las metas de tipo "${data.goalType}" requieren un valor objetivo (targetValue)`,
+        path: ["targetValue"],
+      });
+    }
+    if (!data.targetUnit) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Las metas de tipo "${data.goalType}" requieren una unidad (targetUnit)`,
+        path: ["targetUnit"],
+      });
+    }
+  }
+
+  // Validar que metas manual no tengan targetValue ni currentValue
+  if (data.goalType === "manual") {
+    if (data.targetValue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Las metas manuales no deben tener targetValue",
+        path: ["targetValue"],
+      });
+    }
+    if (data.currentValue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Las metas manuales no deben tener currentValue",
+        path: ["currentValue"],
+      });
+    }
+  }
+
+  // Validar que metas milestone no tengan targetValue ni currentProgress
+  if (data.goalType === "milestone") {
+    if (data.targetValue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Las metas de tipo milestone no deben tener targetValue",
+        path: ["targetValue"],
+      });
+    }
+    if (data.currentProgress) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Las metas de tipo milestone no deben tener currentProgress",
+        path: ["currentProgress"],
+      });
+    }
+  }
 });
 
 export async function POST(req: NextRequest) {
@@ -47,7 +107,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { title, description, deadline, topicCommunityId, templateId } = parsed.data;
+    const { title, description, deadline, topicCommunityId, templateId, goalType, targetValue, targetUnit, currentValue, currentProgress } = parsed.data;
 
     // Ejecutar con contexto de usuario para que apliquen políticas RLS si existieran
     const created = await withUserContext(userId, async (dbCtx) => {
@@ -84,6 +144,11 @@ export async function POST(req: NextRequest) {
           deadline: deadline ?? null,
           topicCommunityId,
           templateId: templateId ?? null,
+          goalType: goalType ?? "manual",
+          targetValue: toNumericString(targetValue),
+          targetUnit: targetUnit ?? null,
+          currentValue: toNumericString(currentValue),
+          currentProgress: currentProgress ?? null,
         })
         .returning();
 
