@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Target, TrendingUp, Users, Trophy } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Target, TrendingUp, Users, Trophy } from "lucide-react";
 
 interface StatsCardsProps {
   activeGoals?: number;
@@ -17,7 +17,7 @@ export function StatsCards({
   averageProgress,
   communitiesCount = 2,
   achievementsCount = 8,
-  loading = false
+  loading = false,
 }: StatsCardsProps) {
   const stats = [
     {
@@ -52,20 +52,18 @@ export function StatsCards({
       gradient: "from-orange-500 to-red-500",
       bgGradient: "from-orange-50 to-red-50",
     },
-  ]
+  ];
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card 
-          key={stat.title} 
+        <Card
+          key={stat.title}
           className={`relative overflow-hidden border-0 bg-gradient-to-br ${stat.bgGradient} dark:from-gray-900 dark:to-gray-800 hover:shadow-lg transition-all duration-300 hover:scale-105`}
         >
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                 <p className="text-2xl font-bold">{stat.value}</p>
                 <Badge variant="secondary" className="text-xs">
                   {stat.change}
@@ -75,12 +73,14 @@ export function StatsCards({
                 <stat.icon className="h-6 w-6" />
               </div>
             </div>
-            
+
             {/* Elemento decorativo */}
-            <div className={`absolute -top-4 -right-4 h-24 w-24 rounded-full bg-gradient-to-br ${stat.gradient} opacity-10`} />
+            <div
+              className={`absolute -top-4 -right-4 h-24 w-24 rounded-full bg-gradient-to-br ${stat.gradient} opacity-10`}
+            />
           </CardContent>
         </Card>
       ))}
     </div>
-  )
+  );
 }

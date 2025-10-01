@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Construction } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, Construction } from "lucide-react";
 
 export default function CalendarPage() {
   return (
@@ -15,9 +15,7 @@ export default function CalendarPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Calendario
             </h1>
-            <p className="text-muted-foreground">
-              Visualiza tus metas y fechas importantes en un calendario
-            </p>
+            <p className="text-muted-foreground">Visualiza tus metas y fechas importantes en un calendario</p>
           </div>
         </div>
       </div>
@@ -31,10 +29,11 @@ export default function CalendarPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            La vista de calendario está en desarrollo. Pronto podrás ver todas tus metas y eventos importantes organizados por fecha.
+            La vista de calendario está en desarrollo. Pronto podrás ver todas tus metas y eventos importantes
+            organizados por fecha.
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

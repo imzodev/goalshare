@@ -1,47 +1,30 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
-import { Card, CardContent} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, RefreshCw, Loader2, AlertCircle, Sparkles } from "lucide-react"
-import type { CommunitySummary } from "@/types/communities"
-import { CommunitiesGrid } from "@/components/communities/communities-grid"
-import { MyCommunitiesGrid } from "@/components/communities/my-communities-grid"
-
-// Gradientes disponibles para las comunidades
-const gradients = [
-  "from-green-500 to-emerald-600",
-  "from-blue-500 to-cyan-600",
-  "from-purple-500 to-pink-600",
-  "from-orange-500 to-red-600",
-  "from-teal-500 to-blue-600",
-  "from-indigo-500 to-purple-600",
-  "from-red-500 to-pink-600",
-  "from-yellow-500 to-orange-600",
-]
-
-// Función para obtener gradiente basado en el ID de la comunidad
-function getCommunityGradient(communityId: string): string {
-  const index = communityId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length;
-  return gradients[index];
-}
+import { useCallback, useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, RefreshCw, Loader2, AlertCircle, Sparkles } from "lucide-react";
+import type { CommunitySummary } from "@/types/communities";
+import { CommunitiesGrid } from "@/components/communities/communities-grid";
+import { MyCommunitiesGrid } from "@/components/communities/my-communities-grid";
+import { getCommunityGradient } from "@/utils/community-utils";
 
 export default function CommunitiesPage() {
-  const [allCommunities, setAllCommunities] = useState<CommunitySummary[]>([])
-  const [userCommunities, setUserCommunities] = useState<CommunitySummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("explore")
+  const [allCommunities, setAllCommunities] = useState<CommunitySummary[]>([]);
+  const [userCommunities, setUserCommunities] = useState<CommunitySummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("explore");
 
   const fetchCommunities = useCallback(async ({ silent = false } = {}) => {
     if (silent) {
-      setRefreshing(true)
+      setRefreshing(true);
     } else {
-      setLoading(true)
+      setLoading(true);
     }
-    setError(null)
+    setError(null);
 
     try {
       // Fetch all communities
@@ -49,39 +32,38 @@ export default function CommunitiesPage() {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-      })
+      });
 
-      const allData = await allResponse.json()
+      const allData = await allResponse.json();
       if (!allResponse.ok) {
-        throw new Error(allData?.error ?? "No se pudieron cargar las comunidades")
+        throw new Error(allData?.error ?? "No se pudieron cargar las comunidades");
       }
 
-      const allCommunitiesList = Array.isArray(allData?.communities) ? allData.communities : []
-      setAllCommunities(allCommunitiesList)
+      const allCommunitiesList = Array.isArray(allData?.communities) ? allData.communities : [];
+      setAllCommunities(allCommunitiesList);
 
       // Filter user communities from all communities
-    //   user.isMember()
-      const userCommunitiesList = allCommunitiesList.filter((community: CommunitySummary) => community.isMember)
-      setUserCommunities(userCommunitiesList)
-
+      //   user.isMember()
+      const userCommunitiesList = allCommunitiesList.filter((community: CommunitySummary) => community.isMember);
+      setUserCommunities(userCommunitiesList);
     } catch (err) {
-      console.error("[CommunitiesPage]", err)
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las comunidades")
-      setAllCommunities([])
-      setUserCommunities([])
+      console.error("[CommunitiesPage]", err);
+      setError(err instanceof Error ? err.message : "No se pudieron cargar las comunidades");
+      setAllCommunities([]);
+      setUserCommunities([]);
     } finally {
-      setLoading(false)
-      setRefreshing(false)
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchCommunities()
-  }, [fetchCommunities])
+    fetchCommunities();
+  }, [fetchCommunities]);
 
-  const handleRefresh = () => fetchCommunities({ silent: true })
+  const handleRefresh = () => fetchCommunities({ silent: true });
 
-  const showSkeleton = loading && !refreshing
+  const showSkeleton = loading && !refreshing;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
@@ -95,9 +77,7 @@ export default function CommunitiesPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Comunidades
             </h1>
-            <p className="text-muted-foreground">
-              Únete a comunidades y comparte tu progreso con otros
-            </p>
+            <p className="text-muted-foreground">Únete a comunidades y comparte tu progreso con otros</p>
           </div>
         </div>
 
@@ -106,7 +86,7 @@ export default function CommunitiesPage() {
           <Sparkles className="h-16 w-16 text-purple-500 animate-pulse" />
         </div>
         <div className="absolute top-32 left-16 opacity-10">
-          <Sparkles className="h-12 w-12 text-blue-500 animate-pulse" style={{ animationDelay: '1s' }} />
+          <Sparkles className="h-12 w-12 text-blue-500 animate-pulse" style={{ animationDelay: "1s" }} />
         </div>
       </div>
 
@@ -192,5 +172,5 @@ export default function CommunitiesPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

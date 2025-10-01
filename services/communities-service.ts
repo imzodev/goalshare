@@ -30,7 +30,7 @@ export class CommunitiesService {
 
     // Si no hay userId, devolver comunidades sin información de membresía
     if (!userId) {
-      return allCommunities.map(community => ({
+      return allCommunities.map((community) => ({
         id: community.id,
         parentId: community.parentId,
         kind: community.kind,
@@ -53,12 +53,10 @@ export class CommunitiesService {
       .where(eq(communityMembers.userId, userId));
 
     // Crear mapa para lookup rápido de membresías del usuario
-    const userMembershipMap = new Map(
-      userCommunities.map(uc => [uc.communityId, uc.role])
-    );
+    const userMembershipMap = new Map(userCommunities.map((uc) => [uc.communityId, uc.role]));
 
     // Cross match: Combinar ambas consultas
-    return allCommunities.map(community => {
+    return allCommunities.map((community) => {
       const userRole = userMembershipMap.get(community.id);
       const isMember = userRole !== undefined;
 
@@ -102,7 +100,7 @@ export class CommunitiesService {
         .groupBy(communities.id, communityMembers.role)
         .orderBy(desc(communities.createdAt));
 
-      return rows.map(row => ({
+      return rows.map((row) => ({
         id: row.id,
         parentId: row.parentId,
         kind: row.kind,
@@ -122,11 +120,7 @@ export class CommunitiesService {
       throw new Error("communityId es requerido para obtener una comunidad");
     }
 
-    const rows = await this.dbInstance
-      .select()
-      .from(communities)
-      .where(eq(communities.id, communityId))
-      .limit(1);
+    const rows = await this.dbInstance.select().from(communities).where(eq(communities.id, communityId)).limit(1);
 
     return rows.length > 0 ? rows[0] : null;
   }
@@ -136,11 +130,7 @@ export class CommunitiesService {
       throw new Error("slug es requerido para obtener una comunidad");
     }
 
-    const rows = await this.dbInstance
-      .select()
-      .from(communities)
-      .where(eq(communities.slug, slug))
-      .limit(1);
+    const rows = await this.dbInstance.select().from(communities).where(eq(communities.slug, slug)).limit(1);
 
     return rows.length > 0 ? rows[0] : null;
   }
@@ -198,17 +188,15 @@ export class CommunitiesService {
 
       // Intentar unirse a la comunidad (sin verificar duplicados)
       try {
-        await this.dbInstance
-          .insert(communityMembers)
-          .values({
-            communityId,
-            userId,
-            role: "member",
-          });
+        await this.dbInstance.insert(communityMembers).values({
+          communityId,
+          userId,
+          role: "member",
+        });
       } catch (error: unknown) {
         // Manejar error de llave duplicada (PostgreSQL error code 23505)
         const dbError = error as { code?: string; message?: string };
-        if (dbError?.code === '23505' || dbError?.message?.includes('duplicate key')) {
+        if (dbError?.code === "23505" || dbError?.message?.includes("duplicate key")) {
           throw new Error("Ya eres miembro de esta comunidad");
         }
         // Re-lanzar otros errores
@@ -262,7 +250,7 @@ export class CommunitiesService {
 
     return {
       ...community,
-      members: members.map(member => ({
+      members: members.map((member) => ({
         userId: member.userId,
         username: member.username || undefined,
         displayName: member.displayName || undefined,

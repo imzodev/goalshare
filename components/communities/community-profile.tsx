@@ -1,73 +1,63 @@
-"use client"
+"use client";
 
-import { useCallback, useMemo, useState } from "react"
-import { toast } from "sonner"
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
-import { formatRelativeTime } from "@/utils/date-utils"
-import {
-  CalendarDays,
-  Flame,
-  Heart,
-  MessageCircle,
-  Sparkles,
-  Star,
-  Target,
-  Trophy,
-  Users,
-} from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { formatRelativeTime } from "@/utils/date-utils";
+import { CalendarDays, Flame, Heart, MessageCircle, Sparkles, Star, Target, Trophy, Users } from "lucide-react";
 
 interface CommunityPageClientProps {
-  communityId: string
+  communityId: string;
   community: {
-    name: string
-    description?: string | null
-    kind: string
-    memberCount: number
-  }
+    name: string;
+    description?: string | null;
+    kind: string;
+    memberCount: number;
+  };
   currentUser: {
-    id: string
-    name: string
-    username?: string | null
-    avatarUrl?: string | null
-    role?: string | null
-  }
+    id: string;
+    name: string;
+    username?: string | null;
+    avatarUrl?: string | null;
+    role?: string | null;
+  };
   initialPosts: Array<{
-    id: string
-    communityId: string
-    body: string
-    createdAt: string
+    id: string;
+    communityId: string;
+    body: string;
+    createdAt: string;
     author: {
-      userId: string
-      displayName?: string | null
-      username?: string | null
-      imageUrl?: string | null
-    }
-  }>
+      userId: string;
+      displayName?: string | null;
+      username?: string | null;
+      imageUrl?: string | null;
+    };
+  }>;
 }
 
 interface FeedPost {
-  id: string
-  title: string
-  content: string
-  createdAt: string
-  authorName: string
-  authorTagline: string
-  authorAvatar?: string
-  tags: string[]
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  authorName: string;
+  authorTagline: string;
+  authorAvatar?: string;
+  tags: string[];
   reactions: {
-    likes: number
-    comments: number
-  }
-  attachments: Array<{ type: string; name: string; url: string }>
-  isOptimistic?: boolean
+    likes: number;
+    comments: number;
+  };
+  attachments: Array<{ type: string; name: string; url: string }>;
+  isOptimistic?: boolean;
 }
 
 const MOCK_COMMUNITY_HIGHLIGHTS = {
@@ -144,43 +134,25 @@ const MOCK_COMMUNITY_HIGHLIGHTS = {
       kudos: 87,
     },
   ],
-}
-
-const gradients = [
-  "from-green-500 to-emerald-600",
-  "from-blue-500 to-cyan-600",
-  "from-purple-500 to-pink-600",
-  "from-orange-500 to-red-600",
-  "from-teal-500 to-blue-600",
-  "from-indigo-500 to-purple-600",
-  "from-red-500 to-pink-600",
-  "from-yellow-500 to-orange-600",
-]
-
-function getCommunityGradient(communityId: string): string {
-  const index = communityId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length
-  return gradients[index]
-}
+};
 
 function deriveTitleFromContent(content: string): string {
-  const trimmed = content.trim()
-  if (!trimmed) return ""
+  const trimmed = content.trim();
+  if (!trimmed) return "";
 
-  const firstSentenceMatch = trimmed.match(/[^.!?\n]{3,}[.!?]/)
+  const firstSentenceMatch = trimmed.match(/[^.!?\n]{3,}[.!?]/);
   if (firstSentenceMatch) {
-    return firstSentenceMatch[0].trim()
+    return firstSentenceMatch[0].trim();
   }
 
-  const slice = trimmed.slice(0, 80)
-  return slice.length < trimmed.length ? `${slice.trim()}...` : slice.trim()
+  const slice = trimmed.slice(0, 80);
+  return slice.length < trimmed.length ? `${slice.trim()}...` : slice.trim();
 }
 
 function mapToFeedPost(post: CommunityPageClientProps["initialPosts"][number]): FeedPost {
-  const title = deriveTitleFromContent(post.body)
-  const authorName = post.author.displayName || post.author.username || "Miembro de GoalShare"
-  const authorTagline = post.author.username
-    ? `@${post.author.username}`
-    : "Miembro comprometido"
+  const title = deriveTitleFromContent(post.body);
+  const authorName = post.author.displayName || post.author.username || "Miembro de GoalShare";
+  const authorTagline = post.author.username ? `@${post.author.username}` : "Miembro comprometido";
 
   return {
     id: post.id,
@@ -196,35 +168,35 @@ function mapToFeedPost(post: CommunityPageClientProps["initialPosts"][number]): 
       comments: 0,
     },
     attachments: [],
-  }
+  };
 }
 
 export function CommunityProfile({ communityId, community, currentUser, initialPosts }: CommunityPageClientProps) {
-  const [posts, setPosts] = useState<FeedPost[]>(() => initialPosts.map(mapToFeedPost))
-  const [newPostContent, setNewPostContent] = useState("")
-  const [isPublishing, setIsPublishing] = useState(false)
+  const [posts, setPosts] = useState<FeedPost[]>(() => initialPosts.map(mapToFeedPost));
+  const [newPostContent, setNewPostContent] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const communityDescription = useMemo(() => {
     if (community.description && community.description.trim().length > 0) {
-      return community.description
+      return community.description;
     }
     switch (community.kind) {
       case "domain":
-        return "Explora tácticas y aprendizajes para dominar este dominio."
+        return "Explora tácticas y aprendizajes para dominar este dominio.";
       case "topic":
-        return "Comparte avances, dudas y recursos para este tema."
+        return "Comparte avances, dudas y recursos para este tema.";
       case "cohort":
-        return "Coordina avances y mantén la accountability con tu cohorte."
+        return "Coordina avances y mantén la accountability con tu cohorte.";
       default:
-        return "Comparte tu progreso con creadores que buscan alcanzar sus metas."
+        return "Comparte tu progreso con creadores que buscan alcanzar sus metas.";
     }
-  }, [community.description, community.kind])
+  }, [community.description, community.kind]);
 
   const handleCreatePost = useCallback(async () => {
-    const content = newPostContent.trim()
-    if (!content || isPublishing) return
+    const content = newPostContent.trim();
+    if (!content || isPublishing) return;
 
-    const tempId = `temp-${Date.now()}`
+    const tempId = `temp-${Date.now()}`;
     const optimisticPost: FeedPost = {
       id: tempId,
       title: deriveTitleFromContent(content),
@@ -237,11 +209,11 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
       reactions: { likes: 0, comments: 0 },
       attachments: [],
       isOptimistic: true,
-    }
+    };
 
-    setPosts((prev) => [optimisticPost, ...prev])
-    setNewPostContent("")
-    setIsPublishing(true)
+    setPosts((prev) => [optimisticPost, ...prev]);
+    setNewPostContent("");
+    setIsPublishing(true);
 
     try {
       const response = await fetch(`/api/communities/${communityId}/posts`, {
@@ -250,27 +222,27 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ body: content }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "No se pudo publicar el post" }))
-        throw new Error(errorData.error || "No se pudo publicar el post")
+        const errorData = await response.json().catch(() => ({ error: "No se pudo publicar el post" }));
+        throw new Error(errorData.error || "No se pudo publicar el post");
       }
 
-      const { post } = (await response.json()) as { post: CommunityPageClientProps["initialPosts"][number] }
-      const mapped = mapToFeedPost(post)
+      const { post } = (await response.json()) as { post: CommunityPageClientProps["initialPosts"][number] };
+      const mapped = mapToFeedPost(post);
 
-      setPosts((prev) => prev.map((item) => (item.id === tempId ? mapped : item)))
-      toast.success("Tu actualización fue publicada")
+      setPosts((prev) => prev.map((item) => (item.id === tempId ? mapped : item)));
+      toast.success("Tu actualización fue publicada");
     } catch (error) {
-      setPosts((prev) => prev.filter((item) => item.id !== tempId))
-      setNewPostContent(content)
-      const message = error instanceof Error ? error.message : "Ocurrió un error al publicar"
-      toast.error(message)
+      setPosts((prev) => prev.filter((item) => item.id !== tempId));
+      setNewPostContent(content);
+      const message = error instanceof Error ? error.message : "Ocurrió un error al publicar";
+      toast.error(message);
     } finally {
-      setIsPublishing(false)
+      setIsPublishing(false);
     }
-  }, [communityId, currentUser.avatarUrl, currentUser.name, currentUser.username, isPublishing, newPostContent])
+  }, [communityId, currentUser.avatarUrl, currentUser.name, currentUser.username, isPublishing, newPostContent]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-slate-900 transition-colors dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white">
@@ -279,7 +251,7 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
           <div
             className={cn(
               "mx-auto h-full w-full max-w-5xl rounded-3xl bg-gradient-to-br blur-[120px] opacity-50",
-              MOCK_COMMUNITY_HIGHLIGHTS.coverGradient,
+              MOCK_COMMUNITY_HIGHLIGHTS.coverGradient
             )}
           />
         </div>
@@ -323,8 +295,8 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
               </div>
 
               <p className="text-base leading-relaxed text-slate-600 dark:text-white/80">
-                Esta comunidad cuenta con {community.memberCount.toLocaleString()} miembros activos. Comparte avances, pide
-                retroalimentación y recibe apoyo constante para mantener tu momentum.
+                Esta comunidad cuenta con {community.memberCount.toLocaleString()} miembros activos. Comparte avances,
+                pide retroalimentación y recibe apoyo constante para mantener tu momentum.
               </p>
 
               <div className="grid gap-4 sm:grid-cols-3">
@@ -339,7 +311,9 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
                         <p className="text-2xl font-semibold">
                           {index === 0 ? community.memberCount.toLocaleString() : index === 1 ? "87" : "312"}
                         </p>
-                        <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/60">{stat.label}</p>
+                        <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/60">
+                          {stat.label}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -361,7 +335,9 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
                       key={announcement.id}
                       className="rounded-2xl border border-slate-200/70 bg-white/90 p-4 transition-colors dark:border-white/10 dark:bg-white/5"
                     >
-                      <div className={cn("flex items-center gap-2 rounded-full px-3 py-1 text-xs", announcement.accent)}>
+                      <div
+                        className={cn("flex items-center gap-2 rounded-full px-3 py-1 text-xs", announcement.accent)}
+                      >
                         <announcement.icon className="h-3 w-3" />
                         <span>{announcement.title}</span>
                       </div>
@@ -378,7 +354,10 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-slate-800 dark:text-white/90">Actividad reciente</h2>
-              <Button variant="ghost" className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white">
+              <Button
+                variant="ghost"
+                className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+              >
                 Ver filtros
               </Button>
             </div>
@@ -436,7 +415,7 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
                   key={post.id}
                   className={cn(
                     "border border-slate-200/70 bg-white text-slate-900 backdrop-blur-xl shadow-2xl shadow-primary/5 transition-colors dark:border-white/10 dark:bg-black/40 dark:text-white",
-                    post.isOptimistic && "opacity-80",
+                    post.isOptimistic && "opacity-80"
                   )}
                 >
                   <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -495,10 +474,18 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
                     )}
                   </CardContent>
                   <CardFooter className="flex flex-wrap items-center gap-4 border-t border-slate-200/70 bg-slate-50/80 px-6 py-4 text-sm text-slate-600 transition-colors dark:border-white/5 dark:bg-white/[0.02] dark:text-white/70">
-                    <Button variant="ghost" size="sm" className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
                       <Heart className="mr-2 h-4 w-4" /> {post.reactions.likes} agradecimientos
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-600 hover:bg-slate-900/10 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
                       <MessageCircle className="mr-2 h-4 w-4" /> {post.reactions.comments} comentarios
                     </Button>
                   </CardFooter>
@@ -538,7 +525,9 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
                               <p className="font-semibold text-slate-900 dark:text-white">
                                 {index + 1}. {member.name}
                               </p>
-                              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/50">{member.role}</p>
+                              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/50">
+                                {member.role}
+                              </p>
                             </div>
                           </div>
                           <Badge className="rounded-full bg-slate-900/10 text-xs font-medium text-slate-800 dark:bg-white/10 dark:text-white">
@@ -590,5 +579,5 @@ export function CommunityProfile({ communityId, community, currentUser, initialP
         </div>
       </div>
     </div>
-  )
+  );
 }

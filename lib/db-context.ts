@@ -4,10 +4,7 @@ import { db, client } from "@/db";
  * withUserContext: setea app.user_id en la conexión Postgres para que RLS funcione por usuario (Clerk).
  * Usa Clerk user id (profiles.user_id) y ejecuta la operación proporcionada.
  */
-export async function withUserContext<T>(
-  clerkUserId: string,
-  fn: (dbInstance: typeof db) => Promise<T>
-): Promise<T> {
+export async function withUserContext<T>(clerkUserId: string, fn: (dbInstance: typeof db) => Promise<T>): Promise<T> {
   // Setea el contexto por conexión. 'true' mantiene la variable durante la sesión.
   // Opción A: usando postgres-js client directamente
   await client`select set_config('app.user_id', ${clerkUserId}, true)`;

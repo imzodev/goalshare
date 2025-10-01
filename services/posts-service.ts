@@ -1,13 +1,16 @@
-import { and, desc, eq } from "drizzle-orm"
-import { z } from "zod"
+import { and, desc, eq } from "drizzle-orm";
+import { z } from "zod";
 
-import { db } from "@/db"
-import { communityMembers, posts, profiles } from "@/db/schema"
-import { withUserContext } from "@/lib/db-context"
+import { db } from "@/db";
+import { communityMembers, posts, profiles } from "@/db/schema";
+import { withUserContext } from "@/lib/db-context";
 
 const sanitizePlainText = (input: string): string => {
-  return input.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
-}
+  return input
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
 export const createCommunityPostSchema = z.object({
   communityId: z.string({ required_error: "El ID de la comunidad es requerido" }).uuid("communityId inválido"),
@@ -16,33 +19,33 @@ export const createCommunityPostSchema = z.object({
     .trim()
     .min(5, "El post debe tener al menos 5 caracteres")
     .max(1000, "El post supera el máximo de 1000 caracteres"),
-})
+});
 
 export type CommunityPostDTO = {
-  id: string
-  communityId: string
-  body: string
-  createdAt: string
+  id: string;
+  communityId: string;
+  body: string;
+  createdAt: string;
   author: {
-    userId: string
-    displayName?: string | null
-    username?: string | null
-    imageUrl?: string | null
-  }
-}
+    userId: string;
+    displayName?: string | null;
+    username?: string | null;
+    imageUrl?: string | null;
+  };
+};
 
-type Database = typeof db
+type Database = typeof db;
 
 export class PostsService {
   constructor(private readonly dbInstance: Database = db) {}
 
   async listCommunityPosts(userId: string, communityId: string, limit = 25): Promise<CommunityPostDTO[]> {
     if (!userId) {
-      throw new Error("userId es requerido para listar posts de la comunidad")
+      throw new Error("userId es requerido para listar posts de la comunidad");
     }
 
     if (!communityId) {
-      throw new Error("communityId es requerido para listar posts de la comunidad")
+      throw new Error("communityId es requerido para listar posts de la comunidad");
     }
 
     return withUserContext(userId, async (dbCtx) => {
@@ -50,10 +53,10 @@ export class PostsService {
         .select({ userId: communityMembers.userId })
         .from(communityMembers)
         .where(and(eq(communityMembers.communityId, communityId), eq(communityMembers.userId, userId)))
-        .limit(1)
+        .limit(1);
 
       if (membership.length === 0) {
-        throw new Error("No eres miembro de esta comunidad")
+        throw new Error("No eres miembro de esta comunidad");
       }
 
       const rows = await dbCtx
@@ -71,7 +74,7 @@ export class PostsService {
         .innerJoin(profiles, eq(posts.authorId, profiles.userId))
         .where(eq(posts.communityId, communityId))
         .orderBy(desc(posts.createdAt))
-        .limit(limit)
+        .limit(limit);
 
       return rows.map((row) => ({
         id: row.id,
@@ -84,20 +87,20 @@ export class PostsService {
           username: row.username,
           imageUrl: row.imageUrl,
         },
-      }))
-    })
+      }));
+    });
   }
 
   async createPost(userId: string, input: z.infer<typeof createCommunityPostSchema>): Promise<CommunityPostDTO> {
     if (!userId) {
-      throw new Error("userId es requerido para crear un post")
+      throw new Error("userId es requerido para crear un post");
     }
 
-    const validated = createCommunityPostSchema.parse(input)
-    const sanitizedBody = sanitizePlainText(validated.body)
+    const validated = createCommunityPostSchema.parse(input);
+    const sanitizedBody = sanitizePlainText(validated.body);
 
     if (!sanitizedBody) {
-      throw new Error("El post no puede quedar vacío luego de limpiar el contenido")
+      throw new Error("El post no puede quedar vacío luego de limpiar el contenido");
     }
 
     return withUserContext(userId, async (dbCtx) => {
@@ -105,10 +108,10 @@ export class PostsService {
         .select({ userId: communityMembers.userId })
         .from(communityMembers)
         .where(and(eq(communityMembers.communityId, validated.communityId), eq(communityMembers.userId, userId)))
-        .limit(1)
+        .limit(1);
 
       if (membership.length === 0) {
-        throw new Error("Necesitas ser miembro de la comunidad para publicar")
+        throw new Error("Necesitas ser miembro de la comunidad para publicar");
       }
 
       const [inserted] = await dbCtx
@@ -123,7 +126,7 @@ export class PostsService {
           communityId: posts.communityId,
           body: posts.body,
           createdAt: posts.createdAt,
-        })
+        });
 
       const [authorProfile] = await dbCtx
         .select({
@@ -134,7 +137,7 @@ export class PostsService {
         })
         .from(profiles)
         .where(eq(profiles.userId, userId))
-        .limit(1)
+        .limit(1);
 
       return {
         id: inserted.id,
@@ -147,7 +150,7 @@ export class PostsService {
           username: authorProfile?.username ?? null,
           imageUrl: authorProfile?.imageUrl ?? null,
         },
-      }
-    })
+      };
+    });
   }
 }

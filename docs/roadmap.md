@@ -122,12 +122,12 @@ Este documento describe el plan general de desarrollo, iniciando por el punto 1 
 
 ### Orden recomendado de ejecución
 
-1) Autenticación y control de acceso  
-2) Datos y migraciones  
-3) CRUD de objetivos  
-4) Colaboración  
-5) Perfiles públicos + SEO/social  
-6) Billing  
-7) Ajustes, analíticas, perf/a11y, QA  
-8) Seguridad, CI/CD  
-9) Docs y lanzamiento
+1. Autenticación y control de acceso
+2. Datos y migraciones
+3. CRUD de objetivos
+4. Colaboración
+5. Perfiles públicos + SEO/social
+6. Billing
+7. Ajustes, analíticas, perf/a11y, QA
+8. Seguridad, CI/CD
+9. Docs y lanzamiento

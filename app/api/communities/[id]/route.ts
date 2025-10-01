@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { CommunitiesService } from "@/services/communities-service";
 
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       message: "Te has unido a la comunidad exitosamente",
-      community
+      community,
     });
   } catch (error) {
     console.error("[Community Join API]", error);
@@ -79,7 +80,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await communitiesService.leaveCommunity(userId, communityId);
 
     return NextResponse.json({
-      message: "Has salido de la comunidad exitosamente"
+      message: "Has salido de la comunidad exitosamente",
     });
   } catch (error) {
     console.error("[Community Leave API]", error);

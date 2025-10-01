@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Plus, Share2, Users, Calendar } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Share2, Users, Calendar } from "lucide-react";
 
 const actions = [
   {
@@ -10,30 +10,30 @@ const actions = [
     description: "Establece una nueva meta personal",
     icon: Plus,
     color: "from-blue-500 to-purple-600",
-    action: () => console.log("Crear meta"),
+    action: () => {}, // TODO: Implementar crear meta
   },
   {
     title: "Compartir Progreso",
     description: "Comparte tu avance con la comunidad",
     icon: Share2,
     color: "from-green-500 to-teal-600",
-    action: () => console.log("Compartir progreso"),
+    action: () => {}, // TODO: Implementar compartir progreso
   },
   {
     title: "Unirse a Comunidad",
     description: "Encuentra personas con metas similares",
     icon: Users,
     color: "from-purple-500 to-pink-600",
-    action: () => console.log("Unirse a comunidad"),
+    action: () => {}, // TODO: Implementar unirse a comunidad
   },
   {
     title: "Programar Recordatorio",
     description: "Configura recordatorios para tus metas",
     icon: Calendar,
     color: "from-orange-500 to-red-600",
-    action: () => console.log("Programar recordatorio"),
+    action: () => {}, // TODO: Implementar programar recordatorio
   },
-]
+];
 
 export function QuickActions() {
   return (
@@ -54,14 +54,14 @@ export function QuickActions() {
               onClick={action.action}
             >
               <div className="flex items-center gap-3 w-full">
-                <div className={`p-2 rounded-lg bg-gradient-to-br ${action.color} text-white shadow-lg group-hover:shadow-xl transition-shadow`}>
+                <div
+                  className={`p-2 rounded-lg bg-gradient-to-br ${action.color} text-white shadow-lg group-hover:shadow-xl transition-shadow`}
+                >
                   <action.icon className="h-4 w-4" />
                 </div>
                 <div className="text-left">
                   <div className="font-medium">{action.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {action.description}
-                  </div>
+                  <div className="text-xs text-muted-foreground">{action.description}</div>
                 </div>
               </div>
             </Button>
@@ -69,5 +69,5 @@ export function QuickActions() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

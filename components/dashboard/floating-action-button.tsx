@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Plus, Target, Users, Calendar, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Plus, Target, Users, Calendar, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const fabActions = [
   {
@@ -11,44 +11,44 @@ const fabActions = [
     label: "Nueva Meta",
     icon: Target,
     color: "from-blue-500 to-purple-600",
-    action: () => console.log("Crear nueva meta"),
+    action: () => {}, // TODO: Implementar crear meta
   },
   {
     id: "community",
     label: "Crear Comunidad",
     icon: Users,
     color: "from-green-500 to-teal-600",
-    action: () => console.log("Crear comunidad"),
+    action: () => {}, // TODO: Implementar crear comunidad
   },
   {
     id: "event",
     label: "Programar Evento",
     icon: Calendar,
     color: "from-orange-500 to-red-600",
-    action: () => console.log("Programar evento"),
+    action: () => {}, // TODO: Implementar programar evento
   },
-]
+];
 
 export function FloatingActionButton() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleFab = () => setIsOpen(!isOpen)
+  const toggleFab = () => setIsOpen(!isOpen);
 
   return (
     <div className="fixed bottom-20 right-4 z-40 md:bottom-6 md:right-6">
       {/* Acciones secundarias */}
-      <div className={cn(
-        "flex flex-col gap-3 mb-3 transition-all duration-300 transform origin-bottom",
-        isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col gap-3 mb-3 transition-all duration-300 transform origin-bottom",
+          isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0"
+        )}
+      >
         {fabActions.map((action, index) => (
           <div
             key={action.id}
             className={cn(
               "flex items-center gap-3 transition-all duration-300 transform",
-              isOpen 
-                ? "translate-y-0 opacity-100" 
-                : "translate-y-4 opacity-0"
+              isOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             )}
             style={{ transitionDelay: `${index * 50}ms` }}
           >
@@ -62,8 +62,8 @@ export function FloatingActionButton() {
                 `bg-gradient-to-br ${action.color} hover:${action.color}`
               )}
               onClick={() => {
-                action.action()
-                setIsOpen(false)
+                action.action();
+                setIsOpen(false);
               }}
             >
               <action.icon className="h-5 w-5" />
@@ -82,11 +82,7 @@ export function FloatingActionButton() {
         )}
         onClick={toggleFab}
       >
-        {isOpen ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <Plus className="h-6 w-6" />
-        )}
+        {isOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
       </Button>
 
       {/* Overlay para cerrar cuando se hace clic fuera */}
@@ -94,8 +90,12 @@ export function FloatingActionButton() {
         <div
           className="fixed inset-0 z-[-1]"
           onClick={() => setIsOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
+          role="button"
+          tabIndex={0}
+          aria-label="Cerrar menú"
         />
       )}
     </div>
-  )
+  );
 }

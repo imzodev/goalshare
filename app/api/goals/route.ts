@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/db";
 import { goals, profiles } from "@/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
@@ -9,78 +9,80 @@ import { env } from "@/config/env";
 import { GoalsService } from "@/services/goals-service";
 import { toNumericString } from "@/utils/type-converters";
 
-const CreateGoalSchema = z.object({
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(120),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres").max(2000),
-  // Usamos string en formato YYYY-MM-DD para coincidir con el tipo 'date' de Drizzle
-  deadline: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .nullish()
-    .or(z.literal("") as unknown as z.ZodType<string | null>)
-    .transform((v) => (v ? v : null)),
-  topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }),
-  templateId: z.string().uuid().nullish(),
-  goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional().default("manual"),
-  targetValue: z.number().positive().nullish(),
-  targetUnit: z.string().max(50).nullish(),
-  currentValue: z.number().min(0).nullish(),
-  currentProgress: z.number().min(0).max(100).int().nullish(),
-}).superRefine((data, ctx) => {
-  // Validar que metas metric/checkin tengan targetValue y targetUnit
-  if (data.goalType === "metric" || data.goalType === "checkin") {
-    if (!data.targetValue) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Las metas de tipo "${data.goalType}" requieren un valor objetivo (targetValue)`,
-        path: ["targetValue"],
-      });
+const CreateGoalSchema = z
+  .object({
+    title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(120),
+    description: z.string().min(10, "La descripción debe tener al menos 10 caracteres").max(2000),
+    // Usamos string en formato YYYY-MM-DD para coincidir con el tipo 'date' de Drizzle
+    deadline: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullish()
+      .or(z.literal("") as unknown as z.ZodType<string | null>)
+      .transform((v) => (v ? v : null)),
+    topicCommunityId: z.string().uuid({ message: "topicCommunityId debe ser un UUID válido" }),
+    templateId: z.string().uuid().nullish(),
+    goalType: z.enum(["metric", "milestone", "checkin", "manual"]).optional().default("manual"),
+    targetValue: z.number().positive().nullish(),
+    targetUnit: z.string().max(50).nullish(),
+    currentValue: z.number().min(0).nullish(),
+    currentProgress: z.number().min(0).max(100).int().nullish(),
+  })
+  .superRefine((data, ctx) => {
+    // Validar que metas metric/checkin tengan targetValue y targetUnit
+    if (data.goalType === "metric" || data.goalType === "checkin") {
+      if (!data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Las metas de tipo "${data.goalType}" requieren un valor objetivo (targetValue)`,
+          path: ["targetValue"],
+        });
+      }
+      if (!data.targetUnit) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Las metas de tipo "${data.goalType}" requieren una unidad (targetUnit)`,
+          path: ["targetUnit"],
+        });
+      }
     }
-    if (!data.targetUnit) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Las metas de tipo "${data.goalType}" requieren una unidad (targetUnit)`,
-        path: ["targetUnit"],
-      });
-    }
-  }
 
-  // Validar que metas manual no tengan targetValue ni currentValue
-  if (data.goalType === "manual") {
-    if (data.targetValue) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Las metas manuales no deben tener targetValue",
-        path: ["targetValue"],
-      });
+    // Validar que metas manual no tengan targetValue ni currentValue
+    if (data.goalType === "manual") {
+      if (data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas manuales no deben tener targetValue",
+          path: ["targetValue"],
+        });
+      }
+      if (data.currentValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas manuales no deben tener currentValue",
+          path: ["currentValue"],
+        });
+      }
     }
-    if (data.currentValue) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Las metas manuales no deben tener currentValue",
-        path: ["currentValue"],
-      });
-    }
-  }
 
-  // Validar que metas milestone no tengan targetValue ni currentProgress
-  if (data.goalType === "milestone") {
-    if (data.targetValue) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Las metas de tipo milestone no deben tener targetValue",
-        path: ["targetValue"],
-      });
+    // Validar que metas milestone no tengan targetValue ni currentProgress
+    if (data.goalType === "milestone") {
+      if (data.targetValue) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas de tipo milestone no deben tener targetValue",
+          path: ["targetValue"],
+        });
+      }
+      if (data.currentProgress) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Las metas de tipo milestone no deben tener currentProgress",
+          path: ["currentProgress"],
+        });
+      }
     }
-    if (data.currentProgress) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Las metas de tipo milestone no deben tener currentProgress",
-        path: ["currentProgress"],
-      });
-    }
-  }
-});
+  });
 
 export async function POST(req: NextRequest) {
   try {
@@ -107,7 +109,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { title, description, deadline, topicCommunityId, templateId, goalType, targetValue, targetUnit, currentValue, currentProgress } = parsed.data;
+    const {
+      title,
+      description,
+      deadline,
+      topicCommunityId,
+      templateId,
+      goalType,
+      targetValue,
+      targetUnit,
+      currentValue,
+      currentProgress,
+    } = parsed.data;
 
     // Ejecutar con contexto de usuario para que apliquen políticas RLS si existieran
     const created = await withUserContext(userId, async (dbCtx) => {
@@ -129,7 +142,7 @@ export async function POST(req: NextRequest) {
       const result = await dbCtx.execute(
         dsql`select count(*)::int as count from ${goals} where ${goals.ownerId} = ${userId}`
       );
-      const currentCount = Number((result as any)?.[0]?.count ?? 0);
+      const currentCount = Number((result as Array<{ count?: number }>)?.[0]?.count ?? 0);
 
       if (plan === "free" && currentCount >= 5) {
         return { limitExceeded: true } as const;
@@ -155,14 +168,11 @@ export async function POST(req: NextRequest) {
       return { row } as const;
     });
 
-    if ((created as any).limitExceeded) {
-      return NextResponse.json(
-        { error: "Límite alcanzado: el plan Free permite hasta 5 metas." },
-        { status: 403 }
-      );
+    if ("limitExceeded" in created && created.limitExceeded) {
+      return NextResponse.json({ error: "Límite alcanzado: el plan Free permite hasta 5 metas." }, { status: 403 });
     }
 
-    return NextResponse.json({ goal: (created as any).row }, { status: 201 });
+    return NextResponse.json({ goal: "row" in created ? created.row : null }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/goals]", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });

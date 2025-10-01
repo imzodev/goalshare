@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { withUserContext } from "@/lib/db-context";
-import { db } from "@/db";
-import { communities, communityKindEnum } from "@/db/schema";
+import { communities } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET() {
@@ -16,7 +15,7 @@ export async function GET() {
       const rows = await dbCtx
         .select({ id: communities.id, name: communities.name, slug: communities.slug })
         .from(communities)
-        .where(eq(communities.kind, "topic" as any));
+        .where(eq(communities.kind, "topic"));
       return rows;
     });
 

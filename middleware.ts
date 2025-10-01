@@ -5,8 +5,9 @@ import { NextResponse } from "next/server";
 type Counter = { count: number; resetAt: number };
 const WINDOW_MS = 60_000; // 1 minuto
 const LIMIT = 60; // 60 req por minuto
-const store: Map<string, Counter> = (globalThis as any).__rateLimitStore || new Map();
-(globalThis as any).__rateLimitStore = store;
+const globalWithStore = globalThis as typeof globalThis & { __rateLimitStore?: Map<string, Counter> };
+const store: Map<string, Counter> = globalWithStore.__rateLimitStore || new Map();
+globalWithStore.__rateLimitStore = store;
 
 function getClientKey(req: Request, userId?: string | null): string {
   const ipHeader = req.headers.get("x-forwarded-for");

@@ -1,20 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  Target,
-  Users,
-  Trophy,
-  Home,
-  Plus,
-  TrendingUp,
-  Calendar,
-  Bell,
-  PanelLeftClose,
-} from "lucide-react"
-import { UserButton } from "@clerk/nextjs"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import * as React from "react";
+import { Target, Users, Trophy, Home, Plus, TrendingUp, Calendar, Bell, PanelLeftClose } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   Sidebar,
@@ -25,16 +15,14 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 // Datos de navegación
 const getNavigationData = (pathname: string) => {
@@ -125,25 +113,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">GoalShare</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    Alcanza tus metas
-                  </span>
+                  <span className="truncate text-xs text-muted-foreground">Alcanza tus metas</span>
                 </div>
               </div>
             </SidebarMenuItem>
           </SidebarMenu>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            onClick={toggleSidebar}
-          >
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={toggleSidebar}>
             <PanelLeftClose className="h-4 w-4" />
             <span className="sr-only">Ocultar navegación</span>
           </Button>
         </div>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navegación</SidebarGroupLabel>
@@ -167,7 +148,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
+
         <SidebarGroup>
           <SidebarGroupLabel>Acciones Rápidas</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -191,7 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      
+
       <SidebarFooter className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -199,29 +180,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Avatar className="h-8 w-8">
                 <AvatarImage src={userData.avatar} alt={userData.name} />
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                  {userData.name.split(' ').map(n => n[0]).join('')}
+                  {userData.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{userData.name}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {userData.email}
-                </span>
+                <span className="truncate text-xs text-muted-foreground">{userData.email}</span>
               </div>
-              <UserButton 
+              <UserButton
                 afterSignOutUrl="/"
                 appearance={{
                   elements: {
                     avatarBox: "h-8 w-8",
-                  }
+                  },
                 }}
               />
             </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-      
+
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

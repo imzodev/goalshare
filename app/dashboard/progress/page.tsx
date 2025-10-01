@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, Construction } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp, Construction } from "lucide-react";
 
 export default function ProgressPage() {
   return (
@@ -15,9 +15,7 @@ export default function ProgressPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Progreso
             </h1>
-            <p className="text-muted-foreground">
-              Visualiza tus estadísticas y seguimiento de progreso
-            </p>
+            <p className="text-muted-foreground">Visualiza tus estadísticas y seguimiento de progreso</p>
           </div>
         </div>
       </div>
@@ -31,10 +29,11 @@ export default function ProgressPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Las estadísticas avanzadas y análisis de progreso están en desarrollo. Pronto podrás ver gráficos detallados de tu rendimiento.
+            Las estadísticas avanzadas y análisis de progreso están en desarrollo. Pronto podrás ver gráficos detallados
+            de tu rendimiento.
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

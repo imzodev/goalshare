@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Home, Target, Users, Trophy, User } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Home, Target, Users, Trophy, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   {
@@ -41,10 +41,10 @@ const navItems = [
     href: "/dashboard/profile",
     badge: null,
   },
-]
+];
 
 export function MobileNav() {
-  const [activeItem, setActiveItem] = useState("home")
+  const [activeItem, setActiveItem] = useState("home");
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
@@ -64,21 +64,19 @@ export function MobileNav() {
               <div className="relative">
                 <item.icon className="h-5 w-5" />
                 {item.badge && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-2 -right-2 h-4 w-4 p-0 text-xs flex items-center justify-center"
                   >
                     {item.badge}
                   </Badge>
                 )}
               </div>
-              <span className="text-xs font-medium truncate">
-                {item.label}
-              </span>
+              <span className="text-xs font-medium truncate">{item.label}</span>
             </button>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }

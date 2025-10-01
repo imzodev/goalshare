@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Target, Calendar, Clock, RefreshCw, Loader2, MoreHorizontal, AlertCircle } from "lucide-react"
-import type { UserGoalSummary } from "@/types/goals"
-import { CreateGoalSheet } from "./create-goal-sheet"
-import { formatDeadline, formatRelativeTime } from "@/utils/date-utils"
-import { getDaysLeftLabel } from "@/utils/goals-ui-utils"
-import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals"
-import { GoalsSectionSkeleton } from "@/components/skeletons/goals-section-skeleton"
+import { useCallback, useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Target, Calendar, Clock, RefreshCw, Loader2, MoreHorizontal, AlertCircle } from "lucide-react";
+import type { UserGoalSummary } from "@/types/goals";
+import { CreateGoalSheet } from "./create-goal-sheet";
+import { formatDeadline, formatRelativeTime } from "@/utils/date-utils";
+import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
+import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals";
+import { GoalsSectionSkeleton } from "@/components/skeletons/goals-section-skeleton";
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -19,60 +19,58 @@ const colorPalette = [
   "from-emerald-500/50 via-emerald-500/20 to-transparent",
   "from-amber-500/50 via-amber-500/20 to-transparent",
   "from-pink-500/50 via-pink-500/20 to-transparent",
-]
+];
 
 export function GoalsSection() {
-  const [open, setOpen] = useState(false)
-  const [goals, setGoals] = useState<UserGoalSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [open, setOpen] = useState(false);
+  const [goals, setGoals] = useState<UserGoalSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchGoals = useCallback(async ({ silent = false } = {}) => {
-    console.log("[GoalsSection] fetchGoals:start", { silent })
     if (silent) {
-      setRefreshing(true)
+      setRefreshing(true);
     } else {
-      setLoading(true)
+      setLoading(true);
     }
-    setError(null)
+    setError(null);
 
     try {
       const response = await fetch("/api/goals", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-      })
+      });
 
-     
-      const data = await response.json()
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error ?? "No se pudieron cargar las metas")
+        throw new Error(data?.error ?? "No se pudieron cargar las metas");
       }
 
-      const nextGoals = Array.isArray(data?.goals) ? data.goals : []
-      setGoals(nextGoals)
+      const nextGoals = Array.isArray(data?.goals) ? data.goals : [];
+      setGoals(nextGoals);
     } catch (err) {
-      console.error("[GoalsSection]", err)
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas")
-      setGoals([])
+      console.error("[GoalsSection]", err);
+      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas");
+      setGoals([]);
     } finally {
-      setLoading(false)
-      setRefreshing(false)
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchGoals()
-  }, [fetchGoals])
+    fetchGoals();
+  }, [fetchGoals]);
 
   const handleGoalCreated = useCallback(() => {
-    fetchGoals({ silent: true })
-  }, [fetchGoals])
+    fetchGoals({ silent: true });
+  }, [fetchGoals]);
 
-  const handleRefresh = () => fetchGoals({ silent: true })
+  const handleRefresh = () => fetchGoals({ silent: true });
 
-  const showSkeleton = loading && !refreshing
+  const showSkeleton = loading && !refreshing;
 
   return (
     <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl">
@@ -119,19 +117,21 @@ export function GoalsSection() {
         {!loading && !error && goals.length > 0 && (
           <div className="space-y-4">
             {goals.map((goal, index) => {
-              const gradient = colorPalette[index % colorPalette.length]
-              const statusLabel = GOAL_STATUS_LABELS[goal.status]
-              const goalTypeLabel = GOAL_TYPE_LABELS[goal.goalType]
-              const deadlineLabel = formatDeadline(goal.deadline)
-              const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft)
-              const lastUpdateLabel = formatRelativeTime(goal.lastUpdateAt)
+              const gradient = colorPalette[index % colorPalette.length];
+              const statusLabel = GOAL_STATUS_LABELS[goal.status];
+              const goalTypeLabel = GOAL_TYPE_LABELS[goal.goalType];
+              const deadlineLabel = formatDeadline(goal.deadline);
+              const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft);
+              const lastUpdateLabel = formatRelativeTime(goal.lastUpdateAt);
 
               return (
                 <div
                   key={goal.id}
                   className="relative overflow-hidden rounded-lg border bg-white/50 dark:bg-gray-800/50 transition-all duration-300 hover:bg-white/70 dark:hover:bg-gray-800/70 hover:shadow-md group"
                 >
-                  <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  <div
+                    className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
+                  />
 
                   <div className="relative p-4">
                     <div className="flex items-start justify-between mb-3">
@@ -144,9 +144,7 @@ export function GoalsSection() {
                           <Badge variant="secondary" className="text-xs">
                             {goal.topicCommunity?.name || "Sin categoría"}
                           </Badge>
-                          <Badge className="text-xs capitalize">
-                            {statusLabel}
-                          </Badge>
+                          <Badge className="text-xs capitalize">{statusLabel}</Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mb-2 line-clamp-2 sm:line-clamp-none">
                           {goal.description}
@@ -168,7 +166,11 @@ export function GoalsSection() {
                           )}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </div>
@@ -188,12 +190,12 @@ export function GoalsSection() {
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </CardContent>
       <CreateGoalSheet open={open} onOpenChange={setOpen} onCreated={handleGoalCreated} />
     </Card>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useTransition } from "react"
+import { useState, useTransition } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,54 +10,54 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Loader2, AlertTriangle } from "lucide-react"
-import type { UserGoalSummary } from "@/types/goals"
+} from "@/components/ui/alert-dialog";
+import { Loader2, AlertTriangle } from "lucide-react";
+import type { UserGoalSummary } from "@/types/goals";
 
 type Props = {
-  goal: UserGoalSummary | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onGoalDeleted?: () => void
-}
+  goal: UserGoalSummary | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onGoalDeleted?: () => void;
+};
 
 export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Props) {
-  const [pending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const handleDelete = () => {
-    if (!goal) return
+    if (!goal) return;
 
-    setError(null)
+    setError(null);
     startTransition(async () => {
       try {
         const res = await fetch(`/api/goals/${goal.id}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-        })
+        });
 
-        const data = await res.json()
+        const data = await res.json();
         if (!res.ok) {
-          const msg = data?.error?.message || data?.error || "No se pudo eliminar la meta"
-          setError(typeof msg === "string" ? msg : "No se pudo eliminar la meta")
-          return
+          const msg = data?.error?.message || data?.error || "No se pudo eliminar la meta";
+          setError(typeof msg === "string" ? msg : "No se pudo eliminar la meta");
+          return;
         }
 
         // éxito
-        onOpenChange(false)
-        onGoalDeleted?.()
-      } catch (e) {
-        setError("Error de red")
+        onOpenChange(false);
+        onGoalDeleted?.();
+      } catch {
+        setError("Error de red");
       }
-    })
-  }
+    });
+  };
 
   const handleCancel = () => {
-    onOpenChange(false)
-    setError(null)
-  }
+    onOpenChange(false);
+    setError(null);
+  };
 
-  if (!goal) return null
+  if (!goal) return null;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -79,12 +79,10 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
         <div className="py-4">
           <div className="rounded-lg border bg-muted/50 p-4">
             <h4 className="font-medium text-sm mb-2">{goal.title}</h4>
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {goal.description}
-            </p>
+            <p className="text-sm text-muted-foreground line-clamp-2">{goal.description}</p>
             {goal.deadline && (
               <p className="text-xs text-muted-foreground mt-2">
-                Fecha límite: {new Date(goal.deadline).toLocaleDateString('es-MX')}
+                Fecha límite: {new Date(goal.deadline).toLocaleDateString("es-MX")}
               </p>
             )}
           </div>
@@ -124,5 +122,5 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

@@ -1,37 +1,37 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowUpRight, Users, MessageCircle, Loader2, TrendingUp } from "lucide-react"
-import type { CommunitySummary } from "@/types/communities"
+import Link from "next/link";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Users, MessageCircle, Loader2, TrendingUp } from "lucide-react";
+import type { CommunitySummary } from "@/types/communities";
 
 interface CommunitiesGridProps {
-  communities: CommunitySummary[]
-  onCommunityAction: () => void
-  getCommunityGradient: (communityId: string) => string
+  communities: CommunitySummary[];
+  onCommunityAction: () => void;
+  getCommunityGradient: (communityId: string) => string;
 }
 
 export function CommunitiesGrid({ communities, onCommunityAction, getCommunityGradient }: CommunitiesGridProps) {
-  const [joiningCommunity, setJoiningCommunity] = useState<string | null>(null)
+  const [joiningCommunity, setJoiningCommunity] = useState<string | null>(null);
 
   const handleJoinCommunity = async (community: CommunitySummary) => {
     try {
-      setJoiningCommunity(community.id)
+      setJoiningCommunity(community.id);
       const response = await fetch(`/api/communities/${community.id}`, {
-        method: 'POST',
-      })
+        method: "POST",
+      });
 
-      if (!response.ok) throw new Error('Error al unirte a la comunidad')
+      if (!response.ok) throw new Error("Error al unirte a la comunidad");
 
-      onCommunityAction() // Refresh data
+      onCommunityAction(); // Refresh data
     } catch (error) {
-      console.error('Error joining community:', error)
+      console.error("Error joining community:", error);
     } finally {
-      setJoiningCommunity(null)
+      setJoiningCommunity(null);
     }
-  }
+  };
 
   if (communities.length === 0) {
     return (
@@ -46,38 +46,45 @@ export function CommunitiesGrid({ communities, onCommunityAction, getCommunityGr
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {communities.map((community) => {
-        const gradient = getCommunityGradient(community.id)
-        const isJoining = joiningCommunity === community.id
+        const gradient = getCommunityGradient(community.id);
+        const isJoining = joiningCommunity === community.id;
 
         return (
           <Card
             key={community.id}
             className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
           >
-            <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity`} />
+            <div
+              className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
+            />
 
             <CardHeader className="relative pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">
-                    {community.name}
-                  </CardTitle>
+                  <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{community.name}</CardTitle>
                   <div className="flex flex-wrap gap-2 mb-3">
                     <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/20 dark:text-blue-300">
-                      {community.kind === 'topic' ? 'Tema' :
-                       community.kind === 'domain' ? 'Dominio' :
-                       community.kind === 'cohort' ? 'Cohorte' : 'Comunidad'}
+                      {community.kind === "topic"
+                        ? "Tema"
+                        : community.kind === "domain"
+                          ? "Dominio"
+                          : community.kind === "cohort"
+                            ? "Cohorte"
+                            : "Comunidad"}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg" style={{ background: `linear-gradient(135deg, var(--tw-gradient-stops))` }}>
+                <div
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg"
+                  style={{ background: `linear-gradient(135deg, var(--tw-gradient-stops))` }}
+                >
                   <Users className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -131,8 +138,8 @@ export function CommunitiesGrid({ communities, onCommunityAction, getCommunityGr
               )}
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
