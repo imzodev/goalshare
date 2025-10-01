@@ -10,7 +10,7 @@ import type { UserGoalSummary } from "@/types/goals"
 import { CreateGoalSheet } from "./create-goal-sheet"
 import { formatDeadline, formatRelativeTime } from "@/utils/date-utils"
 import { getDaysLeftLabel } from "@/utils/goals-ui-utils"
-import { GOAL_STATUS_LABELS } from "@/constants/goals"
+import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals"
 import { GoalsSectionSkeleton } from "@/components/skeletons/goals-section-skeleton"
 
 const colorPalette = [
@@ -121,6 +121,7 @@ export function GoalsSection() {
             {goals.map((goal, index) => {
               const gradient = colorPalette[index % colorPalette.length]
               const statusLabel = GOAL_STATUS_LABELS[goal.status]
+              const goalTypeLabel = GOAL_TYPE_LABELS[goal.goalType]
               const deadlineLabel = formatDeadline(goal.deadline)
               const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft)
               const lastUpdateLabel = formatRelativeTime(goal.lastUpdateAt)
@@ -137,6 +138,9 @@ export function GoalsSection() {
                       <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="font-semibold text-sm sm:text-base">{goal.title}</h3>
+                          <Badge variant="outline" className="text-xs">
+                            {goalTypeLabel}
+                          </Badge>
                           <Badge variant="secondary" className="text-xs">
                             {goal.topicCommunity?.name || "Sin categoría"}
                           </Badge>
