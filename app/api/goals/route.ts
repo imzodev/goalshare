@@ -7,6 +7,7 @@ import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
 import { env } from "@/config/env";
 import { GoalsService } from "@/services/goals-service";
+import { toNumericString } from "@/utils/type-converters";
 
 const CreateGoalSchema = z.object({
   title: z.string().min(3, "El título debe tener al menos 3 caracteres").max(120),
@@ -90,9 +91,9 @@ export async function POST(req: NextRequest) {
           topicCommunityId,
           templateId: templateId ?? null,
           goalType: goalType ?? "manual",
-          targetValue: targetValue !== null && targetValue !== undefined ? String(targetValue) : null,
+          targetValue: toNumericString(targetValue),
           targetUnit: targetUnit ?? null,
-          currentValue: currentValue !== null && currentValue !== undefined ? String(currentValue) : null,
+          currentValue: toNumericString(currentValue),
           currentProgress: currentProgress ?? null,
         })
         .returning();
