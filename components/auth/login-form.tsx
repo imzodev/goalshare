@@ -43,67 +43,66 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md border-purple-200 bg-white/80 backdrop-blur-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-center text-3xl font-bold text-transparent">
-          Iniciar Sesión
+    <Card className="w-full max-w-md border border-border bg-card shadow-sm">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-center text-3xl font-bold">
+          <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Iniciar sesión
+          </span>
         </CardTitle>
-        <CardDescription className="text-center text-gray-600">
+        <CardDescription className="text-center text-muted-foreground">
           Ingresa tus credenciales para acceder a tu cuenta
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email">Correo electrónico</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="tu@email.com"
-              required
-              disabled={isLoading}
-              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-            />
+            <Input id="email" name="email" type="email" placeholder="tu@email.com" required disabled={isLoading} />
           </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Contraseña</Label>
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm text-purple-600 hover:text-purple-700 hover:underline"
-              >
+              <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              disabled={isLoading}
-              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-            />
+            <Input id="password" name="password" type="password" placeholder="••••••••" required disabled={isLoading} />
           </div>
-          <Button
-            type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700"
-            disabled={isLoading}
-          >
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Iniciando sesión...
               </>
             ) : (
-              "Iniciar Sesión"
+              "Iniciar sesión"
             )}
           </Button>
         </form>
-        <div className="mt-4 text-center text-sm text-gray-600">
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">o continúa con</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        {/* Social buttons (UI only for now) */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Button type="button" variant="outline" className="w-full">
+            <span className="mr-2">🔵</span> Google
+          </Button>
+          <Button type="button" variant="outline" className="w-full">
+            <span className="mr-2">🐙</span> GitHub
+          </Button>
+        </div>
+
+        <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿No tienes una cuenta?{" "}
-          <Link href="/auth/sign-up" className="font-medium text-purple-600 hover:text-purple-700 hover:underline">
+          <Link href="/auth/sign-up" className="font-medium text-primary hover:underline">
             Regístrate
           </Link>
         </div>
