@@ -60,44 +60,32 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-md border-purple-200 bg-white/80 backdrop-blur-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-center text-3xl font-bold text-transparent">
-          Crear Cuenta
+    <Card className="w-full max-w-md border border-border bg-card shadow-sm">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-center text-3xl font-bold">
+          <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Crear cuenta
+          </span>
         </CardTitle>
-        <CardDescription className="text-center text-gray-600">
+        <CardDescription className="text-center text-muted-foreground">
           Ingresa tus datos para crear una nueva cuenta
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="email">Correo electrónico</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="tu@email.com"
-              required
-              disabled={isLoading}
-              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-            />
+            <Input id="email" name="email" type="email" placeholder="tu@email.com" required disabled={isLoading} />
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="password">Contraseña</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              disabled={isLoading}
-              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-            />
-            <p className="text-xs text-gray-500">Mínimo 6 caracteres</p>
+            <Input id="password" name="password" type="password" placeholder="••••••••" required disabled={isLoading} />
+            <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
             <Input
               id="confirmPassword"
               name="confirmPassword"
@@ -105,27 +93,41 @@ export function SignUpForm() {
               placeholder="••••••••"
               required
               disabled={isLoading}
-              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700"
-            disabled={isLoading}
-          >
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creando cuenta...
               </>
             ) : (
-              "Crear Cuenta"
+              "Crear cuenta"
             )}
           </Button>
         </form>
-        <div className="mt-4 text-center text-sm text-gray-600">
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">o regístrate con</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        {/* Social buttons (UI only for now) */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Button type="button" variant="outline" className="w-full">
+            <span className="mr-2">🔵</span> Google
+          </Button>
+          <Button type="button" variant="outline" className="w-full">
+            <span className="mr-2">🐙</span> GitHub
+          </Button>
+        </div>
+
+        <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿Ya tienes una cuenta?{" "}
-          <Link href="/auth/login" className="font-medium text-purple-600 hover:text-purple-700 hover:underline">
+          <Link href="/auth/login" className="font-medium text-primary hover:underline">
             Inicia sesión
           </Link>
         </div>
