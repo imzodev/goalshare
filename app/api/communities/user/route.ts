@@ -1,16 +1,21 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { CommunitiesService } from "@/services/communities-service";
 
 export async function GET(_request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
+    if (authError || !user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
+    const userId = user.id;
     const communitiesService = new CommunitiesService();
 
     // Obtener comunidades del usuario

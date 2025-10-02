@@ -13,9 +13,9 @@ const sanitizePlainText = (input: string): string => {
 };
 
 export const createCommunityPostSchema = z.object({
-  communityId: z.string({ required_error: "El ID de la comunidad es requerido" }).uuid("communityId inválido"),
+  communityId: z.string({ message: "El ID de la comunidad es requerido" }).uuid("communityId inválido"),
   body: z
-    .string({ required_error: "El contenido es requerido" })
+    .string({ message: "El contenido es requerido" })
     .trim()
     .min(5, "El post debe tener al menos 5 caracteres")
     .max(1000, "El post supera el máximo de 1000 caracteres"),

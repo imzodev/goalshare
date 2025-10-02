@@ -113,7 +113,7 @@ export class GoalsService {
       // Primero verificar que el goal pertenece al usuario
       const existingGoal = await this.dbInstance.select().from(goals).where(eq(goals.id, goalId)).limit(1);
 
-      if (!existingGoal.length || existingGoal[0].ownerId !== userId) {
+      if (!existingGoal.length || existingGoal[0]?.ownerId !== userId) {
         throw new Error("Meta no encontrada o no tienes permisos para editarla");
       }
 
@@ -161,7 +161,7 @@ export class GoalsService {
       // Primero verificar que el goal pertenece al usuario
       const existingGoal = await this.dbInstance.select().from(goals).where(eq(goals.id, goalId)).limit(1);
 
-      if (!existingGoal.length || existingGoal[0].ownerId !== userId) {
+      if (!existingGoal.length || existingGoal[0]?.ownerId !== userId) {
         throw new Error("Meta no encontrada o no tienes permisos para eliminarla");
       }
 

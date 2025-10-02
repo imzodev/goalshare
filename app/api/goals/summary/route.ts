@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { GoalsService } from "@/services/goals-service";
 
 export async function GET() {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
+    const userId = user.id;
     const goalsService = new GoalsService();
     const summary = await goalsService.getUserGoalsSummary(userId);
 

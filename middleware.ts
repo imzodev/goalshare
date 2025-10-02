@@ -1,22 +1,27 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
+import { NextResponse, type NextRequest } from "next/server";
 
 // Sencillo rate limiting en memoria (por IP/usuario) para /api/*
 type Counter = { count: number; resetAt: number };
 const WINDOW_MS = 60_000; // 1 minuto
 const LIMIT = 60; // 60 req por minuto
-const globalWithStore = globalThis as typeof globalThis & { __rateLimitStore?: Map<string, Counter> };
+const globalWithStore = globalThis as typeof globalThis & {
+  __rateLimitStore?: Map<string, Counter>;
+};
 const store: Map<string, Counter> = globalWithStore.__rateLimitStore || new Map();
 globalWithStore.__rateLimitStore = store;
 
-function getClientKey(req: Request, userId?: string | null): string {
+function getClientKey(req: NextRequest, userId?: string | null): string {
   const ipHeader = req.headers.get("x-forwarded-for");
-  const ip = ipHeader?.split(",")[0].trim() || "unknown";
+  const ip = ipHeader?.split(",")[0]?.trim() || "unknown";
   return userId ? `uid:${userId}` : `ip:${ip}`;
 }
 
-export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+export async function middleware(req: NextRequest) {
+  // Update Supabase session
+  const { supabaseResponse, user } = await updateSession(req);
+
+  const userId = user?.id;
   const url = new URL(req.url);
 
   // Solo rate limit para /api/*
@@ -38,7 +43,9 @@ export default clerkMiddleware(async (auth, req) => {
       store.set(key, current);
     }
   }
-});
+
+  return supabaseResponse;
+}
 
 export const config = {
   matcher: [

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Target, Users, Trophy, Home, Plus, TrendingUp, Calendar, Bell, PanelLeftClose } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -190,14 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span className="truncate font-semibold">{userData.name}</span>
                 <span className="truncate text-xs text-muted-foreground">{userData.email}</span>
               </div>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: "h-8 w-8",
-                  },
-                }}
-              />
+              {/* User menu is now in the header */}
             </div>
           </SidebarMenuItem>
         </SidebarMenu>

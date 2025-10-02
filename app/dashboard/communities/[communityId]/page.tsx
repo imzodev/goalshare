@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 
 import { CommunityProfile } from "@/components/communities/community-profile";
@@ -6,32 +6,32 @@ import { CommunitiesService } from "@/services/communities-service";
 import { PostsService, type CommunityPostDTO } from "@/services/posts-service";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     communityId: string;
-  };
+  }>;
 }
 
 const communitiesService = new CommunitiesService();
 const postsService = new PostsService();
 
 export default async function CommunityPage({ params }: PageProps) {
-  const { communityId } = params;
+  const { communityId } = await params;
 
   if (!communityId) {
     notFound();
   }
 
-  const { userId } = await auth();
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (!userId) {
-    redirect("/sign-in");
+  if (authError || !user) {
+    redirect("/auth/login");
   }
 
-  const user = await currentUser();
-
-  if (!user) {
-    redirect("/sign-in");
-  }
+  const userId = user.id;
 
   const community = await communitiesService.getCommunityWithDetails(userId, communityId);
 
@@ -58,9 +58,9 @@ export default async function CommunityPage({ params }: PageProps) {
       }}
       currentUser={{
         id: userId,
-        name: user.fullName || user.username || user.primaryEmailAddress?.emailAddress || "Miembro de GoalShare",
-        username: user.username ?? user.primaryEmailAddress?.emailAddress ?? null,
-        avatarUrl: user.imageUrl ?? undefined,
+        name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Miembro de GoalShare",
+        username: user.email?.split("@")[0] ?? null,
+        avatarUrl: user.user_metadata?.avatar_url ?? undefined,
         role: community.userRole ?? "member",
       }}
       initialPosts={posts}

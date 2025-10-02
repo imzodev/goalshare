@@ -122,7 +122,7 @@ export class CommunitiesService {
 
     const rows = await this.dbInstance.select().from(communities).where(eq(communities.id, communityId)).limit(1);
 
-    return rows.length > 0 ? rows[0] : null;
+    return rows[0] ?? null;
   }
 
   async getCommunityBySlug(slug: string): Promise<Community | null> {
@@ -132,7 +132,7 @@ export class CommunitiesService {
 
     const rows = await this.dbInstance.select().from(communities).where(eq(communities.slug, slug)).limit(1);
 
-    return rows.length > 0 ? rows[0] : null;
+    return rows[0] ?? null;
   }
 
   async getCommunityWithDetails(userId: string, communityId: string): Promise<CommunitySummary | null> {
@@ -163,7 +163,7 @@ export class CommunitiesService {
         .limit(1);
 
       const isMember = userMembership.length > 0;
-      const userRole = isMember ? userMembership[0].role : undefined;
+      const userRole = isMember ? userMembership[0]?.role : undefined;
 
       return {
         ...community,
@@ -258,5 +258,73 @@ export class CommunitiesService {
         joinedAt: member.joinedAt!.toISOString(),
       })),
     };
+  }
+
+  async searchCommunities(query: string, userId?: string): Promise<CommunitySummary[]> {
+    const searchTerm = `%${query.toLowerCase()}%`;
+
+    // Consulta 1: Buscar comunidades por nombre o descripción
+    const matchingCommunities = await this.dbInstance
+      .select({
+        id: communities.id,
+        parentId: communities.parentId,
+        kind: communities.kind,
+        slug: communities.slug,
+        name: communities.name,
+        description: communities.description,
+        createdAt: communities.createdAt,
+        memberCount: sql<number>`cast(count(${communityMembers.userId}) as integer)`,
+      })
+      .from(communities)
+      .leftJoin(communityMembers, eq(communityMembers.communityId, communities.id))
+      .where(sql`lower(${communities.name}) like ${searchTerm} or lower(${communities.description}) like ${searchTerm}`)
+      .groupBy(communities.id)
+      .orderBy(desc(communities.createdAt));
+
+    // Si no hay userId, devolver comunidades sin información de membresía
+    if (!userId) {
+      return matchingCommunities.map((community) => ({
+        id: community.id,
+        parentId: community.parentId,
+        kind: community.kind,
+        slug: community.slug,
+        name: community.name,
+        description: community.description,
+        createdAt: community.createdAt,
+        memberCount: community.memberCount ?? 0,
+        isMember: false,
+      }));
+    }
+
+    // Consulta 2: Obtener membresías del usuario
+    const userCommunities = await this.dbInstance
+      .select({
+        communityId: communityMembers.communityId,
+        role: communityMembers.role,
+      })
+      .from(communityMembers)
+      .where(eq(communityMembers.userId, userId));
+
+    // Crear mapa para lookup rápido
+    const userMembershipMap = new Map(userCommunities.map((uc) => [uc.communityId, uc.role]));
+
+    // Combinar resultados
+    return matchingCommunities.map((community) => {
+      const userRole = userMembershipMap.get(community.id);
+      const isMember = userRole !== undefined;
+
+      return {
+        id: community.id,
+        parentId: community.parentId,
+        kind: community.kind,
+        slug: community.slug,
+        name: community.name,
+        description: community.description,
+        createdAt: community.createdAt,
+        memberCount: community.memberCount ?? 0,
+        isMember,
+        userRole: isMember ? userRole : undefined,
+      };
+    });
   }
 }

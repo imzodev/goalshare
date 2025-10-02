@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { goals, profiles } from "@/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
@@ -86,10 +86,17 @@ const CreateGoalSchema = z
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     // CSRF / Origin check (solo aceptar same-origin)
     const origin = req.headers.get("origin") || "";
@@ -181,11 +188,17 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
+    const userId = user.id;
     const goalsService = new GoalsService();
     const data = await goalsService.listUserGoals(userId);
 
