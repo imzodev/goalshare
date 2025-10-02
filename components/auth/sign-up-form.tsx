@@ -14,6 +14,7 @@ import { toast } from "sonner";
 export function SignUpForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +30,6 @@ export function SignUpForm() {
       setIsLoading(false);
       return;
     }
-
     if (password.length < 6) {
       toast.error("La contraseña debe tener al menos 6 caracteres");
       setIsLoading(false);
@@ -56,6 +56,28 @@ export function SignUpForm() {
         description: "Revisa tu correo para confirmar tu cuenta",
       });
       router.push("/auth/sign-up-success");
+    }
+  }
+
+  async function handleGoogleSignUp() {
+    try {
+      setIsGoogleLoading(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) {
+        toast.error("No se pudo continuar con Google", { description: error.message });
+        setIsGoogleLoading(false);
+      }
+      return data;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Error desconocido";
+      toast.error("No se pudo continuar con Google", { description: msg });
+      setIsGoogleLoading(false);
     }
   }
 
@@ -115,10 +137,24 @@ export function SignUpForm() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Social buttons (UI only for now) */}
+        {/* Social buttons */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Button type="button" variant="outline" className="w-full">
-            <span className="mr-2">🔵</span> Google
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleSignUp}
+            disabled={isLoading || isGoogleLoading}
+          >
+            {isGoogleLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Continuando con Google
+              </>
+            ) : (
+              <>
+                <span className="mr-2">🔵</span> Google
+              </>
+            )}
           </Button>
           <Button type="button" variant="outline" className="w-full">
             <span className="mr-2">🐙</span> GitHub

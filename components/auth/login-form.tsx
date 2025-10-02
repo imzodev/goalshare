@@ -14,6 +14,7 @@ import { toast } from "sonner";
 export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +40,29 @@ export function LoginForm() {
       toast.success("¡Bienvenido de nuevo!");
       router.push("/dashboard");
       router.refresh();
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    try {
+      setIsGoogleLoading(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) {
+        toast.error("No se pudo iniciar sesión con Google", { description: error.message });
+        setIsGoogleLoading(false);
+      }
+      // On success, Supabase will redirect; no need to continue here.
+      return data;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Error desconocido";
+      toast.error("No se pudo iniciar sesión con Google", { description: msg });
+      setIsGoogleLoading(false);
     }
   }
 
@@ -90,10 +114,24 @@ export function LoginForm() {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Social buttons (UI only for now) */}
+        {/* Social buttons */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Button type="button" variant="outline" className="w-full">
-            <span className="mr-2">🔵</span> Google
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading || isGoogleLoading}
+          >
+            {isGoogleLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando con Google
+              </>
+            ) : (
+              <>
+                <span className="mr-2">🔵</span> Google
+              </>
+            )}
           </Button>
           <Button type="button" variant="outline" className="w-full">
             <span className="mr-2">🐙</span> GitHub
