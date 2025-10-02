@@ -24,8 +24,14 @@ export function LogoutButton() {
       setIsLoading(false);
     } else {
       toast.success("Sesión cerrada");
-      router.push("/");
-      router.refresh();
+      try {
+        router.replace("/");
+        router.refresh();
+      } finally {
+        if (typeof window !== "undefined") {
+          window.location.assign("/");
+        }
+      }
     }
   }
 

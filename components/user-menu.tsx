@@ -52,8 +52,16 @@ export function UserMenu({ user }: UserMenuProps) {
       setIsLoading(false);
     } else {
       toast.success("Sesión cerrada");
-      router.push("/");
-      router.refresh();
+      // Use a reliable redirect: soft replace then hard navigation fallback
+      try {
+        router.replace("/");
+        router.refresh();
+      } finally {
+        // Fallback to hard navigation in case of any race condition
+        if (typeof window !== "undefined") {
+          window.location.assign("/");
+        }
+      }
     }
   }
 
