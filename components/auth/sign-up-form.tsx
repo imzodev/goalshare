@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { env } from "@/config/env";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
+import { getAuthErrorMessage } from "@/utils/auth-errors";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -60,9 +61,7 @@ export function SignUpForm() {
     });
 
     if (error) {
-      toast.error("Error al crear la cuenta", {
-        description: error.message,
-      });
+      toast.error(getAuthErrorMessage(error.message));
       setIsLoading(false);
     } else {
       toast.success("¡Cuenta creada!", {
@@ -83,13 +82,13 @@ export function SignUpForm() {
         },
       });
       if (error) {
-        toast.error("No se pudo continuar con GitHub", { description: error.message });
+        toast.error(getAuthErrorMessage(error.message));
         setIsGithubLoading(false);
       }
       return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      toast.error("No se pudo continuar con GitHub", { description: msg });
+      toast.error(getAuthErrorMessage(msg));
       setIsGithubLoading(false);
     }
   }
@@ -105,13 +104,13 @@ export function SignUpForm() {
         },
       });
       if (error) {
-        toast.error("No se pudo continuar con Google", { description: error.message });
+        toast.error(getAuthErrorMessage(error.message));
         setIsGoogleLoading(false);
       }
       return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      toast.error("No se pudo continuar con Google", { description: msg });
+      toast.error(getAuthErrorMessage(msg));
       setIsGoogleLoading(false);
     }
   }
