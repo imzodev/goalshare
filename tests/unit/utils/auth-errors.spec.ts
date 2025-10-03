@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { getAuthErrorMessage, classifyAuthError } from "@/utils/auth-errors";
 import { AUTH_ERROR_MESSAGES } from "@/constants/errors";
