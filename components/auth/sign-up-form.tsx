@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/config/env";
 import { Loader2 } from "lucide-react";
+import { z } from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +20,17 @@ export function SignUpForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
+  const signUpSchema = z
+    .object({
+      email: z.string().email("Correo electrónico inválido"),
+      password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Las contraseñas no coinciden",
+      path: ["confirmPassword"],
+    });
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
@@ -28,14 +40,11 @@ export function SignUpForm() {
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
-    if (password !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("La contraseña debe tener al menos 6 caracteres");
+    // Validación de email y contraseñas con Zod
+    const result = signUpSchema.safeParse({ email, password, confirmPassword });
+    if (!result.success) {
+      const message = result.error.issues?.[0]?.message || "Datos inválidos";
+      toast.error(message);
       setIsLoading(false);
       return;
     }
@@ -92,7 +101,7 @@ export function SignUpForm() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
         },
       });
       if (error) {
