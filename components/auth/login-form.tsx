@@ -15,6 +15,7 @@ export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,6 +41,28 @@ export function LoginForm() {
       toast.success("¡Bienvenido de nuevo!");
       router.push("/dashboard");
       router.refresh();
+    }
+  }
+
+  async function handleGithubSignIn() {
+    try {
+      setIsGithubLoading(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) {
+        toast.error("No se pudo iniciar sesión con GitHub", { description: error.message });
+        setIsGithubLoading(false);
+      }
+      return data;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Error desconocido";
+      toast.error("No se pudo iniciar sesión con GitHub", { description: msg });
+      setIsGithubLoading(false);
     }
   }
 
@@ -133,8 +156,22 @@ export function LoginForm() {
               </>
             )}
           </Button>
-          <Button type="button" variant="outline" className="w-full">
-            <span className="mr-2">🐙</span> GitHub
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGithubSignIn}
+            disabled={isLoading || isGithubLoading}
+          >
+            {isGithubLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando con GitHub
+              </>
+            ) : (
+              <>
+                <span className="mr-2">🐙</span> GitHub
+              </>
+            )}
           </Button>
         </div>
 

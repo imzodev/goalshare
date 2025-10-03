@@ -15,6 +15,7 @@ export function SignUpForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,6 +30,28 @@ export function SignUpForm() {
       toast.error("Las contraseñas no coinciden");
       setIsLoading(false);
       return;
+    }
+
+    async function handleGithubSignUp() {
+      try {
+        setIsGithubLoading(true);
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "github",
+          options: {
+            redirectTo: `${window.location.origin}/dashboard`,
+          },
+        });
+        if (error) {
+          toast.error("No se pudo continuar con GitHub", { description: error.message });
+          setIsGithubLoading(false);
+        }
+        return data;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Error desconocido";
+        toast.error("No se pudo continuar con GitHub", { description: msg });
+        setIsGithubLoading(false);
+      }
     }
     if (password.length < 6) {
       toast.error("La contraseña debe tener al menos 6 caracteres");
@@ -156,8 +179,22 @@ export function SignUpForm() {
               </>
             )}
           </Button>
-          <Button type="button" variant="outline" className="w-full">
-            <span className="mr-2">🐙</span> GitHub
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGithubSignUp}
+            disabled={isLoading || isGithubLoading}
+          >
+            {isGithubLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Continuando con GitHub
+              </>
+            ) : (
+              <>
+                <span className="mr-2">🐙</span> GitHub
+              </>
+            )}
           </Button>
         </div>
 
