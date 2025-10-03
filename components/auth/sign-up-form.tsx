@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FaGoogle, FaGithub } from "react-icons/fa6";
 
 export function SignUpForm() {
   const router = useRouter();
@@ -32,27 +33,6 @@ export function SignUpForm() {
       return;
     }
 
-    async function handleGithubSignUp() {
-      try {
-        setIsGithubLoading(true);
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: "github",
-          options: {
-            redirectTo: `${window.location.origin}/dashboard`,
-          },
-        });
-        if (error) {
-          toast.error("No se pudo continuar con GitHub", { description: error.message });
-          setIsGithubLoading(false);
-        }
-        return data;
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Error desconocido";
-        toast.error("No se pudo continuar con GitHub", { description: msg });
-        setIsGithubLoading(false);
-      }
-    }
     if (password.length < 6) {
       toast.error("La contraseña debe tener al menos 6 caracteres");
       setIsLoading(false);
@@ -82,6 +62,28 @@ export function SignUpForm() {
     }
   }
 
+  async function handleGithubSignUp() {
+    try {
+      setIsGithubLoading(true);
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) {
+        toast.error("No se pudo continuar con GitHub", { description: error.message });
+        setIsGithubLoading(false);
+      }
+      return data;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Error desconocido";
+      toast.error("No se pudo continuar con GitHub", { description: msg });
+      setIsGithubLoading(false);
+    }
+  }
+
   async function handleGoogleSignUp() {
     try {
       setIsGoogleLoading(true);
@@ -107,11 +109,7 @@ export function SignUpForm() {
   return (
     <Card className="w-full max-w-md border border-border bg-card shadow-sm">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-3xl font-bold">
-          <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Crear cuenta
-          </span>
-        </CardTitle>
+        <CardTitle className="text-center text-3xl font-semibold text-foreground">Crear cuenta</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
           Ingresa tus datos para crear una nueva cuenta
         </CardDescription>
@@ -175,7 +173,7 @@ export function SignUpForm() {
               </>
             ) : (
               <>
-                <span className="mr-2">🔵</span> Google
+                <FaGoogle className="mr-2 h-4 w-4" /> Google
               </>
             )}
           </Button>
@@ -192,7 +190,7 @@ export function SignUpForm() {
               </>
             ) : (
               <>
-                <span className="mr-2">🐙</span> GitHub
+                <FaGithub className="mr-2 h-4 w-4" /> GitHub
               </>
             )}
           </Button>
