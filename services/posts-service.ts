@@ -1,7 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { db } from "@/db";
 import { communityMembers, posts, profiles } from "@/db/schema";
 import { withUserContext } from "@/lib/db-context";
 
@@ -13,9 +12,9 @@ const sanitizePlainText = (input: string): string => {
 };
 
 export const createCommunityPostSchema = z.object({
-  communityId: z.string({ required_error: "El ID de la comunidad es requerido" }).uuid("communityId inválido"),
+  communityId: z.string({ message: "El ID de la comunidad es requerido" }).uuid("communityId inválido"),
   body: z
-    .string({ required_error: "El contenido es requerido" })
+    .string({ message: "El contenido es requerido" })
     .trim()
     .min(5, "El post debe tener al menos 5 caracteres")
     .max(1000, "El post supera el máximo de 1000 caracteres"),
@@ -34,16 +33,11 @@ export type CommunityPostDTO = {
   };
 };
 
-type Database = typeof db;
-
 export class PostsService {
-  constructor(private readonly dbInstance: Database = db) {}
-
   async listCommunityPosts(userId: string, communityId: string, limit = 25): Promise<CommunityPostDTO[]> {
     if (!userId) {
       throw new Error("userId es requerido para listar posts de la comunidad");
     }
-
     if (!communityId) {
       throw new Error("communityId es requerido para listar posts de la comunidad");
     }
@@ -127,6 +121,10 @@ export class PostsService {
           body: posts.body,
           createdAt: posts.createdAt,
         });
+
+      if (!inserted) {
+        throw new Error("No se pudo crear el post");
+      }
 
       const [authorProfile] = await dbCtx
         .select({

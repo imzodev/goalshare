@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { CommunitiesService } from "@/services/communities-service";
-import { auth } from "@/auth";
+import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -10,8 +10,11 @@ const searchSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const userId = user?.id;
 
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");

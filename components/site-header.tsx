@@ -1,10 +1,15 @@
-"use client";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { createClient } from "@/lib/supabase/server";
+import { UserMenu } from "@/components/user-menu";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
@@ -18,18 +23,18 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <SignedOut>
-            <Button asChild variant="outline" size="sm">
-              <SignInButton>Iniciar sesión</SignInButton>
-            </Button>
-            <Button asChild size="sm">
-              <SignUpButton>Crear cuenta</SignUpButton>
-            </Button>
-          </SignedOut>
-
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+          {!user ? (
+            <>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/auth/login">Iniciar sesión</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/auth/sign-up">Crear cuenta</Link>
+              </Button>
+            </>
+          ) : (
+            <UserMenu user={user} />
+          )}
         </div>
       </div>
     </header>

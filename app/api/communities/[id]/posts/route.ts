@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 
 import { env } from "@/config/env";
 import { PostsService, createCommunityPostSchema } from "@/services/posts-service";
@@ -13,11 +13,18 @@ const postsService = new PostsService();
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
+    const userId = user.id;
     const { id: communityId } = await params;
     if (!communityId) {
       return NextResponse.json({ error: "ID de comunidad requerido" }, { status: 400 });
@@ -41,10 +48,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
+
+    const userId = user.id;
     // TODO: Refactorizar, esto no deberia estar aqui, esto debe ser manejado por un middleware
     const origin = request.headers.get("origin") || "";
     if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {

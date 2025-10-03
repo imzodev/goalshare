@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { env } from "@/config/env";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "next-themes";
@@ -53,23 +52,17 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider
-          publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-          signInUrl={env.CLERK_SIGN_IN_URL}
-          signUpUrl={env.CLERK_SIGN_UP_URL}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:text-foreground focus:px-3 focus:py-2 focus:shadow"
-            >
-              Saltar al contenido principal
-            </a>
-            <SiteHeader />
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </ClerkProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:text-foreground focus:px-3 focus:py-2 focus:shadow"
+          >
+            Saltar al contenido principal
+          </a>
+          <SiteHeader />
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { withUserContext } from "@/lib/db-context";
 import { communities } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
 export async function GET() {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
+
+    const userId = user.id;
 
     const data = await withUserContext(userId, async (dbCtx) => {
       const rows = await dbCtx

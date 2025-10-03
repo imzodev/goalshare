@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { describe, it, expect } from "vitest";
 import { clampProgress, calculateGoalProgress } from "@/utils/progress-utils";
 import type { Goal, GoalMilestone } from "@/db/schema";

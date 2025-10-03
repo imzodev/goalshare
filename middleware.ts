@@ -1,23 +1,53 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
+import { NextResponse, type NextRequest } from "next/server";
 
 // Sencillo rate limiting en memoria (por IP/usuario) para /api/*
 type Counter = { count: number; resetAt: number };
 const WINDOW_MS = 60_000; // 1 minuto
 const LIMIT = 60; // 60 req por minuto
-const globalWithStore = globalThis as typeof globalThis & { __rateLimitStore?: Map<string, Counter> };
+const globalWithStore = globalThis as typeof globalThis & {
+  __rateLimitStore?: Map<string, Counter>;
+};
 const store: Map<string, Counter> = globalWithStore.__rateLimitStore || new Map();
 globalWithStore.__rateLimitStore = store;
 
-function getClientKey(req: Request, userId?: string | null): string {
+function getClientKey(req: NextRequest, userId?: string | null): string {
   const ipHeader = req.headers.get("x-forwarded-for");
-  const ip = ipHeader?.split(",")[0].trim() || "unknown";
+  const ip = ipHeader?.split(",")[0]?.trim() || "unknown";
   return userId ? `uid:${userId}` : `ip:${ip}`;
 }
 
-export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
+// Rutas protegidas y de autenticación
+const protectedRoutes = ["/dashboard"];
+const authRoutes = ["/auth/login", "/auth/sign-up"];
+
+export async function middleware(req: NextRequest) {
+  // Update Supabase session
+  const { supabaseResponse, user } = await updateSession(req);
+
+  const userId = user?.id;
   const url = new URL(req.url);
+  const { pathname, search } = url;
+
+  // Protección de rutas: redirigir si no autenticado
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+  if (isProtectedRoute && !user) {
+    const loginUrl = new URL("/auth/login", req.url);
+    loginUrl.searchParams.set("redirect", pathname + (search || ""));
+    const redirectResp = NextResponse.redirect(loginUrl);
+    // Mantener cabeceras/cookies de supabaseResponse
+    for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
+    return redirectResp;
+  }
+
+  // Redirigir a dashboard si ya está autenticado e intenta ir a páginas de auth
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  if (isAuthRoute && user) {
+    const dest = new URL("/dashboard", req.url);
+    const redirectResp = NextResponse.redirect(dest);
+    for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
+    return redirectResp;
+  }
 
   // Solo rate limit para /api/*
   if (url.pathname.startsWith("/api/")) {
@@ -38,13 +68,15 @@ export default clerkMiddleware(async (auth, req) => {
       store.set(key, current);
     }
   }
-});
+
+  return supabaseResponse;
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    // Ejecutar para todo excepto estáticos y rutas internas
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Siempre para API
     "/(api|trpc)(.*)",
   ],
 };
