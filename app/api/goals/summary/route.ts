@@ -11,6 +11,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 

@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
@@ -182,7 +183,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ goal: "row" in created ? created.row : null }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/goals]", err);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Error interno";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -195,6 +197,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 

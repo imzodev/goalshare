@@ -92,6 +92,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
@@ -152,6 +153,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 

@@ -12,6 +12,7 @@ export async function GET(_request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 

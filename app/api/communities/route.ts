@@ -2,7 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { CommunitiesService } from "@/services/communities-service";
-
 export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -12,6 +11,7 @@ export async function GET(_request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 

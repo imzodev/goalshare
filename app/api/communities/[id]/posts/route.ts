@@ -20,6 +20,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 

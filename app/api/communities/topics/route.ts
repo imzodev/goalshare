@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { withUserContext } from "@/lib/db-context";
 import { communities } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -13,6 +12,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("[Auth] getUser failed:", authError?.message);
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
