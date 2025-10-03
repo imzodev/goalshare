@@ -40,7 +40,11 @@ export function LoginForm() {
       setIsLoading(false);
     } else {
       toast.success("¡Bienvenido de nuevo!");
-      router.push("/dashboard");
+      // Redirección al destino original si fue provisto por middleware
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const redirect = searchParams?.get("redirect");
+      const safeRedirect = redirect && redirect.startsWith("/") ? redirect : "/dashboard";
+      router.push(safeRedirect);
       router.refresh();
     }
   }
@@ -49,10 +53,13 @@ export function LoginForm() {
     try {
       setIsGithubLoading(true);
       const supabase = createClient();
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const redirect = searchParams?.get("redirect");
+      const safeRedirect = redirect && redirect.startsWith("/") ? redirect : "/dashboard";
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
-          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}${safeRedirect}`,
         },
       });
       if (error) {
@@ -71,10 +78,13 @@ export function LoginForm() {
     try {
       setIsGoogleLoading(true);
       const supabase = createClient();
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const redirect = searchParams?.get("redirect");
+      const safeRedirect = redirect && redirect.startsWith("/") ? redirect : "/dashboard";
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}${safeRedirect}`,
         },
       });
       if (error) {

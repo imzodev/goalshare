@@ -17,12 +17,37 @@ function getClientKey(req: NextRequest, userId?: string | null): string {
   return userId ? `uid:${userId}` : `ip:${ip}`;
 }
 
+// Rutas protegidas y de autenticación
+const protectedRoutes = ["/dashboard"];
+const authRoutes = ["/auth/login", "/auth/sign-up"];
+
 export async function middleware(req: NextRequest) {
   // Update Supabase session
   const { supabaseResponse, user } = await updateSession(req);
 
   const userId = user?.id;
   const url = new URL(req.url);
+  const { pathname, search } = url;
+
+  // Protección de rutas: redirigir si no autenticado
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+  if (isProtectedRoute && !user) {
+    const loginUrl = new URL("/auth/login", req.url);
+    loginUrl.searchParams.set("redirect", pathname + (search || ""));
+    const redirectResp = NextResponse.redirect(loginUrl);
+    // Mantener cabeceras/cookies de supabaseResponse
+    for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
+    return redirectResp;
+  }
+
+  // Redirigir a dashboard si ya está autenticado e intenta ir a páginas de auth
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  if (isAuthRoute && user) {
+    const dest = new URL("/dashboard", req.url);
+    const redirectResp = NextResponse.redirect(dest);
+    for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
+    return redirectResp;
+  }
 
   // Solo rate limit para /api/*
   if (url.pathname.startsWith("/api/")) {
@@ -49,9 +74,9 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    // Ejecutar para todo excepto estáticos y rutas internas
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Siempre para API
     "/(api|trpc)(.*)",
   ],
 };
