@@ -3,12 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export function LogoutButton() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleLogout() {
@@ -24,13 +22,10 @@ export function LogoutButton() {
       setIsLoading(false);
     } else {
       toast.success("Sesión cerrada");
-      try {
-        router.replace("/");
-        router.refresh();
-      } finally {
-        if (typeof window !== "undefined") {
-          window.location.assign("/");
-        }
+      // Elegimos hard navigation para asegurar limpieza total del estado (cookies, cache) y evitar flickering.
+      // Mantenerlo simple (máximo 1 acción de navegación) según issue #40.
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
       }
     }
   }
