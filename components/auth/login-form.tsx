@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FaGoogle, FaGithub } from "react-icons/fa6";
 
 export function LoginForm() {
   const router = useRouter();
@@ -92,11 +93,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md border border-border bg-card shadow-sm">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-3xl font-bold">
-          <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Iniciar sesión
-          </span>
-        </CardTitle>
+        <CardTitle className="text-center text-3xl font-semibold text-foreground">Iniciar sesión</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
           Ingresa tus credenciales para acceder a tu cuenta
         </CardDescription>
@@ -152,7 +149,7 @@ export function LoginForm() {
               </>
             ) : (
               <>
-                <span className="mr-2">🔵</span> Google
+                <FaGoogle className="mr-2 h-4 w-4" /> Google
               </>
             )}
           </Button>
@@ -169,7 +166,7 @@ export function LoginForm() {
               </>
             ) : (
               <>
-                <span className="mr-2">🐙</span> GitHub
+                <FaGithub className="mr-2 h-4 w-4" /> GitHub
               </>
             )}
           </Button>
