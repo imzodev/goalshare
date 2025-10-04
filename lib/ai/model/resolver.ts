@@ -10,7 +10,7 @@
 import type { AgentKey } from "../../ai/contracts/agent";
 import type { ModelAdapter, ModelConfig } from "../../ai/contracts/model";
 import { ProviderRegistry } from "./provider-registry";
-import { AI_DEFAULTS } from "../../../config/ai";
+import { AI_CONFIG } from "../../../config/ai";
 
 /**
  * Merge default configuration with per-request override.
@@ -29,7 +29,7 @@ function mergeConfig(base: ModelConfig, override?: Partial<ModelConfig>): ModelC
  */
 export const ModelResolver = {
   resolve(agentKey: AgentKey, override?: Partial<ModelConfig>): ModelAdapter {
-    const base = AI_DEFAULTS[agentKey];
+    const base = AI_CONFIG[agentKey];
     if (!base) {
       throw new Error(`No default model config for agent: ${agentKey}`);
     }
