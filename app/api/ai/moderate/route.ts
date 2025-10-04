@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { ModerateRequestSchema } from "../../../../lib/ai/contracts/dto";
-import { AgentFactory } from "../../../../lib/ai/registry";
+import { ModerateRequestSchema, AgentFactory } from "../../../../lib/ai";
 import { defaultRateLimiter } from "../../../../utils/ai-ops/rate-limit";
 import { defaultCache } from "../../../../utils/ai-ops/cache";
 import { defaultTracer } from "../../../../utils/ai-ops/trace";

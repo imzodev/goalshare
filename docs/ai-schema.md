@@ -176,3 +176,74 @@ erDiagram
 - Este diseño permite **seguir siendo agnósticos del proveedor de LLM** y versionar prompts/modelos.
 - `session_id` facilita correlación con caching, rate limit y tracing.
 - `accepted`/`edited` abren la puerta a una **capa de calidad** (medir utilidad real de la IA).
+
+---
+
+## Cómo agregar un nuevo agente (proceso mínimo)
+
+Con la refactorización reciente, agregar un nuevo agente requiere un único cambio en código. El resto se resuelve automáticamente por configuración.
+
+### 1) Agregar la clave del agente
+
+- **Archivo**: `lib/ai/contracts/agent.ts`
+- **Acción**: Agrega la nueva clave al array fuente de verdad `AGENT_KEYS`.
+
+```ts
+export const AGENT_KEYS = [
+  "planner",
+  "smart",
+  "coach",
+  "scheduler",
+  "moderator",
+  // Agrega aquí tu nuevo agente, p.ej. "reviewer"
+  "reviewer",
+] as const;
+```
+
+Eso es todo lo necesario para que:
+
+- El tipo `AgentKey` incluya la nueva clave.
+- El `agentRegistry` la soporte automáticamente (pre-registro iterando `AGENT_KEYS`).
+- `AI_CONFIG` genere configuración efectiva para el nuevo agente (usa defaults globales si no hay específicos).
+
+### 2) Defaults y overrides (opcional)
+
+- **Archivo**: `config/ai.ts`
+  - `AI_DEFAULTS` es `Partial<Record<AgentKey, ModelConfig>>`.
+  - Si quieres defaults específicos para el nuevo agente, añade una entrada (opcional). Si no existe, caerá en los globales.
+- **Archivo**: `.env`
+  - Se mantienen solo overrides por agente para los agentes existentes actuales (planner, smart, coach, scheduler, moderator).
+  - Para agentes nuevos, utiliza los globales:
+    - `AI_DEFAULT_PROVIDER`
+    - `AI_DEFAULT_MODEL`
+
+### 3) Endpoint y DTOs (opcionales)
+
+- Si el agente tendrá endpoint HTTP:
+  - **DTOs**: agrega schemas en `lib/ai/contracts/dto.ts`.
+  - **Ruta**: crea `app/api/ai/<agent>/route.ts` siguiendo el patrón de las existentes (valida DTO, llama `AgentFactory.create('<agent>')`).
+
+### 4) Modelo/proveedor efectivo
+
+- `AI_CONFIG` se construye iterando `AGENT_KEYS` y aplicando la precedencia:
+  1. Overrides por agente (solo para agentes existentes actuales).
+  2. Overrides globales (`AI_DEFAULT_PROVIDER`, `AI_DEFAULT_MODEL`).
+  3. `AI_DEFAULTS[agent]` si existe; de lo contrario, un fallback seguro (OpenAI + `gpt-4o-mini`, `temperature` 0.2).
+
+### 5) Ejemplo de uso
+
+```ts
+import { AgentFactory } from "@/lib/ai";
+
+const agent = AgentFactory.create("reviewer");
+const result = await agent.execute({
+  /* payload */
+});
+// Por defecto devuelve un stub NotImplemented hasta conectar el SDK/lógica real.
+```
+
+### 6) Resumen
+
+- Para agregar un agente, edita solo `AGENT_KEYS`.
+- Config efectiva se resuelve sin cambios adicionales (AI_CONFIG + defaults globales).
+- Overrides por agente se mantienen únicamente para los agentes existentes; los nuevos heredan de los globales.

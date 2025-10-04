@@ -8,6 +8,7 @@
 
 import type { ModelConfig } from "../lib/ai/contracts/model";
 import type { AgentKey } from "../lib/ai/contracts/agent";
+import { AGENT_KEYS } from "../lib/ai/contracts/agent";
 import { env } from "./env";
 
 /**
@@ -15,7 +16,7 @@ import { env } from "./env";
  * Note: when integrating OpenRouter, you can set provider: "openrouter"
  * and use model: "deepseek/deepseek-chat" for DeepSeek.
  */
-export const AI_DEFAULTS: Record<AgentKey, ModelConfig> = {
+export const AI_DEFAULTS: Partial<Record<AgentKey, ModelConfig>> = {
   planner: {
     provider: "openai",
     model: "gpt-4o-mini",
@@ -48,7 +49,11 @@ export const AI_DEFAULTS: Record<AgentKey, ModelConfig> = {
  * Precedence: per-agent overrides > global AI_DEFAULT_* > AI_DEFAULTS.
  */
 export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
-  const base = AI_DEFAULTS[agent];
+  const base = AI_DEFAULTS[agent] ?? {
+    provider: (env.AI_DEFAULT_PROVIDER || "openai") as ModelConfig["provider"],
+    model: env.AI_DEFAULT_MODEL || "gpt-4o-mini",
+    temperature: 0.2,
+  };
 
   // per-agent overrides
   const agentProvider =
@@ -80,7 +85,6 @@ export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
   // global fallbacks
   const globalProvider = env.AI_DEFAULT_PROVIDER;
   const globalModel = env.AI_DEFAULT_MODEL;
-
   const provider = (agentProvider || globalProvider || base.provider) as ModelConfig["provider"];
   const model = agentModel || globalModel || base.model;
 
@@ -94,13 +98,13 @@ export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
 /**
  * Effective, env-aware per-agent config used by the model resolver.
  */
-export const AI_CONFIG: Record<AgentKey, ModelConfig> = {
-  planner: resolveAgentDefaults("planner"),
-  smart: resolveAgentDefaults("smart"),
-  coach: resolveAgentDefaults("coach"),
-  scheduler: resolveAgentDefaults("scheduler"),
-  moderator: resolveAgentDefaults("moderator"),
-};
+export const AI_CONFIG: Record<AgentKey, ModelConfig> = AGENT_KEYS.reduce(
+  (acc, key) => {
+    acc[key] = resolveAgentDefaults(key);
+    return acc;
+  },
+  {} as Record<AgentKey, ModelConfig>
+);
 
 /**
  * Example override usage:

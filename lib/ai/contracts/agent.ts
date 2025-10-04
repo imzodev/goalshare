@@ -13,9 +13,12 @@ import type { RateLimiter, Cache, Tracer } from "./ops";
 import type { ModelResolver } from "./model";
 
 /**
- * Keys for the first batch of agents we plan to support.
+ * Single source of truth for supported agent keys.
+ * Adding a new agent should require editing ONLY this array.
  */
-export type AgentKey = "planner" | "smart" | "coach" | "scheduler" | "moderator";
+export const AGENT_KEYS = ["planner", "smart", "coach", "scheduler", "moderator"] as const;
+
+export type AgentKey = (typeof AGENT_KEYS)[number];
 
 /**
  * Minimal execution context shared with all agents.

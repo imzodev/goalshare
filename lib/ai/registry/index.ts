@@ -9,6 +9,7 @@
  */
 
 import type { AgentKey, IAgent, AgentRegistry as AgentRegistryContract, AgentContext } from "../contracts/agent";
+import { AGENT_KEYS } from "../contracts/agent";
 import type { AgentOutput } from "../contracts/agent";
 
 /**
@@ -88,8 +89,8 @@ export const AgentFactory = {
   },
 };
 
-// Pre-register known stub agents
-(["planner", "smart", "coach", "scheduler", "moderator"] as AgentKey[]).forEach((k) => {
+// Pre-register known stub agents based on AGENT_KEYS
+AGENT_KEYS.forEach((k) => {
   if (!agentRegistry.get(k)) {
     agentRegistry.register(new StubAgent(k));
   }
