@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { MilestonesRequestSchema, MilestonesResponseSchema } from "../../../../lib/ai/contracts/dto";
+import { MilestonesRequestSchema } from "../../../../lib/ai/contracts/dto";
 import { AgentFactory } from "../../../../lib/ai/registry";
+import { defaultRateLimiter } from "../../../../utils/ai-ops/rate-limit";
+import { defaultCache } from "../../../../utils/ai-ops/cache";
+import { defaultTracer } from "../../../../utils/ai-ops/trace";
 
 /**
  * POST /api/ai/milestones
@@ -14,12 +17,10 @@ export async function POST(req: Request) {
     // Hooks: rate-limit/cache/trace can be wired here later
 
     const agent = AgentFactory.create("planner");
-    const result = await agent.execute(input);
-
-    // Ensure response matches schema (defensive check)
-    const typed = MilestonesResponseSchema.extend({ traceId: MilestonesResponseSchema.shape.traceId }).safeParse({
-      ...result.data,
-      traceId: result.traceId,
+    const result = await agent.execute(input, {
+      rateLimiter: defaultRateLimiter,
+      cache: defaultCache,
+      tracer: defaultTracer,
     });
 
     // Return raw result envelope to keep traceId and meta

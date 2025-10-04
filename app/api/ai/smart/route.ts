@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { SmartRequestSchema } from "../../../../lib/ai/contracts/dto";
 import { AgentFactory } from "../../../../lib/ai/registry";
+import { defaultRateLimiter } from "../../../../utils/ai-ops/rate-limit";
+import { defaultCache } from "../../../../utils/ai-ops/cache";
+import { defaultTracer } from "../../../../utils/ai-ops/trace";
 
 /**
  * POST /api/ai/smart
@@ -14,7 +17,11 @@ export async function POST(req: Request) {
     // Hooks: rate-limit/cache/trace can be wired here later
 
     const agent = AgentFactory.create("smart");
-    const result = await agent.execute(input);
+    const result = await agent.execute(input, {
+      rateLimiter: defaultRateLimiter,
+      cache: defaultCache,
+      tracer: defaultTracer,
+    });
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? "Invalid request" }, { status: 400 });
