@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PlanRequestSchema, AgentFactory } from "../../../../lib/ai";
+import { PlanRequestSchema, AgentFactory } from "@/lib/ai";
 import { defaultRateLimiter } from "../../../../utils/ai-ops/rate-limit";
 import { defaultCache } from "../../../../utils/ai-ops/cache";
 import { defaultTracer } from "../../../../utils/ai-ops/trace";
