@@ -11,7 +11,7 @@ export const TraceIdSchema = z.string().min(1).optional();
 /** Milestones */
 export const MilestonesRequestSchema = z.object({
   goal: z.string().min(1, "Goal is required"),
-  context: z.record(z.any()).optional(),
+  context: z.record(z.string(), z.any()).optional(),
   locale: LocaleSchema.optional(),
   traceId: TraceIdSchema,
 });
@@ -47,7 +47,7 @@ export type SmartResponse = z.infer<typeof SmartResponseSchema>;
 /** Coaching advice */
 export const AdviceRequestSchema = z.object({
   question: z.string().min(1),
-  context: z.record(z.any()).optional(),
+  context: z.record(z.string(), z.any()).optional(),
   locale: LocaleSchema.optional(),
   traceId: TraceIdSchema,
 });
@@ -64,7 +64,7 @@ export type AdviceResponse = z.infer<typeof AdviceResponseSchema>;
 export const PlanRequestSchema = z.object({
   timeframe: z.enum(["daily", "weekly"]),
   focus: z.string().min(1),
-  context: z.record(z.any()).optional(),
+  context: z.record(z.string(), z.any()).optional(),
   locale: LocaleSchema.optional(),
   traceId: TraceIdSchema,
 });
