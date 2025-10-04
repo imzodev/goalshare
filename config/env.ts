@@ -14,6 +14,14 @@ export const env = {
   AI_DEFAULT_PROVIDER: process.env.AI_DEFAULT_PROVIDER ?? "",
   AI_DEFAULT_MODEL: process.env.AI_DEFAULT_MODEL ?? "",
 
+  // AI provider API keys (server-only)
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ?? "",
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ?? "",
+
+  // Feature flags
+  AI_ENABLE_MCP: process.env.AI_ENABLE_MCP ?? "",
+
   // AI per-agent overrides (optional)
   AI_PROVIDER_PLANNER: process.env.AI_PROVIDER_PLANNER ?? "",
   AI_MODEL_PLANNER: process.env.AI_MODEL_PLANNER ?? "",
