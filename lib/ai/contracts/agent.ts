@@ -70,24 +70,24 @@ export interface IAgent<TIn = unknown, TOut = unknown> {
    * Expose this agent as a callable tool for other agents.
    * Mirrors SDK capability like `agent.asTool()`.
    */
-  asTool?: () => Promise<import("./tool").ToolBinder> | import("./tool").ToolBinder;
+  asTool?: () => Promise<ToolBinder> | ToolBinder;
   /**
    * Create a specialized handoff tool that transfers control to this agent.
    * Mirrors patterns like `agent.handoffTool(name)` in SDK examples.
    */
-  handoffTool?: (toolNameOverride?: string, toolDescriptionOverride?: string) => import("./tool").ToolBinder;
+  handoffTool?: (toolNameOverride?: string, toolDescriptionOverride?: string) => ToolBinder;
 }
 
 /**
  * Factory signature to obtain an agent instance by key.
  */
-export type AgentFactory = (key: AgentKey) => IAgent<any, any>;
+export type AgentFactory = (key: AgentKey) => IAgent<unknown, unknown>;
 
 /**
  * Simple in-memory registry interface to register and resolve agents.
  */
 export interface AgentRegistry {
-  register(agent: IAgent<any, any>): void;
+  register(agent: IAgent<unknown, unknown>): void;
   get<TIn = unknown, TOut = unknown>(key: AgentKey): IAgent<TIn, TOut> | undefined;
   list(): AgentKey[];
 }
@@ -95,4 +95,4 @@ export interface AgentRegistry {
 /**
  * Utility type alias for common agent shape mappings.
  */
-export type AgentMap = Partial<Record<AgentKey, IAgent<any, any>>>;
+export type AgentMap = Partial<Record<AgentKey, IAgent<unknown, unknown>>>;

@@ -56,9 +56,9 @@ class StubAgent implements IAgent<unknown, AgentOutput<NotImplementedData>> {
  * In-memory implementation of AgentRegistry contract.
  */
 class InMemoryAgentRegistry implements AgentRegistryContract {
-  private map = new Map<AgentKey, IAgent<any, any>>();
+  private map = new Map<AgentKey, IAgent<unknown, unknown>>();
 
-  register(agent: IAgent<any, any>): void {
+  register(agent: IAgent<unknown, unknown>): void {
     this.map.set(agent.key as AgentKey, agent);
   }
 
@@ -80,7 +80,7 @@ export const agentRegistry = new InMemoryAgentRegistry();
  * Default factory that resolves known stubs via the registry.
  */
 export const AgentFactory = {
-  create(key: AgentKey): IAgent<any, any> {
+  create(key: AgentKey): IAgent<unknown, unknown> {
     const existing = agentRegistry.get(key);
     if (existing) return existing;
     const stub = new StubAgent(key);

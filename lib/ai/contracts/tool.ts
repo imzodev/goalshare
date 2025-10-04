@@ -31,7 +31,7 @@ export interface ToolBinder {
  * Mirrors SDK concepts (e.g., new Handoff({ agent, ... })).
  */
 export interface HandoffDefinition<TInput = unknown> {
-  agent: IAgent<any, any>;
+  agent: IAgent<unknown, unknown>;
   toolNameOverride?: string;
   toolDescriptionOverride?: string;
   onHandoff?: (context: unknown, input: TInput) => Promise<void> | void;
