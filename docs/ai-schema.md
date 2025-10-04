@@ -179,6 +179,64 @@ erDiagram
 
 ---
 
+## Guía para contribuidores: Proveedores y Modelos (Issue #50)
+
+Esta guía explica cómo cambiar de proveedor/modelo y cómo preparar la adición de un proveedor nuevo, usando la configuración actual.
+
+### 1) Cambiar proveedor/modelo (sin tocar código)
+
+- **Archivo**: `.env`
+- **Global** (aplica a agentes sin override por agente):
+  - `AI_DEFAULT_PROVIDER` (valores válidos por contrato actual: `openai` | `anthropic` | `openrouter`)
+  - `AI_DEFAULT_MODEL` (string del modelo, p.ej. `gpt-4o-mini`)
+- **Por agente (solo agentes existentes)** en `.env`:
+  - Planner: `AI_PROVIDER_PLANNER`, `AI_MODEL_PLANNER`
+  - Smart: `AI_PROVIDER_SMART`, `AI_MODEL_SMART`
+  - Coach: `AI_PROVIDER_COACH`, `AI_MODEL_COACH`
+  - Scheduler: `AI_PROVIDER_SCHEDULER`, `AI_MODEL_SCHEDULER`
+  - Moderator: `AI_PROVIDER_MODERATOR`, `AI_MODEL_MODERATOR`
+
+Precedencia efectiva (ver `config/ai.ts`):
+
+1. Overrides por agente (si existen) →
+2. Overrides globales `AI_DEFAULT_*` →
+3. `AI_DEFAULTS[agent]` o fallback seguro.
+
+### 2) Cambiar defaults por agente (opcional, en código)
+
+- **Archivo**: `config/ai.ts`
+- Edita `AI_DEFAULTS` (es `Partial<Record<AgentKey, ModelConfig>>`).
+- Útil para proponer valores por defecto adecuados a un agente específico.
+
+### 3) Agregar un proveedor nuevo (conceptual)
+
+Hoy el contrato de proveedores/modelos está definido en `lib/ai/contracts/model.ts`:
+
+- `ProviderKey = "openai" | "anthropic" | "openrouter"`
+- `ModelAdapter` y `ProviderFactory` describen cómo normalizar el acceso al modelo.
+
+Pasos para soportar un nuevo proveedor (cuando se integre el registro de proveedores):
+
+1. **Extender el contrato**: agrega el literal del proveedor en `ProviderKey`.
+2. **Adapter**: crea un adapter que implemente `ModelAdapter` (p. ej., `lib/ai/providers/<proveedor>-adapter.ts`).
+3. **Factory/Registry**: registra un `ProviderFactory` que cree el adapter a partir de `ModelConfig`.
+4. **Resolver**: el `ModelResolver` seleccionará el `ProviderFactory` por `config.provider` y devolverá el `ModelAdapter` correcto.
+
+Nota: Aún no existe un `ProviderRegistry` en el código; esta guía documenta el patrón a seguir. Cuando se implemente, se añadirá la ruta de archivo exacta y ejemplos.
+
+### 4) Uso de Bun para instalaciones
+
+- Este proyecto usa Bun. Para instalar SDKs o clientes oficiales:
+  - `bun add <paquete>` (runtime)
+  - `bun add -d <paquete>` (dev)
+- Verifica la documentación más reciente del SDK antes de integrarlo.
+
+### 5) Buenas prácticas
+
+- No hardcodear API keys; usar variables de entorno.
+- Mantener `ProviderKey` y `ModelConfig` sincronizados con lo soportado.
+- Preferir defaults en `config/ai.ts` y overrides en `.env` para evitar cambios de código.
+
 ## Cómo agregar un nuevo agente (proceso mínimo)
 
 Con la refactorización reciente, agregar un nuevo agente requiere un único cambio en código. El resto se resuelve automáticamente por configuración.
