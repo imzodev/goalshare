@@ -24,6 +24,14 @@ export interface NotImplementedData {
 }
 
 /**
+ * Concrete minimal data shape returned by the SDK-backed adapter for now.
+ */
+export type SdkAgentData = {
+  agent: AgentKey;
+  finalOutput: unknown;
+};
+
+/**
  * Simple generator for a trace id when none is provided by context.
  */
 function genTraceId(prefix: string = "ai"): string {
@@ -33,7 +41,7 @@ function genTraceId(prefix: string = "ai"): string {
 /**
  * Generic stub agent that returns a NotImplemented response.
  */
-class SdkAgentAdapter implements IAgent<unknown, AgentOutput<unknown>> {
+class SdkAgentAdapter implements IAgent<unknown, AgentOutput<SdkAgentData>> {
   readonly key: AgentKey;
   private readonly sdkAgent: Agent;
 
@@ -42,7 +50,7 @@ class SdkAgentAdapter implements IAgent<unknown, AgentOutput<unknown>> {
     this.sdkAgent = sdkAgent;
   }
 
-  async execute(input: unknown, ctx?: AgentContext): Promise<AgentOutput<unknown>> {
+  async execute(input: unknown, ctx?: AgentContext): Promise<AgentOutput<SdkAgentData>> {
     const traceId = ctx?.traceId ?? genTraceId(this.key);
 
     // Derive a basic input string for the SDK. Later we can map DTOs to prompts.
@@ -108,9 +116,9 @@ export const agentRegistry = new InMemoryAgentRegistry();
  * Default factory that returns SDK-backed agents via the registry.
  */
 export const AgentFactory = {
-  create(key: AgentKey): IAgent<unknown, unknown> {
+  create(key: AgentKey): IAgent<unknown, AgentOutput<SdkAgentData>> {
     const existing = agentRegistry.get(key);
-    if (existing) return existing;
+    if (existing) return existing as IAgent<unknown, AgentOutput<SdkAgentData>>;
     const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const concrete: any = modelAdapter;
@@ -123,7 +131,7 @@ export const AgentFactory = {
     agentRegistry.register(adapter);
     return adapter;
   },
-  refresh(key: AgentKey): IAgent<unknown, unknown> {
+  refresh(key: AgentKey): IAgent<unknown, AgentOutput<SdkAgentData>> {
     // Remove current entry (if any) and rebuild
     agentRegistry.delete(key);
     const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
