@@ -1,16 +1,19 @@
 /**
- * Agent Registry and Factory (stubs)
+ * Agent Registry and Factory unified with OpenAI Agents SDK
  * Parent: #42, Issue: #44
  *
  * Provides an in-memory AgentRegistry and a default AgentFactory that returns
- * stub agents for: planner, smart, coach, scheduler, moderator.
- *
- * No business logic or SDK calls. Stubs return NotImplemented with AgentOutput shape.
+ * SDK-backed agents through a thin IAgent adapter. Output remains NotImplemented
+ * until business logic is added.
  */
 
 import type { AgentKey, IAgent, AgentRegistry as AgentRegistryContract, AgentContext } from "../contracts/agent";
 import { AGENT_KEYS } from "../contracts/agent";
 import type { AgentOutput } from "../contracts/agent";
+import type { Model } from "@openai/agents";
+import { Agent, run } from "@openai/agents";
+import { ModelResolver } from "../model/resolver";
+import type { ModelAdapter } from "../contracts/model";
 
 /**
  * Minimal NotImplemented payload shape for stub agents.
@@ -30,23 +33,40 @@ function genTraceId(prefix: string = "ai"): string {
 /**
  * Generic stub agent that returns a NotImplemented response.
  */
-class StubAgent implements IAgent<unknown, AgentOutput<NotImplementedData>> {
+class SdkAgentAdapter implements IAgent<unknown, AgentOutput<unknown>> {
   readonly key: AgentKey;
+  private readonly sdkAgent: Agent;
 
-  constructor(key: AgentKey) {
+  constructor(key: AgentKey, sdkAgent: Agent) {
     this.key = key;
+    this.sdkAgent = sdkAgent;
   }
 
-  async execute(_input: unknown, ctx?: AgentContext): Promise<AgentOutput<NotImplementedData>> {
+  async execute(input: unknown, ctx?: AgentContext): Promise<AgentOutput<unknown>> {
     const traceId = ctx?.traceId ?? genTraceId(this.key);
+
+    // Derive a basic input string for the SDK. Later we can map DTOs to prompts.
+    let userInput: string;
+    if (typeof input === "string") {
+      userInput = input;
+    } else if (
+      input &&
+      typeof input === "object" &&
+      "payload" in (input as Record<string, unknown>) &&
+      typeof (input as any).payload === "string"
+    ) {
+      userInput = (input as any).payload as string;
+    } else {
+      userInput = JSON.stringify(input ?? {});
+    }
+
+    const result = await run(this.sdkAgent, userInput);
+
     return {
       traceId,
       data: {
-        status: "NotImplemented",
         agent: this.key,
-      },
-      meta: {
-        note: "Stub agent placeholder. Wire real implementation in subsequent issues.",
+        finalOutput: result.finalOutput,
       },
     };
   }
@@ -77,21 +97,36 @@ class InMemoryAgentRegistry implements AgentRegistryContract {
 export const agentRegistry = new InMemoryAgentRegistry();
 
 /**
- * Default factory that resolves known stubs via the registry.
+ * Default factory that returns SDK-backed agents via the registry.
  */
 export const AgentFactory = {
   create(key: AgentKey): IAgent<unknown, unknown> {
     const existing = agentRegistry.get(key);
     if (existing) return existing;
-    const stub = new StubAgent(key);
-    agentRegistry.register(stub);
-    return stub;
+    const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const concrete: any = modelAdapter;
+    if (typeof concrete.getSdkModel !== "function") {
+      throw new Error("Resolved model adapter does not expose getSdkModel()");
+    }
+    const model: Model = concrete.getSdkModel();
+    const sdkAgent = new Agent({ name: `${key} agent`, instructions: `You are the ${key} agent`, model });
+    const adapter = new SdkAgentAdapter(key, sdkAgent);
+    agentRegistry.register(adapter);
+    return adapter;
   },
 };
 
-// Pre-register known stub agents based on AGENT_KEYS
 AGENT_KEYS.forEach((k) => {
   if (!agentRegistry.get(k)) {
-    agentRegistry.register(new StubAgent(k));
+    const modelAdapter: ModelAdapter = ModelResolver.resolve(k) as ModelAdapter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const concrete: any = modelAdapter;
+    if (typeof concrete.getSdkModel !== "function") {
+      throw new Error("Resolved model adapter does not expose getSdkModel()");
+    }
+    const model: Model = concrete.getSdkModel();
+    const sdkAgent = new Agent({ name: `${k} agent`, instructions: `You are the ${k} agent`, model });
+    agentRegistry.register(new SdkAgentAdapter(k, sdkAgent));
   }
 });

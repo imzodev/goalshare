@@ -4,6 +4,7 @@
  */
 
 import type { ModelConfig, ModelAdapter, ProviderFactory, ProviderKey } from "../../ai/contracts/model";
+import type { Model } from "@openai/agents";
 import { aisdk } from "@openai/agents-extensions";
 import { openai as openaiProvider } from "@ai-sdk/openai";
 import { anthropic as anthropicProvider } from "@ai-sdk/anthropic";
@@ -31,6 +32,13 @@ class AISDKModelAdapter implements ModelAdapter {
     void this.handle;
     // Intentionally return a placeholder until concrete generation is wired.
     return { status: "NotImplemented", provider: this.provider, model: this.model };
+  }
+
+  /**
+   * Returns the underlying Agents SDK Model handle produced by aisdk(...).
+   */
+  getSdkModel(): Model {
+    return this.handle as Model;
   }
 }
 
