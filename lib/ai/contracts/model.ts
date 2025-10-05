@@ -5,7 +5,7 @@
 
 import type { AgentKey } from "./agent";
 
-export type ProviderKey = "openai" | "anthropic" | "openrouter";
+export type ProviderKey = "openai" | "anthropic" | "openrouter" | "deepseek";
 
 export interface ModelConfig {
   provider: ProviderKey;
