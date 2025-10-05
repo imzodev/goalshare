@@ -89,6 +89,14 @@ class InMemoryAgentRegistry implements AgentRegistryContract {
   list(): AgentKey[] {
     return Array.from(this.map.keys());
   }
+
+  delete(key: AgentKey): void {
+    this.map.delete(key);
+  }
+
+  clear(): void {
+    this.map.clear();
+  }
 }
 
 /**
@@ -114,6 +122,24 @@ export const AgentFactory = {
     const adapter = new SdkAgentAdapter(key, sdkAgent);
     agentRegistry.register(adapter);
     return adapter;
+  },
+  refresh(key: AgentKey): IAgent<unknown, unknown> {
+    // Remove current entry (if any) and rebuild
+    agentRegistry.delete(key);
+    const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const concrete: any = modelAdapter;
+    if (typeof concrete.getSdkModel !== "function") {
+      throw new Error("Resolved model adapter does not expose getSdkModel()");
+    }
+    const model: Model = concrete.getSdkModel();
+    const sdkAgent = new Agent({ name: `${key} agent`, instructions: `You are the ${key} agent`, model });
+    const adapter = new SdkAgentAdapter(key, sdkAgent);
+    agentRegistry.register(adapter);
+    return adapter;
+  },
+  clear(): void {
+    agentRegistry.clear();
   },
 };
 
