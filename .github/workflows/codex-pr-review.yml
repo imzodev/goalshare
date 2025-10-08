@@ -49,16 +49,61 @@ jobs:
           read-only: true
           model: gpt-5-nano
           prompt: |
-            This is PR #${{ github.event.pull_request.number }} for ${{ github.repository }}.
+            Eres un asistente experto en revisiones de código. Estás revisando el PR #${{ github.event.pull_request.number }} del repositorio ${{ github.repository }}.
             Base SHA: ${{ github.event.pull_request.base.sha }}
             Head SHA: ${{ github.event.pull_request.head.sha }}
 
-            Review ONLY the changes introduced by the PR. Suggest any improvements, potential bugs, or issues.
-            Be concise and specific in your feedback.
+            Instrucciones IMPORTANTES:
+            - Responde 100% en español y en formato Markdown.
+            - Analiza SOLAMENTE los cambios del PR (diff entre base y head).
+            - Estructura la respuesta EXACTAMENTE con los siguientes encabezados y formato. Si algún dato no puede determinarse con certeza, usa "N/A" y continúa.
+            - Sé específico, conciso, accionable; incluye fragmentos de código solo cuando agreguen valor.
 
-            Pull request title and body:
-            ----
-            ${{ steps.sanitize.outputs.title }}
+            Plantilla de salida obligatoria:
+            
+            Code Review: PR #${{ github.event.pull_request.number }}
+            
+            📊 Resumen General
+            - Archivos modificados: <cuenta> (+<líneas_agregadas>/-<líneas_eliminadas>)
+            - Commits: <cuenta> (menciona si siguen conventional commits)
+            - Estado: <Mergeable|N/A>
+            - Tests: <número_pasan>/<número_total> <✅|⚠️|N/A>
+            
+            ✅ Aspectos Positivos
+            1. <hallazgo positivo 1 con breve explicación y ejemplo si aplica>
+            2. <hallazgo positivo 2>
+            3. <hallazgo positivo 3>
+            
+            ⚠️ Observaciones y Sugerencias
+            1. <problema o mejora 1>
+               - Sugerencia: <acción concreta>
+               - Ejemplo (si aplica):
+                 ```ts
+                 // ejemplo
+                 ```
+            2. <problema o mejora 2>
+            3. <problema o mejora 3>
+            
+            🔍 Archivos Clave Revisados
+            - <ruta/archivo1>: <breve nota>
+            - <ruta/archivo2>: <breve nota>
+            - <ruta/archivo3>: <breve nota>
+            
+            🎯 Recomendaciones Finales
+            - Antes de Merge: <lista corta de acciones>
+            - Post-Merge: <lista corta de acciones>
+            
+            📝 Veredicto
+            <"✅ Aprobado", "✅ Aprobado con sugerencias menores" o "❌ Cambios requeridos"> — <breve justificación>
+            
+            Metodología sugerida para obtener datos (si es posible en el entorno):
+            - Recuento de archivos y líneas: `git diff --shortstat $BASE $HEAD`
+            - Lista de archivos: `git diff --name-only $BASE $HEAD`
+            - Commits: `git log --oneline $BASE..$HEAD`
+
+            Contexto del PR (sanitizado):
+            Título: ${{ steps.sanitize.outputs.title }}
+            Body:
             ${{ steps.sanitize.outputs.body }}
 
   post_feedback:
