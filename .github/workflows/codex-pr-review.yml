@@ -47,6 +47,7 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           safety-strategy: unprivileged-user
           read-only: true
+          model: gpt-5-nano
           prompt: |
             This is PR #${{ github.event.pull_request.number }} for ${{ github.repository }}.
             Base SHA: ${{ github.event.pull_request.base.sha }}
