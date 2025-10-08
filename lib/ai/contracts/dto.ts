@@ -7,6 +7,8 @@ import { z } from "zod";
 /** Common helpers */
 export const LocaleSchema = z.string().min(2).max(10).default("en");
 export const TraceIdSchema = z.string().min(1).optional();
+/** Date-only in format YYYY-MM-DD to align with DB 'date' columns */
+export const DateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 
 /** Milestones */
 export const MilestonesRequestSchema = z.object({
@@ -20,7 +22,10 @@ export type MilestonesRequest = z.infer<typeof MilestonesRequestSchema>;
 export const MilestoneItemSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  dueDate: z.string().datetime().optional(),
+  /** Date-only string; previously datetime */
+  dueDate: DateOnlySchema.optional(),
+  /** Percentage weight 0-100 determined by AI */
+  weight: z.number().int().min(0).max(100),
 });
 
 export const MilestonesResponseSchema = z.object({
