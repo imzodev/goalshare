@@ -15,6 +15,7 @@ export type { Guardrails, ModerationResult, ModerationVerdict } from "./contract
 export {
   MilestonesRequestSchema,
   MilestonesResponseSchema,
+  MilestoneItemSchema,
   SmartRequestSchema,
   AdviceRequestSchema,
   PlanRequestSchema,
