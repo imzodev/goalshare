@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, Wand2, Check, X } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -23,6 +25,9 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
   const [pending, startTransition] = useTransition();
   const [communities, setCommunities] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [loadingCommunities, setLoadingCommunities] = useState(false);
+  const [smartPending, setSmartPending] = useState(false);
+  const [smartSuggestion, setSmartSuggestion] = useState<string | null>(null);
+  const [smartError, setSmartError] = useState<string | null>(null);
 
   const reset = () => {
     setTitle("");
@@ -31,6 +36,9 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
     setTopicCommunityId("");
     setTemplateId("");
     setError(null);
+    setSmartPending(false);
+    setSmartSuggestion(null);
+    setSmartError(null);
   };
 
   useEffect(() => {
@@ -86,7 +94,6 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
           return;
         }
 
-        // éxito
         onOpenChange(false);
         reset();
         onCreated?.();
@@ -94,6 +101,42 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
         setError("Error de red");
       }
     });
+  };
+
+  const handleSmartPreview = async () => {
+    setSmartError(null);
+    if (!title || title.length < 3) {
+      setSmartError("Agrega un título de al menos 3 caracteres");
+      return;
+    }
+    if (!description || description.length < 10) {
+      setSmartError("Agrega una descripción de al menos 10 caracteres");
+      return;
+    }
+    setSmartPending(true);
+    try {
+      const res = await fetch("/api/ai/smart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          goalText: `${title}\n\n${description}`,
+          locale: typeof navigator !== "undefined" ? navigator.language : "es",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.rewritten) {
+        throw new Error(data?.error || "No se pudo generar la sugerencia SMART");
+      }
+      setSmartSuggestion(String(data.rewritten));
+      toast.success("Sugerencia SMART generada");
+    } catch (e) {
+      console.error("[SMART preview]", e);
+      setSmartError(e instanceof Error ? e.message : "No se pudo generar la sugerencia SMART");
+      setSmartSuggestion(null);
+      toast.error("No se pudo generar la sugerencia SMART");
+    } finally {
+      setSmartPending(false);
+    }
   };
 
   return (
@@ -137,6 +180,38 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
               placeholder="Describe tu meta y cómo la medirás"
               rows={4}
             />
+            {/* SMART preview controls */}
+            <div className="flex items-center gap-2 pt-2">
+              <Button type="button" variant="outline" size="sm" onClick={handleSmartPreview} disabled={smartPending}>
+                {smartPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                {smartPending ? "Generando SMART..." : "Previsualizar SMART"}
+              </Button>
+              {smartError && <span className="text-xs text-destructive">{smartError}</span>}
+            </div>
+            {smartPending && !smartSuggestion && (
+              <div className="text-xs text-muted-foreground">Generando sugerencia SMART…</div>
+            )}
+            {smartSuggestion && (
+              <div className="mt-2 rounded-md border bg-muted/30 p-3">
+                <div className="mb-2 text-xs font-medium">Sugerencia SMART (previsualización)</div>
+                <div className="whitespace-pre-wrap text-sm">{smartSuggestion}</div>
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      setDescription(smartSuggestion);
+                      toast.success("Descripción reemplazada por la versión SMART");
+                    }}
+                  >
+                    <Check className="h-4 w-4" /> Aplicar al formulario
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setSmartSuggestion(null)}>
+                    <X className="h-4 w-4" /> Descartar
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
