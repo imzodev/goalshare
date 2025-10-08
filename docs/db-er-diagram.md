@@ -70,6 +70,11 @@ erDiagram
     text description
     date deadline
     goal_status status
+    goal_type goal_type
+    numeric target_value
+    text target_unit
+    numeric current_value
+    int current_progress
     timestamptz created_at
     timestamptz completed_at
   }
@@ -80,6 +85,7 @@ erDiagram
     text title
     text description
     int sort_order
+    int weight
     date target_date
     timestamptz completed_at
     timestamptz created_at
@@ -91,11 +97,9 @@ erDiagram
     text author_id FK
     entry_kind kind
     text content
-    int progress_value
-    numeric metric_value
-    text metric_unit
     text image_path
     uuid milestone_id FK
+    int progress_snapshot
     entry_visibility visibility
     timestamptz created_at
   }
