@@ -45,7 +45,7 @@ jobs:
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          safety-strategy: unprivileged-user
+          safety-strategy: read-only
           read-only: true
           model: gpt-5-nano
           prompt: |
