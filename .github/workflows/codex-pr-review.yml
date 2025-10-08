@@ -27,6 +27,19 @@ jobs:
       # need to be downloaded before the "Run Codex" step because Codex's
       # default sandbox disables network access.
 
+      # Sanitize PR metadata to mitigate prompt injection via HTML comments
+      - name: Sanitize PR title and body
+        id: sanitize
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request?.body || '';
+            const title = context.payload.pull_request?.title || '';
+            const stripHtmlComments = (s) => s.replace(/<!--[\s\S]*?-->/g, '');
+            const limit = (s) => s.slice(0, 4000);
+            core.setOutput('title', limit(stripHtmlComments(title)));
+            core.setOutput('body', limit(stripHtmlComments(body)));
+
       - name: Run Codex
         id: run_codex
         uses: openai/codex-action@v1
@@ -91,9 +104,10 @@ jobs:
             - Lista de archivos: `git diff --name-only $BASE $HEAD`
             - Commits: `git log --oneline $BASE..$HEAD`
 
-            Contexto del PR:
-            Título: ${{ github.event.pull_request.title }}
-            Body: ${{ github.event.pull_request.body }}
+            Contexto del PR (sanitizado):
+            Título: ${{ steps.sanitize.outputs.title }}
+            Body:
+            ${{ steps.sanitize.outputs.body }}
 
   post_feedback:
     runs-on: ubuntu-latest
