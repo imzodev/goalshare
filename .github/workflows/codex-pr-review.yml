@@ -55,6 +55,10 @@ jobs:
 
             Instrucciones IMPORTANTES:
             - Responde 100% en español y en formato Markdown.
+            - Utiliza emojis para representar estados y acciones.
+            - Utiliza headers #, ##, ### para distinguir cada sección.
+            - Utiliza --- para dividir secciones.
+            - Utiliza tablas cuando sea necesario para mostrar datos tabulares.
             - Analiza SOLAMENTE los cambios del PR (diff entre base y head).
             - Estructura la respuesta EXACTAMENTE con los siguientes encabezados y formato. Si algún dato no puede determinarse con certeza, usa "N/A" y continúa.
             - Sé específico, conciso, accionable; incluye fragmentos de código solo cuando agreguen valor.
@@ -67,7 +71,6 @@ jobs:
             - Archivos modificados: <cuenta> (+<líneas_agregadas>/-<líneas_eliminadas>)
             - Commits: <cuenta> (menciona si siguen conventional commits)
             - Estado: <Mergeable|N/A>
-            - Tests: <número_pasan>/<número_total> <✅|⚠️|N/A>
             
             ✅ Aspectos Positivos
             1. <hallazgo positivo 1 con breve explicación y ejemplo si aplica>
