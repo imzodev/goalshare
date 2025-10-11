@@ -9,7 +9,6 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
 import { MilestoneCard } from "@/components/dashboard/milestone-card";
 
 type Props = {

@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
+import { weeksUntil } from "@/utils/date-utils";
 
 type MilestoneItem = { title: string; description?: string; dueDate?: string; weight: number };
 
@@ -28,16 +30,6 @@ export function MilestoneCard({
   onChangeDescription,
   onChangeWeight,
 }: Props) {
-  const weeksUntil = (date?: string) => {
-    if (!date) return null;
-    const due = new Date(date + "T00:00:00");
-    if (isNaN(due.getTime())) return null;
-    const now = new Date();
-    const diffMs = due.getTime() - now.getTime();
-    const weeks = Math.ceil(diffMs / (1000 * 60 * 60 * 24 * 7));
-    return weeks;
-  };
-
   const weeks = weeksUntil(item.dueDate);
 
   return (
@@ -71,12 +63,27 @@ export function MilestoneCard({
             : "Sin fecha"}
       </div>
 
-      <div className="mt-2 h-2 rounded-full bg-muted">
-        <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, item.weight))}%` }} />
+      {/* Inline slider replacing the static bar with live feedback */}
+      <div className="mt-2 flex items-center gap-2">
+        <Slider
+          className="flex-1"
+          aria-label={`Peso del hito ${index + 1}`}
+          value={[item.weight]}
+          min={0}
+          max={100}
+          step={1}
+          onValueChange={(vals) => {
+            const val = typeof vals[0] === "number" ? vals[0] : item.weight;
+            onChangeWeight(val);
+          }}
+        />
+        <Badge variant="secondary" className="w-12 justify-center select-none">
+          {item.weight}%
+        </Badge>
       </div>
 
       {expanded && (
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           <div className="space-y-1">
             <label htmlFor={`ms-${index}-due`} className="text-[11px] text-muted-foreground">
               Fecha objetivo (YYYY-MM-DD)
@@ -89,26 +96,7 @@ export function MilestoneCard({
               onChange={(e) => onChangeDue(e.target.value)}
             />
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <span id={`ms-${index}-weight-label`} className="text-[11px] text-muted-foreground">
-                Peso (%)
-              </span>
-              <span className="text-[11px] text-muted-foreground">{item.weight}%</span>
-            </div>
-            <Slider
-              aria-labelledby={`ms-${index}-weight-label`}
-              value={[item.weight]}
-              min={0}
-              max={100}
-              step={1}
-              onValueChange={(vals) => {
-                const val = typeof vals[0] === "number" ? vals[0] : item.weight;
-                onChangeWeight(val);
-              }}
-            />
-          </div>
-          <div className="sm:col-span-3 space-y-1">
+          <div className="sm:col-span-2 space-y-1">
             <label htmlFor={`ms-${index}-desc`} className="text-[11px] text-muted-foreground">
               Descripción
             </label>
