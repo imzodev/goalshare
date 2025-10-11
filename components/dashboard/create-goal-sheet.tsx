@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { MilestoneCard } from "@/components/dashboard/milestone-card";
 
 type Props = {
   open: boolean;
@@ -353,112 +354,31 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
 
               <ScrollArea className="h-full pr-3 pb-28">
                 <div className="space-y-3">
-                  {milestones.map((m, idx) => {
-                    const weeks = weeksUntil(m.dueDate);
-                    return (
-                      <div key={idx} className="rounded-2xl border border-foreground/10 bg-card shadow-sm p-3 sm:p-4">
-                        {/* Header line (title + pill + menu) */}
-                        <div className="flex items-center gap-2">
-                          <input
-                            className="flex-1 bg-transparent border-none outline-none text-sm sm:text-base font-semibold tracking-tight placeholder:text-muted-foreground/60"
-                            value={m.title}
-                            onChange={(e) => {
-                              const copy: MilestoneItem[] = [...milestones];
-                              copy[idx] = { ...copy[idx], title: e.target.value } as MilestoneItem;
-                              setMilestones(copy);
-                            }}
-                            placeholder={`Hito ${idx + 1}`}
-                          />
-                          <span className="rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold text-white bg-gradient-to-r from-indigo-500 to-fuchsia-500">
-                            {m.weight}%
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground"
-                            onClick={() => setExpanded((prev) => ({ ...prev, [idx]: !prev[idx] }))}
-                            title={expanded[idx] ? "Ocultar detalles" : "Editar"}
-                          >
-                            ⋯
-                          </Button>
-                        </div>
-
-                        {/* Subtitle */}
-                        <div className="mt-1 text-xs sm:text-sm text-muted-foreground">
-                          {weeks !== null
-                            ? `${weeks} semana${weeks === 1 ? "" : "s"} para completar`
-                            : m.dueDate
-                              ? m.dueDate
-                              : "Sin fecha"}
-                        </div>
-
-                        {/* Tiny progress bar (visual only, uses weight as fill %) */}
-                        <div className="mt-2 h-2 rounded-full bg-muted">
-                          <div
-                            className="h-2 rounded-full bg-primary"
-                            style={{ width: `${Math.max(0, Math.min(100, m.weight))}%` }}
-                          />
-                        </div>
-
-                        {/* Collapsible edit area */}
-                        {expanded[idx] && (
-                          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-                            <div className="space-y-1">
-                              <label htmlFor={`ms-${idx}-due`} className="text-[11px] text-muted-foreground">
-                                Fecha objetivo (YYYY-MM-DD)
-                              </label>
-                              <Input
-                                id={`ms-${idx}-due`}
-                                className="h-8"
-                                placeholder="YYYY-MM-DD"
-                                value={m.dueDate || ""}
-                                onChange={(e) => {
-                                  const copy: MilestoneItem[] = [...milestones];
-                                  copy[idx] = { ...copy[idx], dueDate: e.target.value } as MilestoneItem;
-                                  setMilestones(copy);
-                                }}
-                              />
-                            </div>
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span id={`ms-${idx}-weight-label`} className="text-[11px] text-muted-foreground">
-                                  Peso (%)
-                                </span>
-                                <span className="text-[11px] text-muted-foreground">{m.weight}%</span>
-                              </div>
-                              <Slider
-                                aria-labelledby={`ms-${idx}-weight-label`}
-                                value={[m.weight]}
-                                min={0}
-                                max={100}
-                                step={1}
-                                onValueChange={(vals) => {
-                                  const val = typeof vals[0] === "number" ? vals[0] : m.weight;
-                                  setWeightWithConstraint(idx, val);
-                                }}
-                              />
-                            </div>
-                            <div className="sm:col-span-3 space-y-1">
-                              <label htmlFor={`ms-${idx}-desc`} className="text-[11px] text-muted-foreground">
-                                Descripción
-                              </label>
-                              <Textarea
-                                id={`ms-${idx}-desc`}
-                                placeholder="Descripción (opcional)"
-                                value={m.description || ""}
-                                onChange={(e) => {
-                                  const copy: MilestoneItem[] = [...milestones];
-                                  copy[idx] = { ...copy[idx], description: e.target.value } as MilestoneItem;
-                                  setMilestones(copy);
-                                }}
-                                rows={2}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {milestones.map((m, idx) => (
+                    <MilestoneCard
+                      key={idx}
+                      index={idx}
+                      item={m}
+                      expanded={!!expanded[idx]}
+                      onToggle={() => setExpanded((prev) => ({ ...prev, [idx]: !prev[idx] }))}
+                      onChangeTitle={(val) => {
+                        const copy: MilestoneItem[] = [...milestones];
+                        copy[idx] = { ...copy[idx], title: val } as MilestoneItem;
+                        setMilestones(copy);
+                      }}
+                      onChangeDue={(val) => {
+                        const copy: MilestoneItem[] = [...milestones];
+                        copy[idx] = { ...copy[idx], dueDate: val } as MilestoneItem;
+                        setMilestones(copy);
+                      }}
+                      onChangeDescription={(val) => {
+                        const copy: MilestoneItem[] = [...milestones];
+                        copy[idx] = { ...copy[idx], description: val } as MilestoneItem;
+                        setMilestones(copy);
+                      }}
+                      onChangeWeight={(val) => setWeightWithConstraint(idx, val)}
+                    />
+                  ))}
                   {/* Bottom spacer to avoid footer overlap */}
                   <div className="h-8" />
                 </div>
