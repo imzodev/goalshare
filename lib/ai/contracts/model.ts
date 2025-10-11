@@ -3,8 +3,6 @@
  * These contracts are provider-agnostic and do not import any SDKs.
  */
 
-import type { AgentKey } from "./agent";
-
 export type ProviderKey = "openai" | "anthropic" | "openrouter" | "deepseek";
 
 export interface ModelConfig {

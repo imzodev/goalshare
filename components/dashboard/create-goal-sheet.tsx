@@ -95,17 +95,6 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
     setMilestones(next);
   };
 
-  // UX helper: weeks until due date
-  const weeksUntil = (date?: string) => {
-    if (!date) return null;
-    const due = new Date(date + "T00:00:00");
-    if (isNaN(due.getTime())) return null;
-    const now = new Date();
-    const diffMs = due.getTime() - now.getTime();
-    const weeks = Math.ceil(diffMs / (1000 * 60 * 60 * 24 * 7));
-    return weeks;
-  };
-
   // Helpers: weight summary and redistribution
   const weightSum = milestones.reduce((acc, m) => acc + (Number(m.weight) || 0), 0);
   const redistributeWeights = () => {

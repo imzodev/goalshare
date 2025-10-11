@@ -1,4 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+// Use hoisted store to synchronize between vi.mock and tests
+const hoisted = vi.hoisted(() => ({
+  constructed: [] as Array<{ name?: string; instructions?: string; model?: unknown }>,
+}));
 
 // Mock provider builders to avoid touching real SDKs
 vi.mock("../../../lib/ai/registry/provider-builders", () => {
@@ -27,9 +31,9 @@ vi.mock("@openai/agents", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     model?: any;
     constructor(opts: { name?: string; instructions?: string; model?: unknown }) {
+      hoisted.constructed.push(opts);
       this.name = opts.name;
       this.instructions = opts.instructions;
-
       this.model = opts.model;
     }
   }
@@ -38,6 +42,7 @@ vi.mock("@openai/agents", () => {
 
 import { AgentFactory, agentRegistry } from "../../../lib/ai/registry/index";
 import { run as mockedRun } from "@openai/agents";
+import { AI_CONFIG } from "../../../config/ai";
 
 describe("AgentFactory + SdkAgentAdapter", () => {
   beforeEach(() => {
@@ -83,5 +88,22 @@ describe("AgentFactory + SdkAgentAdapter", () => {
     expect(agentRegistry.list().length).toBeGreaterThan(0);
     AgentFactory.clear();
     expect(agentRegistry.list().length).toBe(0);
+  });
+
+  it("builds 'planner' with AI_CONFIG instructions and caches instance", () => {
+    hoisted.constructed.length = 0;
+    const cfg = AI_CONFIG.planner;
+    const a1 = AgentFactory.create("planner");
+    const a2 = AgentFactory.create("planner");
+    expect(a2).toBe(a1);
+    // Only one SDK Agent constructed
+    expect(hoisted.constructed.length).toBe(1);
+    const opts = hoisted.constructed[0]!;
+    expect(opts.name).toBe("planner agent");
+    expect(typeof opts.instructions).toBe("string");
+    if (cfg.instructions) {
+      expect(opts.instructions).toContain("PLANIFICADOR");
+    }
+    expect(opts.model).toBeTruthy();
   });
 });
