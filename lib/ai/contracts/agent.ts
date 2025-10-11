@@ -10,7 +10,6 @@
 import type { ToolBinder } from "./tool";
 import type { Guardrails } from "./guardrails";
 import type { RateLimiter, Cache, Tracer } from "./ops";
-import type { ModelResolver } from "./model";
 
 /**
  * Single source of truth for supported agent keys.
@@ -32,7 +31,6 @@ export interface AgentContext {
   cache?: Cache;
   tracer?: Tracer;
   guardrails?: Guardrails;
-  modelResolver?: ModelResolver;
   tools?: ToolBinder[];
   // Allow additional context extensions without breaking type safety
   meta?: Record<string, unknown>;

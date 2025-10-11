@@ -4,6 +4,25 @@ import React from "react";
 // Ensure React is available globally for components expecting it in scope
 (globalThis as any).React = React;
 
+// Polyfill ResizeObserver for Radix Slider and other components in jsdom
+if (typeof (globalThis as any).ResizeObserver === "undefined") {
+  class ResizeObserverPolyfill {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(callback: any) {
+      this.callback = callback;
+    }
+
+    observe(_target: Element) {}
+
+    unobserve(_target: Element) {}
+    disconnect() {}
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).ResizeObserver = ResizeObserverPolyfill as unknown as typeof ResizeObserver;
+}
+
 // Mock next/navigation useRouter for client components
 vi.mock("next/navigation", async () => {
   const actual = await vi.importActual<any>("next/navigation");

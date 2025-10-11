@@ -188,7 +188,7 @@ Esta guía explica cómo cambiar de proveedor/modelo y cómo preparar la adició
 - **Archivo**: `.env`
 - **Global** (aplica a agentes sin override por agente):
   - `AI_DEFAULT_PROVIDER` (valores válidos por contrato actual: `openai` | `anthropic` | `openrouter`)
-  - `AI_DEFAULT_MODEL` (string del modelo, p.ej. `gpt-4o-mini`)
+  - `AI_DEFAULT_MODEL` (string del modelo, p.ej. `gpt-5-nano`)
 - **Por agente (solo agentes existentes)** en `.env`:
   - Planner: `AI_PROVIDER_PLANNER`, `AI_MODEL_PLANNER`
   - Smart: `AI_PROVIDER_SMART`, `AI_MODEL_SMART`
@@ -208,21 +208,23 @@ Precedencia efectiva (ver `config/ai.ts`):
 - Edita `AI_DEFAULTS` (es `Partial<Record<AgentKey, ModelConfig>>`).
 - Útil para proponer valores por defecto adecuados a un agente específico.
 
-### 3) Agregar un proveedor nuevo (conceptual)
+### 3) Agregar un proveedor nuevo (actual)
 
-Hoy el contrato de proveedores/modelos está definido en `lib/ai/contracts/model.ts`:
+La construcción del modelo del agente se realiza mediante un mapa de builders:
 
-- `ProviderKey = "openai" | "anthropic" | "openrouter"`
-- `ModelAdapter` y `ProviderFactory` describen cómo normalizar el acceso al modelo.
+- Archivo: `lib/ai/registry/provider-builders.ts`
+- Mapa: `PROVIDER_BUILDERS: Record<ProviderKey, (modelName: string) => Model>`
 
-Pasos para soportar un nuevo proveedor (cuando se integre el registro de proveedores):
+Pasos para soportar un nuevo proveedor:
 
-1. **Extender el contrato**: agrega el literal del proveedor en `ProviderKey`.
-2. **Adapter**: crea un adapter que implemente `ModelAdapter` (p. ej., `lib/ai/providers/<proveedor>-adapter.ts`).
-3. **Factory/Registry**: registra un `ProviderFactory` que cree el adapter a partir de `ModelConfig`.
-4. **Resolver**: el `ModelResolver` seleccionará el `ProviderFactory` por `config.provider` y devolverá el `ModelAdapter` correcto.
+1. **Extender el contrato**: agrega el literal del proveedor en `ProviderKey` (`lib/ai/contracts/model.ts`).
+2. **Builder**: añade una entrada en `PROVIDER_BUILDERS` que envuelva el provider SDK con `aisdk(...)` y retorne un `Model` válido para `@openai/agents`.
+3. **Config**: opcionalmente, ajusta `AI_DEFAULTS` en `config/ai.ts` para que algún agente use el nuevo `provider`/`model`.
 
-Nota: Aún no existe un `ProviderRegistry` en el código; esta guía documenta el patrón a seguir. Cuando se implemente, se añadirá la ruta de archivo exacta y ejemplos.
+En tiempo de ejecución, `AgentFactory` crea el `Agent` con:
+
+- `model`: resultado de `PROVIDER_BUILDERS[cfg.provider](cfg.model)`
+- `instructions`: tomadas desde `AI_CONFIG[agent].instructions`
 
 ### 4) Uso de Bun para instalaciones
 
@@ -286,7 +288,7 @@ Eso es todo lo necesario para que:
 - `AI_CONFIG` se construye iterando `AGENT_KEYS` y aplicando la precedencia:
   1. Overrides por agente (solo para agentes existentes actuales).
   2. Overrides globales (`AI_DEFAULT_PROVIDER`, `AI_DEFAULT_MODEL`).
-  3. `AI_DEFAULTS[agent]` si existe; de lo contrario, un fallback seguro (OpenAI + `gpt-4o-mini`, `temperature` 0.2).
+  3. `AI_DEFAULTS[agent]` si existe; de lo contrario, un fallback seguro (OpenAI + `gpt-5-nano`, `temperature` 0.2).
 
 ### 5) Ejemplo de uso
 

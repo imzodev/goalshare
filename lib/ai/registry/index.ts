@@ -10,10 +10,9 @@
 import type { AgentKey, IAgent, AgentRegistry as AgentRegistryContract, AgentContext } from "../contracts/agent";
 import { AGENT_KEYS } from "../contracts/agent";
 import type { AgentOutput } from "../contracts/agent";
-import type { Model } from "@openai/agents";
 import { Agent, run } from "@openai/agents";
-import { ModelResolver } from "../model/resolver";
-import type { ModelAdapter } from "../contracts/model";
+import { AI_CONFIG } from "../../../config/ai";
+import { PROVIDER_BUILDERS } from "./provider-builders";
 
 /**
  * Minimal NotImplemented payload shape for stub agents.
@@ -119,32 +118,23 @@ export const AgentFactory = {
   create(key: AgentKey): IAgent<unknown, AgentOutput<SdkAgentData>> {
     const existing = agentRegistry.get(key);
     if (existing) return existing as IAgent<unknown, AgentOutput<SdkAgentData>>;
-    const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const concrete: any = modelAdapter;
-    if (typeof concrete.getSdkModel !== "function") {
-      throw new Error("Resolved model adapter does not expose getSdkModel()");
-    }
-    const model: Model = concrete.getSdkModel();
-    const sdkAgent = new Agent({ name: `${key} agent`, instructions: `You are the ${key} agent`, model });
+
+    const cfg = AI_CONFIG[key];
+    if (!cfg) throw new Error(`No AI config for agent: ${key}`);
+
+    const buildModel = PROVIDER_BUILDERS[cfg.provider];
+    if (!buildModel) throw new Error(`Provider builder missing: ${cfg.provider}`);
+    const model = buildModel(cfg.model);
+
+    const instructions = cfg.instructions || `You are the ${key} agent.`;
+    const sdkAgent = new Agent({ name: `${key} agent`, instructions, model });
     const adapter = new SdkAgentAdapter(key, sdkAgent);
     agentRegistry.register(adapter);
     return adapter;
   },
   refresh(key: AgentKey): IAgent<unknown, AgentOutput<SdkAgentData>> {
-    // Remove current entry (if any) and rebuild
     agentRegistry.delete(key);
-    const modelAdapter: ModelAdapter = ModelResolver.resolve(key) as ModelAdapter;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const concrete: any = modelAdapter;
-    if (typeof concrete.getSdkModel !== "function") {
-      throw new Error("Resolved model adapter does not expose getSdkModel()");
-    }
-    const model: Model = concrete.getSdkModel();
-    const sdkAgent = new Agent({ name: `${key} agent`, instructions: `You are the ${key} agent`, model });
-    const adapter = new SdkAgentAdapter(key, sdkAgent);
-    agentRegistry.register(adapter);
-    return adapter;
+    return this.create(key);
   },
   clear(): void {
     agentRegistry.clear();
@@ -153,14 +143,12 @@ export const AgentFactory = {
 
 AGENT_KEYS.forEach((k) => {
   if (!agentRegistry.get(k)) {
-    const modelAdapter: ModelAdapter = ModelResolver.resolve(k) as ModelAdapter;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const concrete: any = modelAdapter;
-    if (typeof concrete.getSdkModel !== "function") {
-      throw new Error("Resolved model adapter does not expose getSdkModel()");
-    }
-    const model: Model = concrete.getSdkModel();
-    const sdkAgent = new Agent({ name: `${k} agent`, instructions: `You are the ${k} agent`, model });
+    const cfg = AI_CONFIG[k];
+    const buildModel = PROVIDER_BUILDERS[cfg.provider];
+    if (!buildModel) return; // skip if provider not wired
+    const model = buildModel(cfg.model);
+    const instructions = cfg.instructions || `You are the ${k} agent.`;
+    const sdkAgent = new Agent({ name: `${k} agent`, instructions, model });
     agentRegistry.register(new SdkAgentAdapter(k, sdkAgent));
   }
 });
