@@ -25,5 +25,4 @@ export {
 // Registry & Factory
 export { AgentFactory, agentRegistry } from "./registry";
 
-// Model resolution (provider-agnostic)
-export { ModelResolver } from "./model/resolver";
+// Model resolution handled via AI_CONFIG + provider builders in AgentFactory

@@ -2,8 +2,8 @@
  * AI per-agent default model configuration (stubs)
  * Parent: #42, Issue: #45
  *
- * Provider-agnostic defaults. These are read by the ModelResolver and can be
- * overridden per-request. No SDK imports here.
+ * Provider-agnostic defaults. Estas defaults se combinan en AI_CONFIG y
+ * se consumen por AgentFactory junto con los provider builders. Sin SDKs aquí.
  */
 
 import type { ModelConfig } from "../lib/ai/contracts/model";
@@ -19,28 +19,50 @@ import { env } from "./env";
 export const AI_DEFAULTS: Partial<Record<AgentKey, ModelConfig>> = {
   planner: {
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: "gpt-5-nano",
     temperature: 0.3,
+    instructions: `
+Eres un agente PLANIFICADOR experto. Devuelve exclusivamente JSON válido con este esquema:
+{
+  "milestones": [
+    { "title": string, "description": string?, "dueDate": "YYYY-MM-DD"?, "weight": number }
+  ],
+  "traceId": string?
+}
+Reglas:
+- Genera entre 3 y 6 milestones.
+- La suma de "weight" debe ser 100.
+- "dueDate" usa formato YYYY-MM-DD; si no aplica, omite el campo.
+- Títulos claros y descripciones breves.
+- Coherencia de fechas: usa la fecha de HOY proporcionada en el input como referencia.
+- Si hay fecha límite de la meta, todos los dueDate deben estar entre HOY y la fecha límite (inclusive), en orden ascendente. El último milestone debe coincidir con la fecha límite o quedar muy próximo (±3 días), sin superarla.
+- Si no hay fecha límite, distribuye dueDate de forma realista desde HOY (p. ej., 1-4 semanas), en orden ascendente y sin fechas en el pasado.
+- No generes fechas inválidas ni fuera de rango; si no puedes determinar una fecha, omite el campo dueDate en ese hito.
+`,
   },
   smart: {
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: "gpt-5-nano",
     temperature: 0.2,
+    instructions: `Eres un agente que reescribe metas al formato SMART. Responde sólo texto.`,
   },
   coach: {
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: "gpt-5-nano",
     temperature: 0.5,
+    instructions: `Eres un agente de coaching. Responde consejos prácticos y concisos.`,
   },
   scheduler: {
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: "gpt-5-nano",
     temperature: 0.2,
+    instructions: `Eres un agente de agenda. Devuelve un plan diario o semanal en texto estructurado.`,
   },
   moderator: {
     provider: "openai",
     model: "omni-moderation-latest",
     temperature: 0,
+    instructions: `Clasifica contenido. Devuelve un veredicto: allow|flag|block y motivos.`,
   },
 };
 
@@ -51,7 +73,7 @@ export const AI_DEFAULTS: Partial<Record<AgentKey, ModelConfig>> = {
 export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
   const base = AI_DEFAULTS[agent] ?? {
     provider: (env.AI_DEFAULT_PROVIDER || "openai") as ModelConfig["provider"],
-    model: env.AI_DEFAULT_MODEL || "gpt-4o-mini",
+    model: env.AI_DEFAULT_MODEL || "gpt-5-nano",
     temperature: 0.2,
   };
 
@@ -107,6 +129,7 @@ export const AI_CONFIG: Record<AgentKey, ModelConfig> = AGENT_KEYS.reduce(
 );
 
 /**
- * Example override usage:
- * ModelResolver.resolve("planner", { provider: "openrouter", model: "deepseek/deepseek-chat" })
+ * Ejemplo de override en tiempo de ejecución (conceptual):
+ * AgentFactory.create("planner") usará AI_CONFIG["planner"], que surge de AI_DEFAULTS + overrides en env.
+ * Para probar otro provider/model por request, puedes construir tu propio agente con un builder ad-hoc.
  */

@@ -14,6 +14,8 @@ export interface ModelConfig {
   maxTokens?: number;
   // Free-form options per provider
   options?: Record<string, unknown>;
+  /** Optional per-agent instructions to pass to Agent creation */
+  instructions?: string;
 }
 
 /**
@@ -28,12 +30,4 @@ export interface ModelAdapter {
 
 export interface ProviderFactory {
   create: (config: ModelConfig) => ModelAdapter;
-}
-
-export interface ModelResolver {
-  /**
-   * Resolves a normalized model adapter for a given agent key and optional per-request override
-   * of the configuration.
-   */
-  resolve: (agentKey: AgentKey, override?: Partial<ModelConfig>) => Promise<ModelAdapter> | ModelAdapter;
 }

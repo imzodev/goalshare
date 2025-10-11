@@ -1,21 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-// Mock ModelResolver to avoid hitting real provider registry
-vi.mock("../../../lib/ai/model/resolver", () => {
+// Mock provider builders to avoid touching real SDKs
+vi.mock("../../../lib/ai/registry/provider-builders", () => {
   return {
-    ModelResolver: {
-      resolve: vi.fn(() => {
-        // Return a minimal adapter exposing getSdkModel() as the factory expects
-        return {
-          provider: "openai",
-          model: "gpt-4o-mini",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          getSdkModel: () => ({}) as any,
-          // generate is unused in this path
-
-          generate: async (_prompt: string) => ({ ok: true }),
-        };
-      }),
+    PROVIDER_BUILDERS: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      openai: (_modelName: string) => ({}) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      anthropic: (_modelName: string) => ({}) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      deepseek: (_modelName: string) => ({}) as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      openrouter: (_modelName: string) => ({}) as any,
     },
   };
 });
