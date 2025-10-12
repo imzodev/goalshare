@@ -38,7 +38,9 @@ export function DashboardContent() {
       <MobileNav />
 
       {/* FAB flotante */}
-      <FloatingActionButton />
+      <div className="md:hidden">
+        <FloatingActionButton />
+      </div>
     </>
   );
 }
