@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Target, Users, Trophy, Home, Plus, TrendingUp, Calendar, Bell, PanelLeftClose } from "lucide-react";
+import { Target, Users, Trophy, Home, Plus, TrendingUp, Calendar, PanelLeftClose, Share2, Bell } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -72,6 +72,24 @@ const getNavigationData = (pathname: string) => {
       url: "/dashboard/goals/new",
       icon: Plus,
       isActive: pathname === "/dashboard/goals/new",
+    },
+    {
+      title: "Compartir Progreso",
+      url: "/dashboard/progress",
+      icon: Share2,
+      isActive: pathname === "/dashboard/progress",
+    },
+    {
+      title: "Unirse a Comunidad",
+      url: "/dashboard/communities",
+      icon: Users,
+      isActive: pathname === "/dashboard/communities",
+    },
+    {
+      title: "Programar Recordatorio",
+      url: "/dashboard/calendar",
+      icon: Calendar,
+      isActive: pathname === "/dashboard/calendar",
     },
     {
       title: "Notificaciones",

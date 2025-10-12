@@ -2,7 +2,6 @@
 
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { StatsCards } from "@/components/dashboard/stats-cards";
-import { QuickActions } from "@/components/dashboard/quick-actions";
 import { GoalsSection } from "@/components/dashboard/goals-section";
 import { CommunitiesSection } from "@/components/dashboard/communities-section";
 import { MobileNav } from "@/components/dashboard/mobile-nav";
@@ -23,11 +22,6 @@ export function DashboardContent() {
 
         {/* Layout principal */}
         <div className="grid gap-6 md:grid-cols-2 min-w-0">
-          {/* Acciones rápidas */}
-          <div className="min-w-0">
-            <QuickActions />
-          </div>
-
           {/* Sección de metas */}
           <div className="min-w-0">
             <GoalsSection />
