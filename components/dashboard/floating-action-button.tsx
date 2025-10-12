@@ -63,6 +63,7 @@ export function FloatingActionButton() {
                 "h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110",
                 `bg-gradient-to-br ${action.color} hover:${action.color}`
               )}
+              aria-label={action.label}
               onClick={() => {
                 action.action();
                 setIsOpen(false);
@@ -82,6 +83,7 @@ export function FloatingActionButton() {
           "bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700",
           isOpen && "rotate-45"
         )}
+        aria-label={isOpen ? "Cerrar acciones" : "Abrir acciones"}
         onClick={toggleFab}
       >
         {isOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
