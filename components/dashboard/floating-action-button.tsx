@@ -4,33 +4,35 @@ import { useState } from "react";
 import { Plus, Target, Users, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const fabActions = [
-  {
-    id: "goal",
-    label: "Nueva Meta",
-    icon: Target,
-    color: "from-blue-500 to-purple-600",
-    action: () => {}, // TODO: Implementar crear meta
-  },
-  {
-    id: "community",
-    label: "Crear Comunidad",
-    icon: Users,
-    color: "from-green-500 to-teal-600",
-    action: () => {}, // TODO: Implementar crear comunidad
-  },
-  {
-    id: "event",
-    label: "Programar Evento",
-    icon: Calendar,
-    color: "from-orange-500 to-red-600",
-    action: () => {}, // TODO: Implementar programar evento
-  },
-];
+import { useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
 
 export function FloatingActionButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const { openSheet } = useGoalSheet();
+
+  const fabActions = [
+    {
+      id: "goal",
+      label: "Nueva Meta",
+      icon: Target,
+      color: "from-blue-500 to-purple-600",
+      action: () => openSheet(),
+    },
+    {
+      id: "community",
+      label: "Crear Comunidad",
+      icon: Users,
+      color: "from-green-500 to-teal-600",
+      action: () => {}, // TODO: Implementar crear comunidad
+    },
+    {
+      id: "event",
+      label: "Programar Evento",
+      icon: Calendar,
+      color: "from-orange-500 to-red-600",
+      action: () => {}, // TODO: Implementar programar evento
+    },
+  ];
 
   const toggleFab = () => setIsOpen(!isOpen);
 
