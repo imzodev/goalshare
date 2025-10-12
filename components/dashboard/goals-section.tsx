@@ -1,17 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Target, Calendar, Clock, RefreshCw, Loader2, MoreHorizontal, AlertCircle } from "lucide-react";
-import type { UserGoalSummary } from "@/types/goals";
-import { CreateGoalSheet } from "./create-goal-sheet";
 import { formatDeadline, formatRelativeTime } from "@/utils/date-utils";
 import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
 import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals";
 import { GoalsSectionSkeleton } from "@/components/skeletons/goals-section-skeleton";
+import { useGoals } from "@/hooks/use-goals";
+import { useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -22,50 +22,20 @@ const colorPalette = [
 ];
 
 export function GoalsSection() {
-  const [open, setOpen] = useState(false);
-  const [goals, setGoals] = useState<UserGoalSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchGoals = useCallback(async ({ silent = false } = {}) => {
-    if (silent) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    setError(null);
-
-    try {
-      const response = await fetch("/api/goals", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error ?? "No se pudieron cargar las metas");
-      }
-
-      const nextGoals = Array.isArray(data?.goals) ? data.goals : [];
-      setGoals(nextGoals);
-    } catch (err) {
-      console.error("[GoalsSection]", err);
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas");
-      setGoals([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+  const { goals, loading, refreshing, error, fetchGoals } = useGoals();
+  const { openSheet } = useGoalSheet();
 
   useEffect(() => {
     fetchGoals();
-  }, [fetchGoals]);
-
-  const handleGoalCreated = useCallback(() => {
-    fetchGoals({ silent: true });
+    const onCreated = () => fetchGoals({ silent: true });
+    if (typeof window !== "undefined") {
+      window.addEventListener("goal-created", onCreated as EventListener);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("goal-created", onCreated as EventListener);
+      }
+    };
   }, [fetchGoals]);
 
   const handleRefresh = () => fetchGoals({ silent: true });
@@ -83,7 +53,7 @@ export function GoalsSection() {
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
             {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           </Button>
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={() => openSheet()}>
             Crear meta
           </Button>
         </div>
@@ -108,7 +78,7 @@ export function GoalsSection() {
             <p className="mt-1 text-sm text-muted-foreground">
               Crea tu primera meta para comenzar a compartir tu progreso con la comunidad.
             </p>
-            <Button className="mt-4" onClick={() => setOpen(true)}>
+            <Button className="mt-4" onClick={() => openSheet()}>
               Crear mi primera meta
             </Button>
           </div>
@@ -195,7 +165,7 @@ export function GoalsSection() {
           </div>
         )}
       </CardContent>
-      <CreateGoalSheet open={open} onOpenChange={setOpen} onCreated={handleGoalCreated} />
+      {/* CreateGoalSheet is provided globally by GoalSheetProvider */}
     </Card>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Target, Users, Trophy, Home, Plus, TrendingUp, Calendar, PanelLeftClose, Share2, Bell } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -22,9 +22,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
 
 // Datos de navegación
-const getNavigationData = (pathname: string) => {
+const getNavigationData = (pathname: string, actions?: { onNewGoal?: () => void }) => {
   const navMain = [
     {
       title: "Dashboard",
@@ -66,12 +67,22 @@ const getNavigationData = (pathname: string) => {
     },
   ];
 
-  const quickActions = [
+  type QuickAction = {
+    title: string;
+    url: string;
+    icon: typeof Home;
+    isActive: boolean;
+    badge?: string;
+    onClick?: () => void;
+  };
+
+  const quickActions: QuickAction[] = [
     {
       title: "Nueva Meta",
       url: "/dashboard/goals/new",
       icon: Plus,
       isActive: pathname === "/dashboard/goals/new",
+      onClick: actions?.onNewGoal,
     },
     {
       title: "Compartir Progreso",
@@ -112,7 +123,9 @@ const userData = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const { navMain, quickActions } = getNavigationData(pathname);
+  const router = useRouter();
+  const { openSheet } = useGoalSheet();
+  const { navMain, quickActions } = getNavigationData(pathname, { onNewGoal: openSheet });
   const { toggleSidebar } = useSidebar();
   return (
     <Sidebar
@@ -170,10 +183,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Acciones Rápidas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {quickActions.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton tooltip={item.title} asChild>
-                    <Link href={item.url}>
+              {quickActions.map((item) => {
+                const handleClick = item.onClick ?? (() => router.push(item.url));
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton tooltip={item.title} onClick={handleClick}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                       {item.badge && (
@@ -181,10 +195,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           {item.badge}
                         </Badge>
                       )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
