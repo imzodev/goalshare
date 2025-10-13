@@ -15,7 +15,7 @@ import type { RateLimiter, Cache, Tracer } from "./ops";
  * Single source of truth for supported agent keys.
  * Adding a new agent should require editing ONLY this array.
  */
-export const AGENT_KEYS = ["planner", "smart", "coach", "scheduler", "moderator"] as const;
+export const AGENT_KEYS = ["planner", "smart", "coach", "scheduler", "moderator", "autocomplete"] as const;
 
 export type AgentKey = (typeof AGENT_KEYS)[number];
 

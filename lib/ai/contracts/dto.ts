@@ -5,7 +5,7 @@
 import { z } from "zod";
 
 /** Common helpers */
-export const LocaleSchema = z.string().min(2).max(10).default("en");
+export const LocaleSchema = z.string().min(2).max(10).default("es");
 export const TraceIdSchema = z.string().min(1).optional();
 /** Date-only in format YYYY-MM-DD to align with DB 'date' columns */
 export const DateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
@@ -102,3 +102,19 @@ export const ModerateResponseSchema = z.object({
   traceId: z.string().optional(),
 });
 export type ModerateResponse = z.infer<typeof ModerateResponseSchema>;
+
+/** Autocomplete: suggest description from title */
+export const AutocompleteDescriptionRequestSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  tone: z.string().optional(),
+  audience: z.string().optional(),
+  locale: LocaleSchema.optional(),
+  traceId: TraceIdSchema,
+});
+export type AutocompleteDescriptionRequest = z.infer<typeof AutocompleteDescriptionRequestSchema>;
+
+export const AutocompleteDescriptionResponseSchema = z.object({
+  suggestion: z.string(),
+  traceId: z.string().optional(),
+});
+export type AutocompleteDescriptionResponse = z.infer<typeof AutocompleteDescriptionResponseSchema>;

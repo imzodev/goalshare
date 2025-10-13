@@ -64,6 +64,21 @@ Reglas:
     temperature: 0,
     instructions: `Clasifica contenido. Devuelve un veredicto: allow|flag|block y motivos.`,
   },
+  autocomplete: {
+    provider: "openai",
+    model: "gpt-5-nano",
+    temperature: 0.6,
+    instructions: `Eres un agente de autocompletado de texto. Según la tarea solicitada, genera una sugerencia breve y útil. Devuelve solo texto plano bien formateado, con saltos de línea adecuados. Mantén un tono claro, conciso y motivador si aplica. Evita promesas o afirmaciones fuertes.
+
+Tareas típicas (ejemplos):
+- description: sugerir 2–4 frases de descripción inicial.
+- title: proponer 1 título claro y atractivo (máx. 80 caracteres).
+- summary: resumir en 2–3 frases.
+- bullet_points: listar 3–5 viñetas.
+- rewrite: reescribir con claridad y corrección.
+
+Respeta el idioma solicitado. Si recibes restricciones (p. ej., longitud, tono, audiencia), síguelas. Devuelve únicamente el texto resultante sin metadatos.`,
+  },
 };
 
 /**
@@ -89,7 +104,9 @@ export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
             ? env.AI_PROVIDER_SCHEDULER
             : agent === "moderator"
               ? env.AI_PROVIDER_MODERATOR
-              : "";
+              : agent === "autocomplete"
+                ? env.AI_PROVIDER_AUTOCOMPLETE
+                : "";
 
   const agentModel =
     agent === "planner"
@@ -102,7 +119,9 @@ export function resolveAgentDefaults(agent: AgentKey): ModelConfig {
             ? env.AI_MODEL_SCHEDULER
             : agent === "moderator"
               ? env.AI_MODEL_MODERATOR
-              : "";
+              : agent === "autocomplete"
+                ? env.AI_MODEL_AUTOCOMPLETE
+                : "";
 
   // global fallbacks
   const globalProvider = env.AI_DEFAULT_PROVIDER;

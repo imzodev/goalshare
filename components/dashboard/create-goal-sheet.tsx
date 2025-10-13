@@ -34,6 +34,7 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
   const [persisting, setPersisting] = useState(false);
   const [step, setStep] = useState<"form" | "preview">("form");
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+  const [descLoading, setDescLoading] = useState(false);
 
   const reset = () => {
     setTitle("");
@@ -46,6 +47,36 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
     setGenerating(false);
     setPersisting(false);
     setStep("form");
+  };
+
+  const handleGenerateDescription = async () => {
+    setError(null);
+    if (!title || title.trim().length < 3) {
+      setError("Primero ingresa un título (mín. 3 caracteres)");
+      return;
+    }
+    try {
+      setDescLoading(true);
+      const res = await fetch("/api/ai/autocomplete/description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: title.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const msg = data?.error || "No se pudo generar la descripción";
+        setError(typeof msg === "string" ? msg : "No se pudo generar la descripción");
+        return;
+      }
+      const suggestion = typeof data?.suggestion === "string" ? data.suggestion.trim() : "";
+      if (suggestion) {
+        setDescription((prev) => (prev && prev.trim().length > 0 ? `${prev}\n\n${suggestion}` : suggestion));
+      }
+    } catch {
+      setError("Error de red");
+    } finally {
+      setDescLoading(false);
+    }
   };
 
   // Set weight with 100% constraint: if increasing one, automatically reduce others to make room
@@ -259,9 +290,20 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="goal-description" className="text-sm font-medium">
-                  Descripción
-                </label>
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="goal-description" className="text-sm font-medium">
+                    Descripción
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateDescription}
+                    disabled={descLoading || !title}
+                  >
+                    {descLoading ? "Generando..." : "Generar descripción"}
+                  </Button>
+                </div>
                 <Textarea
                   id="goal-description"
                   value={description}

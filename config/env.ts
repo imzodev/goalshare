@@ -37,4 +37,7 @@ export const env = {
 
   AI_PROVIDER_MODERATOR: process.env.AI_PROVIDER_MODERATOR ?? "",
   AI_MODEL_MODERATOR: process.env.AI_MODEL_MODERATOR ?? "",
+
+  AI_PROVIDER_AUTOCOMPLETE: process.env.AI_PROVIDER_AUTOCOMPLETE ?? "",
+  AI_MODEL_AUTOCOMPLETE: process.env.AI_MODEL_AUTOCOMPLETE ?? "",
 } as const;

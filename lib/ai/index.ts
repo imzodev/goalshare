@@ -20,6 +20,8 @@ export {
   AdviceRequestSchema,
   PlanRequestSchema,
   ModerateRequestSchema,
+  AutocompleteDescriptionRequestSchema,
+  AutocompleteDescriptionResponseSchema,
 } from "./contracts/dto";
 
 // Registry & Factory
