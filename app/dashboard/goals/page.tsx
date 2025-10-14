@@ -1,43 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Target, Calendar, Clock, RefreshCw, Loader2, AlertCircle, Edit, Trash2, Sparkles, Plus } from "lucide-react";
-import type { UserGoalSummary } from "@/types/goals";
-import { EditGoalDialog } from "./components/edit-goal-dialog";
-import { DeleteGoalDialog } from "./components/delete-goal-dialog";
-import { formatDeadline } from "@/utils/date-utils";
-import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
+import { Target, RefreshCw, Loader2, AlertCircle, Sparkles, Plus } from "lucide-react";
+import { EditGoalDialog } from "@/components/goals/edit-goal-dialog";
+import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
 import { GoalsManagementSkeleton } from "@/components/skeletons/goals-management-skeleton";
-import { GOAL_STATUS_LABELS } from "@/constants/goals";
-
-const colorPalette = [
-  "from-blue-500/50 via-blue-500/20 to-transparent",
-  "from-purple-500/50 via-purple-500/20 to-transparent",
-  "from-emerald-500/50 via-emerald-500/20 to-transparent",
-  "from-amber-500/50 via-amber-500/20 to-transparent",
-  "from-pink-500/50 via-pink-500/20 to-transparent",
-  "from-rose-500/50 via-rose-500/20 to-transparent",
-  "from-cyan-500/50 via-cyan-500/20 to-transparent",
-  "from-violet-500/50 via-violet-500/20 to-transparent",
-];
+import { GoalCard } from "@/components/goals/goal-card";
+import { useGoalManagement } from "@/hooks/use-goal-management";
+import type { UserGoalSummary } from "@/types/goals";
 
 export default function GoalsManagementPage() {
   const [goals, setGoals] = useState<UserGoalSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Estados para edición
-  const [editingGoal, setEditingGoal] = useState<UserGoalSummary | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-
-  // Estados para eliminación
-  const [deletingGoal, setDeletingGoal] = useState<UserGoalSummary | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchGoals = useCallback(async ({ silent = false } = {}) => {
     if (silent) {
@@ -71,33 +49,28 @@ export default function GoalsManagementPage() {
     }
   }, []);
 
+  // Hook de gestión de goals (edición y eliminación)
+  const {
+    editingGoal,
+    editDialogOpen,
+    deletingGoal,
+    deleteDialogOpen,
+    setEditDialogOpen,
+    setDeleteDialogOpen,
+    handleEditGoal,
+    handleDeleteGoal,
+    handleGoalUpdated,
+    handleGoalDeleted,
+  } = useGoalManagement({
+    onGoalUpdated: () => fetchGoals({ silent: true }),
+    onGoalDeleted: () => fetchGoals({ silent: true }),
+  });
+
   useEffect(() => {
     fetchGoals();
   }, [fetchGoals]);
 
   const handleRefresh = () => fetchGoals({ silent: true });
-
-  const handleEditGoal = (goal: UserGoalSummary) => {
-    setEditingGoal(goal);
-    setEditDialogOpen(true);
-  };
-
-  const handleDeleteGoal = (goal: UserGoalSummary) => {
-    setDeletingGoal(goal);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleGoalUpdated = () => {
-    fetchGoals({ silent: true });
-    setEditDialogOpen(false);
-    setEditingGoal(null);
-  };
-
-  const handleGoalDeleted = () => {
-    fetchGoals({ silent: true });
-    setDeleteDialogOpen(false);
-    setDeletingGoal(null);
-  };
 
   const showSkeleton = loading && !refreshing;
 
@@ -202,90 +175,16 @@ export default function GoalsManagementPage() {
         {/* Lista de metas */}
         {!loading && !error && goals.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {goals.map((goal, index) => {
-              const gradient = colorPalette[index % colorPalette.length];
-              const statusLabel = GOAL_STATUS_LABELS[goal.status];
-              const deadlineLabel = formatDeadline(goal.deadline);
-              const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft);
-
-              return (
-                <Card
-                  key={goal.id}
-                  className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
-                >
-                  <div
-                    className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
-                  />
-
-                  <CardHeader className="relative pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{goal.title}</CardTitle>
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          <Badge variant="secondary" className="text-xs">
-                            {goal.topicCommunity?.name || "Sin categoría"}
-                          </Badge>
-                          <Badge
-                            className={`text-xs capitalize ${
-                              goal.status === "completed"
-                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                                : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            }`}
-                          >
-                            {statusLabel}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      {/* Acciones */}
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditGoal(goal)}
-                          className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteGoal(goal)}
-                          className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="relative space-y-4">
-                    <p className="text-sm text-muted-foreground line-clamp-3">{goal.description}</p>
-
-                    {/* Información temporal */}
-                    <div className="space-y-2 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span>{deadlineLabel}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{daysLeftLabel}</span>
-                      </div>
-                    </div>
-
-                    {/* Barra de progreso */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Progreso</span>
-                        <span className="font-medium">{goal.progress}%</span>
-                      </div>
-                      <Progress value={goal.progress} className="h-2" />
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {goals.map((goal, index) => (
+              <GoalCard
+                key={goal.id}
+                goal={goal}
+                index={index}
+                layout="multi-column"
+                onEdit={handleEditGoal}
+                onDelete={handleDeleteGoal}
+              />
+            ))}
           </div>
         )}
       </div>
