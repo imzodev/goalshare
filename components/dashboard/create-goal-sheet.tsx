@@ -36,6 +36,43 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const [descLoading, setDescLoading] = useState(false);
 
+  // Helpers for deadline quick-selects
+  const toInputDate = (d: Date) => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1; // 0-indexed
+    const day = d.getDate();
+    return `${y}-${pad(m)}-${pad(day)}`;
+  };
+
+  const addDaysFromToday = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+
+  const addMonthsFromToday = (months: number) => {
+    const d = new Date();
+    const currentDate = d.getDate();
+    d.setMonth(d.getMonth() + months);
+    // Handle month overflow to keep last valid day if needed
+    if (d.getDate() !== currentDate) {
+      d.setDate(0);
+    }
+    return d;
+  };
+
+  const addYearsFromToday = (years: number) => {
+    const d = new Date();
+    const currentDate = d.getDate();
+    d.setFullYear(d.getFullYear() + years);
+    // Handle Feb 29 and similar edge cases
+    if (d.getDate() !== currentDate) {
+      d.setDate(0);
+    }
+    return d;
+  };
+
   const reset = () => {
     setTitle("");
     setDescription("");
@@ -318,6 +355,40 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
                   Fecha límite (opcional)
                 </label>
                 <Input id="goal-deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeadline(toInputDate(addDaysFromToday(7)))}
+                  >
+                    1 semana
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeadline(toInputDate(addMonthsFromToday(1)))}
+                  >
+                    1 mes
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeadline(toInputDate(addMonthsFromToday(6)))}
+                  >
+                    6 meses
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeadline(toInputDate(addYearsFromToday(1)))}
+                  >
+                    1 año
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
