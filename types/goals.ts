@@ -6,6 +6,21 @@ export interface TopicSummary {
   slug: string;
 }
 
+export interface MilestoneItem {
+  title: string;
+  description?: string;
+  dueDate?: string;
+  weight: number;
+}
+
+export interface CreateGoalPayload {
+  title: string;
+  description: string;
+  deadline?: string | null;
+  topicCommunityId: string;
+  templateId?: string | null;
+}
+
 export interface UserGoalSummary {
   id: string;
   title: string;

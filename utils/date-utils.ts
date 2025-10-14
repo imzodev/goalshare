@@ -30,6 +30,53 @@ export function toISODate(date: Date): string {
   return date.toISOString().split("T")[0] ?? date.toISOString();
 }
 
+/**
+ * Formats a Date to an <input type="date" /> compatible string (YYYY-MM-DD).
+ */
+export function toInputDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1; // 0-indexed -> 1..12
+  const d = date.getDate();
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+
+/** Adds a number of days to a base date (default: today). */
+export function addDaysFrom(base: Date = new Date(), days: number = 0): Date {
+  const d = new Date(base);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+/**
+ * Adds months to a base date (default: today). If the target month has fewer days,
+ * it will clamp to the last valid day of that month.
+ */
+export function addMonthsFrom(base: Date = new Date(), months: number = 0): Date {
+  const d = new Date(base);
+  const currentDate = d.getDate();
+  d.setMonth(d.getMonth() + months);
+  if (d.getDate() !== currentDate) {
+    // Overflowed (e.g., Jan 31 + 1 month -> Mar 3). Set to last day of previous month.
+    d.setDate(0);
+  }
+  return d;
+}
+
+/**
+ * Adds years to a base date (default: today). Handles Feb 29 and similar cases by
+ * clamping to the last valid day of the month if needed.
+ */
+export function addYearsFrom(base: Date = new Date(), years: number = 0): Date {
+  const d = new Date(base);
+  const currentDate = d.getDate();
+  d.setFullYear(d.getFullYear() + years);
+  if (d.getDate() !== currentDate) {
+    d.setDate(0);
+  }
+  return d;
+}
+
 export function calculateDaysLeft(deadline: Date, reference: Date): number {
   const diff = deadline.getTime() - reference.getTime();
   return Math.max(Math.ceil(diff / MS_IN_DAY), 0);
