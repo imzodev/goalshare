@@ -4,6 +4,21 @@ import React from "react";
 // Ensure React is available globally for components expecting it in scope
 (globalThis as any).React = React;
 
+// Minimal DOM polyfills for Radix Select under jsdom
+if (typeof Element !== "undefined") {
+  if (typeof (Element as any).prototype.scrollIntoView !== "function") {
+    (Element as any).prototype.scrollIntoView = () => {};
+  }
+}
+if (typeof HTMLElement !== "undefined") {
+  if (typeof (HTMLElement as any).prototype.hasPointerCapture !== "function") {
+    (HTMLElement as any).prototype.hasPointerCapture = () => false;
+  }
+  if (typeof (HTMLElement as any).prototype.releasePointerCapture !== "function") {
+    (HTMLElement as any).prototype.releasePointerCapture = () => {};
+  }
+}
+
 // Polyfill ResizeObserver for Radix Slider and other components in jsdom
 if (typeof (globalThis as any).ResizeObserver === "undefined") {
   class ResizeObserverPolyfill {
