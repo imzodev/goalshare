@@ -62,7 +62,7 @@ describe("GoalsSection", () => {
   });
 
   it("muestra mensaje de error cuando error presente", () => {
-    (useGoals as unknown as vi.Mock).mockReturnValue({
+    (useGoals as unknown as Mock).mockReturnValue({
       goals: [],
       loading: false,
       refreshing: false,
@@ -76,7 +76,7 @@ describe("GoalsSection", () => {
   });
 
   it("muestra empty state cuando no hay metas", () => {
-    (useGoals as unknown as vi.Mock).mockReturnValue({
+    (useGoals as unknown as Mock).mockReturnValue({
       goals: [],
       loading: false,
       refreshing: false,
@@ -91,7 +91,7 @@ describe("GoalsSection", () => {
 
   it("renderiza GoalCards cuando hay metas y refresca en callbacks del hook", async () => {
     const fetchGoals = vi.fn();
-    (useGoals as unknown as vi.Mock).mockReturnValue({
+    (useGoals as unknown as Mock).mockReturnValue({
       goals: [makeUserGoal({ id: "g1" }), makeUserGoal({ id: "g2", title: "Otra meta" })],
       loading: false,
       refreshing: false,
