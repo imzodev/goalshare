@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, AlertTriangle } from "lucide-react";
 import type { UserGoalSummary } from "@/types/goals";
+import { useTranslations } from "next-intl";
 
 type Props = {
   goal: UserGoalSummary | null;
@@ -22,6 +23,10 @@ type Props = {
 };
 
 export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Props) {
+  const t = useTranslations("goals.delete");
+  const tCommon = useTranslations("common.actions");
+  const tStates = useTranslations("common.states");
+
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +43,8 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
 
         const data = await res.json();
         if (!res.ok) {
-          const msg = data?.error?.message || data?.error || "No se pudo eliminar la meta";
-          setError(typeof msg === "string" ? msg : "No se pudo eliminar la meta");
+          const msg = data?.error?.message || data?.error || t("deleteError");
+          setError(typeof msg === "string" ? msg : t("deleteError"));
           return;
         }
 
@@ -47,7 +52,7 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
         onOpenChange(false);
         onGoalDeleted?.();
       } catch {
-        setError("Error de red");
+        setError(tStates("networkError"));
       }
     });
   };
@@ -68,10 +73,8 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <AlertDialogTitle>Eliminar Meta</AlertDialogTitle>
-              <AlertDialogDescription className="mt-2">
-                ¿Estás seguro de que quieres eliminar esta meta? Esta acción no se puede deshacer.
-              </AlertDialogDescription>
+              <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+              <AlertDialogDescription className="mt-2">{t("description")}</AlertDialogDescription>
             </div>
           </div>
         </AlertDialogHeader>
@@ -82,7 +85,7 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
             <p className="text-sm text-muted-foreground line-clamp-2">{goal.description}</p>
             {goal.deadline && (
               <p className="text-xs text-muted-foreground mt-2">
-                Fecha límite: {new Date(goal.deadline).toLocaleDateString("es-MX")}
+                {t("deadlineLabel")}: {new Date(goal.deadline).toLocaleDateString()}
               </p>
             )}
           </div>
@@ -95,15 +98,13 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
           )}
 
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 p-3">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              ⚠️ Se eliminarán permanentemente todos los registros de progreso asociados a esta meta.
-            </p>
+            <p className="text-sm text-amber-800 dark:text-amber-200">⚠️ {t("warning")}</p>
           </div>
         </div>
 
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel} disabled={pending}>
-            Cancelar
+            {tCommon("cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
@@ -113,10 +114,10 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: Pr
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Eliminando...
+                {tStates("deleting")}
               </>
             ) : (
-              "Eliminar meta"
+              t("deleteButton")
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

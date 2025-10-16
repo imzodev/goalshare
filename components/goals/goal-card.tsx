@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Calendar, Clock, MoreHorizontal, Edit, Trash2 } from "lucide-react";
-import { formatDeadline, formatRelativeTime } from "@/utils/date-utils";
-import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
-import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals";
+import { formatDeadline, formatRelativeTimeI18n } from "@/utils/date-utils";
+import { getDaysLeftLabelI18n } from "@/utils/goals-ui-utils";
 import type { UserGoalSummary } from "@/types/goals";
+import { useTranslations } from "next-intl";
+import { getGoalTypeKey, getGoalStatusKey } from "@/utils/i18n-helpers";
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -36,12 +37,25 @@ interface GoalCardProps {
 }
 
 export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelete }: GoalCardProps) {
+  const t = useTranslations("goals");
+  const tLabels = useTranslations("goals.labels");
+  const tCommon = useTranslations("common.actions");
+  const tTime = useTranslations("common.time");
+
   const gradient = colorPalette[index % colorPalette.length];
-  const statusLabel = GOAL_STATUS_LABELS[goal.status];
-  const goalTypeLabel = GOAL_TYPE_LABELS[goal.goalType];
+  const statusKey = getGoalStatusKey(goal.status);
+  const typeKey = getGoalTypeKey(goal.goalType);
   const deadlineLabel = formatDeadline(goal.deadline);
-  const daysLeftLabel = getDaysLeftLabel(goal.status, goal.daysLeft);
-  const lastUpdateLabel = formatRelativeTime(goal.lastUpdateAt);
+  // Translate deadline label if it's the noDeadline key
+  const deadlineText = deadlineLabel.startsWith("goals.labels.")
+    ? tLabels(deadlineLabel.replace("goals.labels.", ""))
+    : deadlineLabel;
+
+  // Translate days left using helper and strip the namespace for the local translator
+  const daysLeftText = getDaysLeftLabelI18n(goal.status, goal.daysLeft, tLabels);
+  const lastUpdateLabel = formatRelativeTimeI18n(goal.lastUpdateAt, (key, values) =>
+    tTime(key.replace("common.time.", ""), values)
+  );
 
   const renderActions = () => {
     if (!onEdit && !onDelete) return null;
@@ -59,13 +73,13 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(goal)}>
                 <Edit className="h-4 w-4 mr-2" />
-                Editar
+                {tCommon("edit")}
               </DropdownMenuItem>
             )}
             {onDelete && (
               <DropdownMenuItem onClick={() => onDelete(goal)} className="text-destructive">
                 <Trash2 className="h-4 w-4 mr-2" />
-                Eliminar
+                {tCommon("delete")}
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>
@@ -91,13 +105,13 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
             {onEdit && (
               <DropdownMenuItem onClick={() => onEdit(goal)}>
                 <Edit className="h-4 w-4 mr-2" />
-                Editar
+                {tCommon("edit")}
               </DropdownMenuItem>
             )}
             {onDelete && (
               <DropdownMenuItem onClick={() => onDelete(goal)} className="text-destructive">
                 <Trash2 className="h-4 w-4 mr-2" />
-                Eliminar
+                {tCommon("delete")}
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>
@@ -142,10 +156,10 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
             <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{goal.title}</CardTitle>
             <div className="flex flex-wrap gap-2 mb-3">
               <Badge variant="outline" className="text-xs">
-                {goalTypeLabel}
+                {t(`types.${typeKey}`)}
               </Badge>
               <Badge variant="secondary" className="text-xs">
-                {goal.topicCommunity?.name || "Sin categoría"}
+                {goal.topicCommunity?.name || t("labels.noCategory")}
               </Badge>
               <Badge
                 className={`text-xs capitalize ${
@@ -154,7 +168,7 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
                     : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                 }`}
               >
-                {statusLabel}
+                {t(`status.${statusKey}`)}
               </Badge>
             </div>
           </div>
@@ -171,11 +185,11 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
         <div className="space-y-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3.5 w-3.5" />
-            <span>{deadlineLabel}</span>
+            <span>{deadlineText}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
-            <span>{daysLeftLabel}</span>
+            <span>{daysLeftText}</span>
           </div>
           {lastUpdateLabel && (
             <div className="flex items-center gap-1">
@@ -188,7 +202,7 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
         {/* Barra de progreso */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Progreso</span>
+            <span className="text-muted-foreground">{t("labels.progress")}</span>
             <span className="font-medium">{goal.progress}%</span>
           </div>
           <Progress value={goal.progress} className="h-2" />

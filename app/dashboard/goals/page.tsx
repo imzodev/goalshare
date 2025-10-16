@@ -10,8 +10,12 @@ import { GoalsManagementSkeleton } from "@/components/skeletons/goals-management
 import { GoalCard } from "@/components/goals/goal-card";
 import { useGoalManagement } from "@/hooks/use-goal-management";
 import type { UserGoalSummary } from "@/types/goals";
+import { useTranslations } from "next-intl";
 
 export default function GoalsManagementPage() {
+  const t = useTranslations("goals.list");
+  const tCommon = useTranslations("common.actions");
+
   const [goals, setGoals] = useState<UserGoalSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,14 +38,14 @@ export default function GoalsManagementPage() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error ?? "No se pudieron cargar las metas");
+        throw new Error(data?.error ?? t("loadError"));
       }
 
       const nextGoals = Array.isArray(data?.goals) ? data.goals : [];
       setGoals(nextGoals);
     } catch (err) {
       console.error("[GoalsManagement]", err);
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las metas");
+      setError(err instanceof Error ? err.message : t("loadError"));
       setGoals([]);
     } finally {
       setLoading(false);
@@ -84,9 +88,9 @@ export default function GoalsManagementPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Gestión de Metas
+              {t("pageTitle")}
             </h1>
-            <p className="text-muted-foreground">Administra todas tus metas: edita, elimina y sigue tu progreso</p>
+            <p className="text-muted-foreground">{t("pageDescription")}</p>
           </div>
         </div>
 
@@ -108,22 +112,28 @@ export default function GoalsManagementPage() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Target className="h-4 w-4" />
-                  <span>{goals.length} metas totales</span>
+                  <span>
+                    {goals.length} {t("totalGoals")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  <span>{goals.filter((g) => g.status === "completed").length} completadas</span>
+                  <span>
+                    {goals.filter((g) => g.status === "completed").length} {t("completed")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                  <span>{goals.filter((g) => g.status === "pending").length} en progreso</span>
+                  <span>
+                    {goals.filter((g) => g.status === "pending").length} {t("inProgress")}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
                   {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                  Refrescar
+                  {tCommon("refresh")}
                 </Button>
               </div>
             </div>
@@ -139,10 +149,10 @@ export default function GoalsManagementPage() {
               <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm">
                 <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
                 <div>
-                  <p className="font-medium text-destructive">No pudimos cargar tus metas</p>
+                  <p className="font-medium text-destructive">{t("errorTitle")}</p>
                   <p className="text-muted-foreground">{error}</p>
                   <Button variant="outline" size="sm" className="mt-2" onClick={handleRefresh}>
-                    Reintentar
+                    {tCommon("retry")}
                   </Button>
                 </div>
               </div>
@@ -156,16 +166,14 @@ export default function GoalsManagementPage() {
             <CardContent className="pt-6">
               <div className="rounded-lg border border-dashed bg-white/50 dark:bg-gray-800/40 px-6 py-16 text-center">
                 <Target className="mx-auto h-16 w-16 text-blue-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Aún no tienes metas</h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Crea tu primera meta para comenzar a gestionar tus objetivos y compartir tu progreso con la comunidad.
-                </p>
+                <h3 className="text-xl font-semibold mb-2">{t("empty")}</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">{t("emptyDescription")}</p>
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Crear mi primera meta
+                  {t("createFirst")}
                 </Button>
               </div>
             </CardContent>

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Mock } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import { GoalsSection } from "@/components/dashboard/goals-section";
 import { makeUserGoal } from "@/tests/test-utils/goal-fixtures";
 
@@ -53,7 +54,7 @@ describe("GoalsSection", () => {
   });
 
   it("muestra skeleton cuando loading y no refreshing", () => {
-    render(<GoalsSection />);
+    render(withI18n(<GoalsSection />));
     expect(screen.getByText(/Mis Metas/i)).toBeInTheDocument();
     // Skeleton shows by existence of placeholder text or simply by role region count
     // Using a heuristic check: empty state and error are not shown
@@ -70,7 +71,7 @@ describe("GoalsSection", () => {
       fetchGoals: vi.fn(),
     });
 
-    render(<GoalsSection />);
+    render(withI18n(<GoalsSection />));
     expect(screen.getByText(/No pudimos cargar tus metas/i)).toBeInTheDocument();
     expect(screen.getByText(/Fallo X/i)).toBeInTheDocument();
   });
@@ -84,8 +85,8 @@ describe("GoalsSection", () => {
       fetchGoals: vi.fn(),
     });
 
-    render(<GoalsSection />);
-    expect(screen.getByText(/Aún no tienes metas activas/i)).toBeInTheDocument();
+    render(withI18n(<GoalsSection />));
+    expect(screen.getByText(/No tienes metas activas/i)).toBeInTheDocument();
     expect(screen.getAllByRole("button")).toBeTruthy();
   });
 
@@ -99,7 +100,7 @@ describe("GoalsSection", () => {
       fetchGoals,
     });
 
-    render(<GoalsSection />);
+    render(withI18n(<GoalsSection />));
 
     // Se renderizan títulos de ambas metas
     expect(screen.getByText(/Leer 12 libros/i)).toBeInTheDocument();

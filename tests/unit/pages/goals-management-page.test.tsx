@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import GoalsManagementPage from "@/app/dashboard/goals/page";
 import { makeUserGoal } from "@/tests/test-utils/goal-fixtures";
 
@@ -67,7 +68,7 @@ describe("GoalsManagementPage", () => {
     const goals = [makeUserGoal({ id: "g1" }), makeUserGoal({ id: "g2", title: "Otra meta" })];
     mockFetchOnce(200, { goals });
 
-    render(<GoalsManagementPage />);
+    render(withI18n(<GoalsManagementPage />));
 
     // Skeleton state implied initially; wait for goals to render
     await waitFor(() => expect(screen.getByText(/Gestión de Metas/i)).toBeInTheDocument());
@@ -81,7 +82,7 @@ describe("GoalsManagementPage", () => {
       { status: 200, body: { goals: [] } },
     ]);
 
-    render(<GoalsManagementPage />);
+    render(withI18n(<GoalsManagementPage />));
 
     await waitFor(() => expect(screen.getByText(/No pudimos cargar tus metas/i)).toBeInTheDocument());
 
@@ -95,7 +96,7 @@ describe("GoalsManagementPage", () => {
   it("muestra empty state cuando la API retorna lista vacía", async () => {
     mockFetchOnce(200, { goals: [] });
 
-    render(<GoalsManagementPage />);
+    render(withI18n(<GoalsManagementPage />));
 
     await waitFor(() => expect(screen.getByText(/Aún no tienes metas/i)).toBeInTheDocument());
   });
@@ -107,7 +108,7 @@ describe("GoalsManagementPage", () => {
       { status: 200, body: { goals: [makeUserGoal({ id: "g1" })] } },
     ]);
 
-    render(<GoalsManagementPage />);
+    render(withI18n(<GoalsManagementPage />));
 
     // First load
     await waitFor(() => expect(screen.getByText(/Leer 12 libros/i)).toBeInTheDocument());

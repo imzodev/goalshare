@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import { CreateGoalPreview } from "@/components/dashboard/create-goal/CreateGoalPreview";
 
 function renderPreview(overrides: Partial<Parameters<typeof CreateGoalPreview>[0]> = {}) {
@@ -20,7 +21,7 @@ function renderPreview(overrides: Partial<Parameters<typeof CreateGoalPreview>[0
     persisting: overrides.persisting ?? false,
     pending: overrides.pending ?? false,
   };
-  render(<CreateGoalPreview {...props} />);
+  render(withI18n(<CreateGoalPreview {...props} />));
   return props;
 }
 

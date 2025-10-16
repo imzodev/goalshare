@@ -14,21 +14,26 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { FaGoogle, FaGithub } from "react-icons/fa6";
+import { useTranslations } from "next-intl";
 
 export function SignUpForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const t = useTranslations("auth.signupPage");
+  const tValidation = useTranslations("validation");
+  const tCommon = useTranslations("common.states");
+  const tErrors = useTranslations("auth.errors");
 
   const signUpSchema = z
     .object({
-      email: z.string().email("Correo electrónico inválido"),
-      password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+      email: z.string().email(tValidation("invalidEmail")),
+      password: z.string().min(6, tValidation("minLength", { min: 6 })),
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      message: "Las contraseñas no coinciden",
+      message: tErrors("passwordMismatch"),
       path: ["confirmPassword"],
     });
 
@@ -44,7 +49,7 @@ export function SignUpForm() {
     // Validación de email y contraseñas con Zod
     const result = signUpSchema.safeParse({ email, password, confirmPassword });
     if (!result.success) {
-      const message = result.error.issues?.[0]?.message || "Datos inválidos";
+      const message = result.error.issues?.[0]?.message || tValidation("required");
       toast.error(message);
       setIsLoading(false);
       return;
@@ -64,8 +69,8 @@ export function SignUpForm() {
       toast.error(getAuthErrorMessage(error.message));
       setIsLoading(false);
     } else {
-      toast.success("¡Cuenta creada!", {
-        description: "Revisa tu correo para confirmar tu cuenta",
+      toast.success(tCommon("success"), {
+        description: t("emailConfirmation"),
       });
       router.push("/auth/sign-up-success");
     }
@@ -118,31 +123,43 @@ export function SignUpForm() {
   return (
     <Card className="w-full max-w-md border border-border bg-card shadow-sm">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-3xl font-semibold text-foreground">Crear cuenta</CardTitle>
-        <CardDescription className="text-center text-muted-foreground">
-          Ingresa tus datos para crear una nueva cuenta
-        </CardDescription>
+        <CardTitle className="text-center text-3xl font-semibold text-foreground">{t("title")}</CardTitle>
+        <CardDescription className="text-center text-muted-foreground">{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email">Correo electrónico</Label>
-            <Input id="email" name="email" type="email" placeholder="tu@email.com" required disabled={isLoading} />
+            <Label htmlFor="email">{t("email")}</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder={t("emailPlaceholder")}
+              required
+              disabled={isLoading}
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input id="password" name="password" type="password" placeholder="••••••••" required disabled={isLoading} />
-            <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
+            <Label htmlFor="password">{t("password")}</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder={t("passwordPlaceholder")}
+              required
+              disabled={isLoading}
+            />
+            <p className="text-xs text-muted-foreground">{t("passwordHint")}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
             <Input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              placeholder="••••••••"
+              placeholder={t("confirmPasswordPlaceholder")}
               required
               disabled={isLoading}
             />
@@ -152,10 +169,10 @@ export function SignUpForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creando cuenta...
+                {tCommon("loading")}
               </>
             ) : (
-              "Crear cuenta"
+              t("submit")
             )}
           </Button>
         </form>
@@ -163,7 +180,7 @@ export function SignUpForm() {
         {/* Divider */}
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">o regístrate con</span>
+          <span className="text-xs text-muted-foreground">{t("orContinueWith")}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
@@ -178,7 +195,7 @@ export function SignUpForm() {
           >
             {isGoogleLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Continuando con Google
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {tCommon("loading")}
               </>
             ) : (
               <>
@@ -195,7 +212,7 @@ export function SignUpForm() {
           >
             {isGithubLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Continuando con GitHub
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {tCommon("loading")}
               </>
             ) : (
               <>
@@ -206,9 +223,9 @@ export function SignUpForm() {
         </div>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          ¿Ya tienes una cuenta?{" "}
+          {t("hasAccount")}{" "}
           <Link href="/auth/login" className="font-medium text-primary hover:underline">
-            Inicia sesión
+            {t("loginLink")}
           </Link>
         </div>
       </CardContent>

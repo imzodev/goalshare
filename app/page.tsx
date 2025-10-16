@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -19,6 +20,8 @@ export default async function Home() {
   if (user) {
     redirect("/dashboard");
   }
+
+  const t = await getTranslations("landing");
   return (
     <main id="main-content" className="min-h-screen">
       {/* Hero */}
@@ -35,52 +38,52 @@ export default async function Home() {
           <div className="mx-auto max-w-4xl">
             <Badge className="mb-6 bg-gradient-to-br from-primary/10 via-purple-500/10 to-accent/10 text-primary border-primary/20 hover:bg-gradient-to-br hover:from-primary/20 hover:via-purple-500/20 hover:to-accent/20 transition-all duration-300">
               <Sparkles className="w-3 h-3 mr-1" />
-              Nuevo · Presentación de GoalShare
+              {t("hero.badge")}
             </Badge>
 
             <h1
               id="hero-heading"
               className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent leading-tight"
             >
-              Convierte tus metas en
+              {t("hero.title")}
               <span className="bg-gradient-to-br from-primary via-purple-500 to-accent bg-clip-text text-transparent">
                 {" "}
-                progreso real
+                {t("hero.titleHighlight")}
               </span>
             </h1>
 
-            <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Define objetivos claros, comparte tu avance y mantén la motivación con tu comunidad.
-            </p>
+            <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">{t("hero.subtitle")}</p>
 
             <div className="mt-8 mx-auto max-w-2xl">
               <div className="grid md:grid-cols-3 gap-4 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  Establece metas con hitos y fechas límite
+                  {t("hero.feature1")}
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <div className="w-2 h-2 rounded-full bg-accent" />
-                  Publica avances para rendir cuentas
+                  {t("hero.feature2")}
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <div className="w-2 h-2 rounded-full bg-primary" />
-                  Recibe apoyo y feedback en cada paso
+                  {t("hero.feature3")}
                 </div>
               </div>
             </div>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <CtaAuthLink size="lg" className="min-w-[200px] transition-all duration-300">
-                Comenzar gratis
+                {t("hero.ctaPrimary")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CtaAuthLink>
               <Button variant="outline" size="lg" asChild className="min-w-[200px] backdrop-blur-sm">
-                <a href="#features">Ver funciones</a>
+                <a href="#features">{t("hero.ctaSecondary")}</a>
               </Button>
             </div>
 
-            <p className="mt-4 text-sm text-muted-foreground">Sin tarjeta requerida · Configuración en 2 minutos</p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {t("hero.noCard")} · {t("hero.quickSetup")}
+            </p>
           </div>
         </div>
       </section>
@@ -90,12 +93,10 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-16">
             <Badge variant="outline" className="mb-4">
-              Funcionalidades
+              {t("features.badge")}
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Todo lo que necesitas para avanzar</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Define, mide y comparte tu progreso con claridad y mantén la motivación en cada paso.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">{t("features.title")}</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">{t("features.subtitle")}</p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             <FeatureCard
@@ -104,8 +105,8 @@ export default async function Home() {
                   🎯
                 </span>
               }
-              title="Metas e hitos"
-              description="Crea objetivos concretos, divídelos en hitos e impulsa tu ritmo con deadlines."
+              title={t("features.goalsTitle")}
+              description={t("features.goalsDescription")}
             />
             <FeatureCard
               icon={
@@ -113,8 +114,8 @@ export default async function Home() {
                   📊
                 </span>
               }
-              title="Seguimiento claro"
-              description="Registra avances y visualiza tu progreso para no perder el foco."
+              title={t("features.trackingTitle")}
+              description={t("features.trackingDescription")}
             />
             <FeatureCard
               icon={
@@ -122,8 +123,8 @@ export default async function Home() {
                   🤝
                 </span>
               }
-              title="Comparte y colabora"
-              description="Invita a tu comunidad para recibir apoyo y mantener la constancia."
+              title={t("features.shareTitle")}
+              description={t("features.shareDescription")}
             />
             <FeatureCard
               icon={
@@ -131,8 +132,8 @@ export default async function Home() {
                   🔒
                 </span>
               }
-              title="Privacidad flexible"
-              description="Elige quién puede ver tus objetivos: privado, por enlace o público."
+              title={t("features.privacyTitle")}
+              description={t("features.privacyDescription")}
             />
             <FeatureCard
               icon={
@@ -140,8 +141,8 @@ export default async function Home() {
                   🔔
                 </span>
               }
-              title="Recordatorios inteligentes"
-              description="Recibe recordatorios y resúmenes para mantenerte en movimiento."
+              title={t("features.remindersTitle")}
+              description={t("features.remindersDescription")}
             />
             <FeatureCard
               icon={
@@ -149,8 +150,8 @@ export default async function Home() {
                   🧩
                 </span>
               }
-              title="Integraciones (próximamente)"
-              description="Conecta con tus herramientas favoritas para centralizar tu progreso."
+              title={t("features.integrationsTitle")}
+              description={t("features.integrationsDescription")}
             />
           </div>
         </div>
@@ -164,30 +165,28 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-16">
             <Badge variant="outline" className="mb-4">
-              Testimonios
+              {t("testimonials.badge")}
             </Badge>
             <h2 id="social-proof-heading" className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Lo que dice nuestra comunidad
+              {t("testimonials.title")}
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Historias reales de progreso y motivación de personas que han transformado sus metas en realidad.
-            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">{t("testimonials.subtitle")}</p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             <TestimonialCard
-              quote="Con GoalShare por fin mantengo mis metas visibles. El simple hecho de compartir avances me mantiene constante."
-              author="María P."
-              jobTitle="Creadora de contenido"
+              quote={t("testimonials.testimonial1Quote")}
+              author={t("testimonials.testimonial1Author")}
+              jobTitle={t("testimonials.testimonial1Role")}
             />
             <TestimonialCard
-              quote="Nuestro equipo alinea objetivos y ve el progreso en una sola vista. Mucho menos fricción en las dailies."
-              author="Equipo Acme"
-              jobTitle="Startup de producto"
+              quote={t("testimonials.testimonial2Quote")}
+              author={t("testimonials.testimonial2Author")}
+              jobTitle={t("testimonials.testimonial2Role")}
             />
             <TestimonialCard
-              quote="Me encanta la simplicidad. Crear objetivos, registrar avances y pedir feedback es muy natural."
-              author="Jorge R."
-              jobTitle="Indie hacker"
+              quote={t("testimonials.testimonial3Quote")}
+              author={t("testimonials.testimonial3Author")}
+              jobTitle={t("testimonials.testimonial3Role")}
             />
           </div>
         </div>
@@ -202,35 +201,33 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-16">
             <Badge variant="outline" className="mb-4">
-              Precios
+              {t("pricing.badge")}
             </Badge>
             <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Planes simples y
+              {t("pricing.title")}
               <span className="bg-gradient-to-br from-emerald-500 via-primary to-accent bg-clip-text text-transparent">
                 {" "}
-                claros
+                {t("pricing.titleHighlight")}
               </span>
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Comienza gratis y descubre el poder de GoalShare. Escala a Pro cuando estés listo para más funciones.
-            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">{t("pricing.subtitle")}</p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
             <PricingCard
-              name="Free"
-              price="$0"
-              period="/mes"
-              description="Todo lo esencial para empezar y validar tu flujo."
-              features={["Metas ilimitadas", "Actualizaciones de progreso", "Compartir por enlace público"]}
-              ctaLabel="Crear cuenta gratis"
+              name={t("pricing.freeName")}
+              price={t("pricing.freePrice")}
+              period={t("pricing.freePeriod")}
+              description={t("pricing.freeDescription")}
+              features={[t("pricing.freeFeature1"), t("pricing.freeFeature2"), t("pricing.freeFeature3")]}
+              ctaLabel={t("pricing.freeCta")}
             />
             <PricingCard
-              name="Pro"
-              price="$9"
-              period="/mes"
-              description="Colaboración avanzada, métricas y automatizaciones."
-              features={["Todo en Free", "Colaboradores con permisos", "Historial y recordatorios avanzados"]}
-              ctaLabel="Mejorar a Pro"
+              name={t("pricing.proName")}
+              price={t("pricing.proPrice")}
+              period={t("pricing.proPeriod")}
+              description={t("pricing.proDescription")}
+              features={[t("pricing.proFeature1"), t("pricing.proFeature2"), t("pricing.proFeature3")]}
+              ctaLabel={t("pricing.proCta")}
               popular
             />
           </div>
@@ -246,40 +243,38 @@ export default async function Home() {
         <div className="relative container mx-auto px-4 text-center">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-              Listo para dar el
+              {t("finalCta.title")}
               <span className="bg-gradient-to-br from-accent via-rose-500 to-primary bg-clip-text text-transparent">
                 {" "}
-                siguiente paso
+                {t("finalCta.titleHighlight")}
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Únete a miles de personas que ya están transformando sus metas en progreso real.
-            </p>
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">{t("finalCta.subtitle")}</p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
               <CtaAuthLink size="lg" className="min-w-[200px] transition-all duration-300">
-                Comenzar gratis
+                {t("finalCta.ctaPrimary")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </CtaAuthLink>
               <Button variant="outline" size="lg" asChild className="min-w-[200px] backdrop-blur-sm">
-                <a href="#features">Ver demo</a>
+                <a href="#features">{t("finalCta.ctaSecondary")}</a>
               </Button>
             </div>
 
             <div className="flex items-center justify-center gap-8 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
-                Sin tarjeta requerida
+                {t("finalCta.feature1")}
               </div>
               <Separator orientation="vertical" className="h-4" />
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-blue-500" />
-                Configuración en 2 minutos
+                {t("finalCta.feature2")}
               </div>
               <Separator orientation="vertical" className="h-4" />
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-purple-500" />
-                Soporte 24/7
+                {t("finalCta.feature3")}
               </div>
             </div>
           </div>

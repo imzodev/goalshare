@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { I18nTestWrapper } from "@/tests/helpers/i18n-test-wrapper";
 
 // Mock next/navigation minimal API used
 vi.mock("next/navigation", () => ({
@@ -16,9 +17,11 @@ import { applyDomPolyfills } from "@/tests/test-utils/jsdom-polyfills";
 
 function Wrapper({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <GoalSheetProvider>{children}</GoalSheetProvider>
-    </SidebarProvider>
+    <I18nTestWrapper>
+      <SidebarProvider>
+        <GoalSheetProvider>{children}</GoalSheetProvider>
+      </SidebarProvider>
+    </I18nTestWrapper>
   );
 }
 
@@ -43,8 +46,8 @@ describe("Sidebar QuickActions -> CreateGoalSheet", () => {
 
     render(<AppSidebar />, { wrapper: Wrapper as any });
 
-    // Click en la acción rápida "Nueva Meta"
-    await user.click(screen.getByRole("button", { name: /Nueva Meta/i }));
+    // Click en la acción rápida "Crear Meta" (i18n)
+    await user.click(screen.getByRole("button", { name: /Crear Meta/i }));
 
     // Debe aparecer el sheet con su título
     expect(await screen.findByText(/Crear nueva meta/i)).toBeInTheDocument();

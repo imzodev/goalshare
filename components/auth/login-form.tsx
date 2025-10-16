@@ -13,12 +13,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { FaGoogle, FaGithub } from "react-icons/fa6";
+import { useTranslations } from "next-intl";
 
 export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const t = useTranslations("auth.loginPage");
+  const tCommon = useTranslations("common.states");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +42,7 @@ export function LoginForm() {
       toast.error(getAuthErrorMessage(error.message));
       setIsLoading(false);
     } else {
-      toast.success("¡Bienvenido de nuevo!");
+      toast.success(tCommon("success"));
       // Redirección al destino original si fue provisto por middleware
       const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
       const redirect = searchParams?.get("redirect");
@@ -68,7 +71,7 @@ export function LoginForm() {
       }
       return data;
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error desconocido";
+      const msg = e instanceof Error ? e.message : tCommon("error");
       toast.error(getAuthErrorMessage(msg));
       setIsGithubLoading(false);
     }
@@ -94,7 +97,7 @@ export function LoginForm() {
       // On success, Supabase will redirect; no need to continue here.
       return data;
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error desconocido";
+      const msg = e instanceof Error ? e.message : tCommon("error");
       toast.error(getAuthErrorMessage(msg));
       setIsGoogleLoading(false);
     }
@@ -103,36 +106,48 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md border border-border bg-card shadow-sm">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-center text-3xl font-semibold text-foreground">Iniciar sesión</CardTitle>
-        <CardDescription className="text-center text-muted-foreground">
-          Ingresa tus credenciales para acceder a tu cuenta
-        </CardDescription>
+        <CardTitle className="text-center text-3xl font-semibold text-foreground">{t("title")}</CardTitle>
+        <CardDescription className="text-center text-muted-foreground">{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email">Correo electrónico</Label>
-            <Input id="email" name="email" type="email" placeholder="tu@email.com" required disabled={isLoading} />
+            <Label htmlFor="email">{t("email")}</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder={t("emailPlaceholder")}
+              required
+              disabled={isLoading}
+            />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
-                ¿Olvidaste tu contraseña?
+                {t("forgotPassword")}
               </Link>
             </div>
-            <Input id="password" name="password" type="password" placeholder="••••••••" required disabled={isLoading} />
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder={t("passwordPlaceholder")}
+              required
+              disabled={isLoading}
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Iniciando sesión...
+                {tCommon("loading")}
               </>
             ) : (
-              "Iniciar sesión"
+              t("submit")
             )}
           </Button>
         </form>
@@ -140,7 +155,7 @@ export function LoginForm() {
         {/* Divider */}
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">o continúa con</span>
+          <span className="text-xs text-muted-foreground">{t("orContinueWith")}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
@@ -155,7 +170,7 @@ export function LoginForm() {
           >
             {isGoogleLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando con Google
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {tCommon("loading")}
               </>
             ) : (
               <>
@@ -172,7 +187,7 @@ export function LoginForm() {
           >
             {isGithubLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando con GitHub
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {tCommon("loading")}
               </>
             ) : (
               <>
@@ -183,9 +198,9 @@ export function LoginForm() {
         </div>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          ¿No tienes una cuenta?{" "}
+          {t("noAccount")}{" "}
           <Link href="/auth/sign-up" className="font-medium text-primary hover:underline">
-            Regístrate
+            {t("signupLink")}
           </Link>
         </div>
       </CardContent>

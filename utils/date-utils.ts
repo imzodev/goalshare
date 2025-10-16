@@ -1,4 +1,4 @@
-import { DATE_FORMAT, RELATIVE_TIME_LABELS, DEADLINE_LABELS, TIME_THRESHOLDS } from "@/constants/goals";
+import { getRelativeTimeKey } from "@/utils/i18n-helpers";
 
 const MS_IN_DAY = 1000 * 60 * 60 * 24;
 
@@ -82,59 +82,60 @@ export function calculateDaysLeft(deadline: Date, reference: Date): number {
   return Math.max(Math.ceil(diff / MS_IN_DAY), 0);
 }
 
-export function formatDeadline(deadline: string | null): string {
+/**
+ * Format deadline for display
+ * Returns the translation key if no deadline, otherwise formats the date
+ * using Intl.DateTimeFormat with the current locale
+ */
+export function formatDeadline(deadline: string | null, locale: string = "es-MX"): string {
   if (!deadline) {
-    return DEADLINE_LABELS.NO_DEADLINE;
+    return "goals.labels.noDeadline"; // Return translation key
   }
 
   const [year, month, day] = deadline.split("-").map((value) => Number.parseInt(value, 10));
   if (!year || !month || !day) {
-    return DEADLINE_LABELS.NO_DEADLINE;
+    return "goals.labels.noDeadline"; // Return translation key
   }
 
   const date = new Date(Date.UTC(year, month - 1, day));
   if (Number.isNaN(date.getTime())) {
-    return DEADLINE_LABELS.NO_DEADLINE;
+    return "goals.labels.noDeadline"; // Return translation key
   }
 
-  return new Intl.DateTimeFormat(DATE_FORMAT.LOCALE, {
-    day: DATE_FORMAT.DAY,
-    month: DATE_FORMAT.MONTH,
-    year: DATE_FORMAT.YEAR,
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit" as const,
+    month: "short" as const,
+    year: "numeric" as const,
   }).format(date);
 }
 
-export function formatRelativeTime(timestamp: string): string {
+/**
+ * Format relative time using i18n
+ * Returns an object with the translation key and optional value
+ * Usage:
+ * const { key, value } = formatRelativeTime(timestamp);
+ * const label = value ? t(key, { count: value }) : t(key);
+ */
+export function formatRelativeTime(timestamp: string): { key: string; value?: number } {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) {
-    return "";
+    return { key: "common.time.justNow" };
   }
 
   const diffMs = Date.now() - date.getTime();
-  if (diffMs < TIME_THRESHOLDS.JUST_NOW_MS) {
-    return RELATIVE_TIME_LABELS.JUST_NOW;
-  }
+  return getRelativeTimeKey(diffMs);
+}
 
-  const minutes = Math.round(diffMs / 60_000);
-  if (minutes < 60) {
-    return `${RELATIVE_TIME_LABELS.MINUTES_PREFIX} ${minutes} ${RELATIVE_TIME_LABELS.MINUTES_SUFFIX}`;
-  }
-
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) {
-    return `${RELATIVE_TIME_LABELS.HOURS_PREFIX} ${hours} ${RELATIVE_TIME_LABELS.HOURS_SUFFIX}`;
-  }
-
-  const days = Math.round(hours / 24);
-  if (days < 30) {
-    return `${RELATIVE_TIME_LABELS.DAYS_PREFIX} ${days} ${RELATIVE_TIME_LABELS.DAYS_SUFFIX}`;
-  }
-
-  const months = Math.round(days / 30);
-  if (months < 12) {
-    return `${RELATIVE_TIME_LABELS.MONTHS_PREFIX} ${months} ${RELATIVE_TIME_LABELS.MONTHS_SUFFIX}`;
-  }
-
-  const years = Math.round(months / 12);
-  return `${RELATIVE_TIME_LABELS.YEARS_PREFIX} ${years} ${RELATIVE_TIME_LABELS.YEARS_SUFFIX}`;
+/**
+ * Format relative time with translation function
+ * Usage in components:
+ * const t = useTranslations();
+ * const label = formatRelativeTimeI18n(timestamp, t);
+ */
+export function formatRelativeTimeI18n(
+  timestamp: string,
+  t: (key: string, values?: Record<string, number>) => string
+): string {
+  const { key, value } = formatRelativeTime(timestamp);
+  return value ? t(key, { count: value }) : t(key);
 }

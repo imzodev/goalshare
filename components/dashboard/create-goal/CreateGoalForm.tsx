@@ -14,27 +14,35 @@ import {
   generateMilestones as aiGenerateMilestones,
 } from "@/api-client/ai";
 import type { MilestoneItem } from "@/types/goals";
+import { useTranslations } from "next-intl";
 
-const FormSchema = z.object({
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres"),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
-  deadline: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine((val) => {
-      if (!val || val === "") return true;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const d = new Date(val);
-      if (isNaN(d.getTime())) return false;
-      d.setHours(0, 0, 0, 0);
-      return d > today;
-    }, "La fecha debe ser futura"),
-  topicCommunityId: z.string().min(1, "Debes seleccionar una comunidad (topic)"),
-});
+// Schema will be created inside component to access translations
+const createFormSchema = (t: (key: string, values?: Record<string, number>) => string) =>
+  z.object({
+    title: z.string().min(3, t("validation.minLength", { min: 3 })),
+    description: z.string().min(10, t("validation.minLength", { min: 10 })),
+    deadline: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .refine((val) => {
+        if (!val || val === "") return true;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return false;
+        d.setHours(0, 0, 0, 0);
+        return d > today;
+      }, t("validation.futureDate")),
+    topicCommunityId: z.string().min(1, t("goals.create.communityRequired")),
+  });
 
-export type CreateGoalFormValues = z.infer<typeof FormSchema>;
+export type CreateGoalFormValues = {
+  title: string;
+  description: string;
+  deadline?: string;
+  topicCommunityId: string;
+};
 
 type Community = { id: string; name: string; slug: string };
 
@@ -55,8 +63,15 @@ export function CreateGoalForm({
   onCancel,
   onError,
 }: Props) {
+  const t = useTranslations();
+  const tCreate = useTranslations("goals.create");
+  const tStates = useTranslations("common.states");
+
   const [generating, setGenerating] = useState(false);
   const [descLoading, setDescLoading] = useState(false);
+
+  const FormSchema = useMemo(() => createFormSchema(t), [t]);
+
   const form = useForm<CreateGoalFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues,
@@ -78,7 +93,7 @@ export function CreateGoalForm({
       });
       await Promise.resolve(onMilestonesReady({ ...values, deadline }, items));
     } catch (e) {
-      onError?.("Error de red");
+      onError?.(tStates("networkError"));
     } finally {
       setGenerating(false);
     }
@@ -124,9 +139,9 @@ export function CreateGoalForm({
     <form className="space-y-4" onSubmit={form.handleSubmit(handleFormSubmit)}>
       <div className="space-y-2">
         <label htmlFor="goal-title" className="text-sm font-medium">
-          Título
+          {tCreate("title")}
         </label>
-        <Input id="goal-title" {...form.register("title")} placeholder="Ej: Correr 5K diarios" />
+        <Input id="goal-title" {...form.register("title")} placeholder={tCreate("titlePlaceholder")} />
         {form.formState.errors.title?.message && (
           <p className="text-xs text-red-600 dark:text-red-500">{form.formState.errors.title.message}</p>
         )}
@@ -135,7 +150,7 @@ export function CreateGoalForm({
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <label htmlFor="goal-description" className="text-sm font-medium">
-            Descripción
+            {tCreate("description")}
           </label>
           <Button
             type="button"
@@ -144,14 +159,14 @@ export function CreateGoalForm({
             onClick={handleGenerateDescriptionClick}
             disabled={descLoading || !form.getValues("title")}
           >
-            {descLoading ? "Generando..." : "Generar descripción"}
+            {descLoading ? tStates("generating") : tCreate("generateDescription")}
           </Button>
         </div>
         <Textarea
           id="goal-description"
           rows={4}
           {...form.register("description")}
-          placeholder="Describe tu meta y cómo la medirás"
+          placeholder={tCreate("descriptionPlaceholder")}
         />
         {form.formState.errors.description?.message && (
           <p className="text-xs text-red-600 dark:text-red-500">{form.formState.errors.description.message}</p>
@@ -160,7 +175,7 @@ export function CreateGoalForm({
 
       <div className="space-y-2">
         <label htmlFor="goal-deadline" className="text-sm font-medium">
-          Fecha límite (opcional)
+          {tCreate("deadline")}
         </label>
         <Input id="goal-deadline" type="date" {...form.register("deadline")} />
         {form.formState.errors.deadline?.message && (
@@ -168,31 +183,31 @@ export function CreateGoalForm({
         )}
         <div className="flex flex-wrap gap-2 pt-1">
           <Button type="button" variant="outline" size="sm" onClick={setDeadline1Week}>
-            1 semana
+            {tCreate("deadline1Week")}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={setDeadline1Month}>
-            1 mes
+            {tCreate("deadline1Month")}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={setDeadline6Months}>
-            6 meses
+            {tCreate("deadline6Months")}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={setDeadline1Year}>
-            1 año
+            {tCreate("deadline1Year")}
           </Button>
         </div>
       </div>
 
       <div className="space-y-2">
         <label htmlFor="goal-community" className="text-sm font-medium">
-          Comunidad (topic)
+          {tCreate("community")}
         </label>
         <Select value={form.watch("topicCommunityId")} onValueChange={handleCommunityChange}>
           <SelectTrigger>
-            <SelectValue placeholder={loadingCommunities ? "Cargando comunidades..." : "Selecciona una comunidad"} />
+            <SelectValue placeholder={loadingCommunities ? tStates("loading") : tCreate("communityPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             {communities.length === 0 && !loadingCommunities ? (
-              <div className="px-2 py-1.5 text-sm text-muted-foreground">No hay comunidades disponibles</div>
+              <div className="px-2 py-1.5 text-sm text-muted-foreground">{tStates("noResults")}</div>
             ) : (
               communities.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
@@ -202,7 +217,7 @@ export function CreateGoalForm({
             )}
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">Elige la comunidad temática a la que pertenece tu meta.</p>
+        <p className="text-xs text-muted-foreground">{tCreate("communityHint")}</p>
         {form.formState.errors.topicCommunityId?.message && (
           <p className="text-xs text-red-600 dark:text-red-500">{form.formState.errors.topicCommunityId.message}</p>
         )}
@@ -210,10 +225,10 @@ export function CreateGoalForm({
 
       <div className="pt-2 flex flex-wrap items-center gap-2">
         <Button type="submit" disabled={!canGenerate || generating}>
-          {generating ? "Generando..." : "Siguiente: Generar milestones"}
+          {generating ? tStates("generating") : tCreate("submit")}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={generating}>
-          Cancelar
+          {tCreate("cancel")}
         </Button>
       </div>
     </form>

@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import userEvent from "@testing-library/user-event";
 import { CreateGoalForm, type CreateGoalFormValues } from "@/components/dashboard/create-goal/CreateGoalForm";
 import type { MilestoneItem } from "@/types/goals";
@@ -38,14 +39,16 @@ describe("CreateGoalForm", () => {
     const onError = vi.fn();
 
     render(
-      <CreateGoalForm
-        defaultValues={{ ...defaultValues, ...(overrides as any)?.defaultValues }}
-        communities={(overrides as any)?.communities ?? communities}
-        loadingCommunities={(overrides as any)?.loadingCommunities ?? false}
-        onMilestonesReady={(overrides as any)?.onMilestonesReady ?? onMilestonesReady}
-        onCancel={(overrides as any)?.onCancel ?? onCancel}
-        onError={(overrides as any)?.onError ?? onError}
-      />
+      withI18n(
+        <CreateGoalForm
+          defaultValues={{ ...defaultValues, ...(overrides as any)?.defaultValues }}
+          communities={(overrides as any)?.communities ?? communities}
+          loadingCommunities={(overrides as any)?.loadingCommunities ?? false}
+          onMilestonesReady={(overrides as any)?.onMilestonesReady ?? onMilestonesReady}
+          onCancel={(overrides as any)?.onCancel ?? onCancel}
+          onError={(overrides as any)?.onError ?? onError}
+        />
+      )
     );
 
     return { onMilestonesReady, onCancel, onError };
@@ -56,8 +59,8 @@ describe("CreateGoalForm", () => {
     renderForm();
 
     // Campos visibles
-    const title = screen.getByLabelText(/Título/i);
-    const desc = screen.getByLabelText(/Descripción/i);
+    const title = screen.getByPlaceholderText(/Correr 5K diarios/i);
+    const desc = screen.getByPlaceholderText(/Describe tu meta/i);
     expect(title).toBeInTheDocument();
     expect(desc).toBeInTheDocument();
     expect(screen.getByLabelText(/Fecha límite/i)).toBeInTheDocument();
@@ -69,8 +72,8 @@ describe("CreateGoalForm", () => {
     await user.click(title); // blur descripción
 
     // Ahora los mensajes deben mostrarse por onTouched
-    expect(await screen.findByText(/El título debe tener al menos 3 caracteres/i)).toBeInTheDocument();
-    expect(await screen.findByText(/La descripción debe tener al menos 10 caracteres/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Mínimo 3 caracteres/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Mínimo 10 caracteres/i)).toBeInTheDocument();
 
     // Cuando el formulario es inválido, el botón de submit debe estar deshabilitado
     const submitBtn = screen.getByRole("button", { name: /Siguiente: Generar milestones/i });
@@ -83,13 +86,13 @@ describe("CreateGoalForm", () => {
       defaultValues: { title: "Correr", description: "Desc suficiente", deadline: "", topicCommunityId: "c1" },
     });
 
-    expect((screen.getByLabelText(/Título/i) as HTMLInputElement).value).toBe("Correr");
-    expect((screen.getByLabelText(/Descripción/i) as HTMLTextAreaElement).value).toMatch(/Desc suficiente/);
+    expect(screen.getByDisplayValue("Correr")).toBeInTheDocument();
+    expect(screen.getByDisplayValue(/Desc suficiente/i)).toBeInTheDocument();
 
     // Cambiar título
-    await user.clear(screen.getByLabelText(/Título/i));
-    await user.type(screen.getByLabelText(/Título/i), "Correr 5K");
-    expect((screen.getByLabelText(/Título/i) as HTMLInputElement).value).toBe("Correr 5K");
+    await user.clear(screen.getByPlaceholderText(/Correr 5K diarios/i));
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Correr 5K");
+    expect((screen.getByPlaceholderText(/Correr 5K diarios/i) as HTMLInputElement).value).toBe("Correr 5K");
   });
 
   it("genera descripción con AI y agrega al campo", async () => {
@@ -99,7 +102,7 @@ describe("CreateGoalForm", () => {
     await user.click(screen.getByRole("button", { name: /Generar descripción/i }));
     await waitFor(() => expect(generateDescription).toHaveBeenCalled());
 
-    const desc = screen.getByLabelText(/Descripción/i) as HTMLTextAreaElement;
+    const desc = screen.getByPlaceholderText(/Describe tu meta/i) as HTMLTextAreaElement;
     expect(desc.value).toMatch(/Sugerencia para: Leer/);
   });
 
@@ -108,8 +111,8 @@ describe("CreateGoalForm", () => {
     const { onMilestonesReady } = renderForm();
 
     // Completar campos mínimos
-    await user.type(screen.getByLabelText(/Título/i), "Correr 5K diarios");
-    await user.type(screen.getByLabelText(/Descripción/i), "Correr todos los días por la mañana");
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Correr 5K diarios");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Correr todos los días por la mañana");
 
     // Seleccionar comunidad
     const combo = screen.getByRole("combobox");
@@ -146,8 +149,8 @@ describe("CreateGoalForm", () => {
     const user = userEvent.setup();
     const { onError } = renderForm();
 
-    await user.type(screen.getByLabelText(/Título/i), "Correr 5K diarios");
-    await user.type(screen.getByLabelText(/Descripción/i), "Correr todos los días por la mañana");
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Correr 5K diarios");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Correr todos los días por la mañana");
 
     const combo = screen.getByRole("combobox");
     await user.click(combo);

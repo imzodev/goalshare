@@ -1,9 +1,11 @@
-"use client";
-
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { getTranslations } from "next-intl/server";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const t = await getTranslations("landing.footer");
+  const tApp = await getTranslations("app");
+
   return (
     <footer className="border-t bg-gradient-to-r from-background to-muted/20">
       <div className="container mx-auto px-4 py-12">
@@ -12,52 +14,47 @@ export function SiteFooter() {
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <span className="text-xl font-bold bg-gradient-to-br from-primary via-indigo-500 to-accent bg-clip-text text-transparent">
-                GoalShare
+                {tApp("name")}
               </span>
             </Link>
-            <p className="text-muted-foreground mb-4 max-w-md leading-relaxed">
-              Transforma tus metas en progreso real. Comparte tu avance, mantén la motivación y alcanza tus objetivos
-              con el apoyo de tu comunidad.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} GoalShare. Todos los derechos reservados.
-            </p>
+            <p className="text-muted-foreground mb-4 max-w-md leading-relaxed">{tApp("description")}</p>
+            <p className="text-sm text-muted-foreground">{t("copyright")}</p>
           </div>
 
           {/* Product */}
           <div>
-            <h3 className="font-semibold mb-4">Producto</h3>
+            <h3 className="font-semibold mb-4">{t("productTitle")}</h3>
             <nav className="flex flex-col gap-3 text-sm text-muted-foreground">
               <Link className="hover:text-primary transition-colors" href="#features">
-                Funciones
+                {t("features")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#pricing">
-                Precios
+                {t("pricing")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#">
-                Integraciones
+                {t("roadmap")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#">
-                API
+                {t("changelog")}
               </Link>
             </nav>
           </div>
 
           {/* Company */}
           <div>
-            <h3 className="font-semibold mb-4">Empresa</h3>
+            <h3 className="font-semibold mb-4">{t("companyTitle")}</h3>
             <nav className="flex flex-col gap-3 text-sm text-muted-foreground">
               <Link className="hover:text-primary transition-colors" href="#">
-                Acerca de
+                {t("about")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#">
-                Blog
+                {t("blog")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#">
-                Contacto
+                {t("contact")}
               </Link>
               <Link className="hover:text-primary transition-colors" href="#">
-                Soporte
+                {t("careers")}
               </Link>
             </nav>
           </div>
@@ -68,17 +65,14 @@ export function SiteFooter() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-6">
             <Link className="hover:text-primary transition-colors" href="#">
-              Privacidad
+              {t("privacy")}
             </Link>
             <Link className="hover:text-primary transition-colors" href="#">
-              Términos
+              {t("terms")}
             </Link>
             <Link className="hover:text-primary transition-colors" href="#">
-              Cookies
+              {t("security")}
             </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Hecho con ❤️ para la comunidad</span>
           </div>
         </div>
       </div>

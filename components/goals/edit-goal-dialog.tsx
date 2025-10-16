@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Loader2, AlertCircle } from "lucide-react";
 import type { UserGoalSummary } from "@/types/goals";
+import { useTranslations } from "next-intl";
 
 type Props = {
   goal: UserGoalSummary | null;
@@ -25,6 +26,12 @@ type Props = {
 };
 
 export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Props) {
+  const t = useTranslations("goals.edit");
+  const tCommon = useTranslations("common.actions");
+  const tValidation = useTranslations("validation");
+  const tStatus = useTranslations("goals.status");
+  const tStates = useTranslations("common.states");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState<string>("");
@@ -71,15 +78,15 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
     if (!goal) return;
 
     if (!title || title.length < 3) {
-      setError("El título debe tener al menos 3 caracteres");
+      setError(tValidation("minLength", { min: 3 }));
       return;
     }
     if (!description || description.length < 10) {
-      setError("La descripción debe tener al menos 10 caracteres");
+      setError(tValidation("minLength", { min: 10 }));
       return;
     }
     if (!topicCommunityId) {
-      setError("Debes seleccionar una comunidad (topic)");
+      setError(t("selectCommunityRequired"));
       return;
     }
 
@@ -99,8 +106,8 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
 
         const data = await res.json();
         if (!res.ok) {
-          const msg = data?.error?.message || data?.error || "No se pudo actualizar la meta";
-          setError(typeof msg === "string" ? msg : "No se pudo actualizar la meta");
+          const msg = data?.error?.message || data?.error || t("updateError");
+          setError(typeof msg === "string" ? msg : t("updateError"));
           return;
         }
 
@@ -108,7 +115,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
         onOpenChange(false);
         onGoalUpdated?.();
       } catch {
-        setError("Error de red");
+        setError(tStates("networkError"));
       }
     });
   };
@@ -128,11 +135,9 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white">
               ✏️
             </div>
-            Editar Meta
+            {t("title")}
           </DialogTitle>
-          <DialogDescription>
-            Modifica los detalles de tu meta. Los cambios se guardarán automáticamente.
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -144,23 +149,23 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="title">Título</Label>
+            <Label htmlFor="title">{t("titleLabel")}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej: Aprender React"
+              placeholder={t("titlePlaceholder")}
               disabled={pending}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
+            <Label htmlFor="description">{t("descriptionLabel")}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe tu meta en detalle..."
+              placeholder={t("descriptionPlaceholder")}
               rows={3}
               disabled={pending}
             />
@@ -168,7 +173,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="deadline">Fecha límite (opcional)</Label>
+              <Label htmlFor="deadline">{t("deadlineLabel")}</Label>
               <Input
                 id="deadline"
                 type="date"
@@ -179,7 +184,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Estado</Label>
+              <Label htmlFor="status">{t("statusLabel")}</Label>
               <Select
                 value={status}
                 onValueChange={(value: "pending" | "completed") => setStatus(value)}
@@ -189,22 +194,22 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">En progreso</SelectItem>
-                  <SelectItem value="completed">Completada</SelectItem>
+                  <SelectItem value="pending">{tStatus("pending")}</SelectItem>
+                  <SelectItem value="completed">{tStatus("completed")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="community">Comunidad</Label>
+            <Label htmlFor="community">{t("communityLabel")}</Label>
             <Select
               value={topicCommunityId}
               onValueChange={setTopicCommunityId}
               disabled={pending || loadingCommunities}
             >
               <SelectTrigger>
-                <SelectValue placeholder={loadingCommunities ? "Cargando..." : "Selecciona una comunidad"} />
+                <SelectValue placeholder={loadingCommunities ? tStates("loading") : t("communityPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {communities.map((community) => (
@@ -219,16 +224,16 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Prop
 
         <DialogFooter>
           <Button variant="outline" onClick={handleCancel} disabled={pending}>
-            Cancelar
+            {tCommon("cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={pending}>
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Guardando...
+                {tStates("saving")}
               </>
             ) : (
-              "Guardar cambios"
+              t("saveButton")
             )}
           </Button>
         </DialogFooter>

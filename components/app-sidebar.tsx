@@ -23,44 +23,50 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
+import { useTranslations } from "next-intl";
 
 // Datos de navegación
-const getNavigationData = (pathname: string, actions?: { onNewGoal?: () => void }) => {
+const getNavigationData = (
+  pathname: string,
+  t: (key: string) => string,
+  tQuick: (key: string) => string,
+  actions?: { onNewGoal?: () => void }
+) => {
   const navMain = [
     {
-      title: "Dashboard",
+      title: t("dashboard"),
       url: "/dashboard",
       icon: Home,
       isActive: pathname === "/dashboard",
     },
     {
-      title: "Mis Metas",
+      title: t("goals"),
       url: "/dashboard/goals",
       icon: Target,
       badge: "3",
       isActive: pathname === "/dashboard/goals" || pathname.startsWith("/dashboard/goals/"),
     },
     {
-      title: "Comunidades",
+      title: t("communities"),
       url: "/dashboard/communities",
       icon: Users,
       badge: "2",
       isActive: pathname === "/dashboard/communities",
     },
     {
-      title: "Logros",
+      title: t("achievements"),
       url: "/dashboard/achievements",
       icon: Trophy,
       isActive: pathname === "/dashboard/achievements",
     },
     {
-      title: "Progreso",
+      title: t("progress"),
       url: "/dashboard/progress",
       icon: TrendingUp,
       isActive: pathname === "/dashboard/progress",
     },
     {
-      title: "Calendario",
+      title: t("calendar"),
       url: "/dashboard/calendar",
       icon: Calendar,
       isActive: pathname === "/dashboard/calendar",
@@ -78,32 +84,32 @@ const getNavigationData = (pathname: string, actions?: { onNewGoal?: () => void 
 
   const quickActions: QuickAction[] = [
     {
-      title: "Nueva Meta",
+      title: tQuick("createGoal"),
       url: "/dashboard/goals/new",
       icon: Plus,
       isActive: pathname === "/dashboard/goals/new",
       onClick: actions?.onNewGoal,
     },
     {
-      title: "Compartir Progreso",
+      title: tQuick("shareProgress"),
       url: "/dashboard/progress",
       icon: Share2,
       isActive: pathname === "/dashboard/progress",
     },
     {
-      title: "Unirse a Comunidad",
+      title: tQuick("joinCommunity"),
       url: "/dashboard/communities",
       icon: Users,
       isActive: pathname === "/dashboard/communities",
     },
     {
-      title: "Programar Recordatorio",
+      title: tQuick("setReminder"),
       url: "/dashboard/calendar",
       icon: Calendar,
       isActive: pathname === "/dashboard/calendar",
     },
     {
-      title: "Notificaciones",
+      title: t("notifications"),
       url: "/dashboard/notifications",
       icon: Bell,
       badge: "5",
@@ -125,7 +131,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const router = useRouter();
   const { openSheet } = useGoalSheet();
-  const { navMain, quickActions } = getNavigationData(pathname, { onNewGoal: openSheet });
+  const t = useTranslations("dashboard.sidebar");
+  const tQuick = useTranslations("dashboard.quickActions");
+  const tApp = useTranslations("app");
+  const { navMain, quickActions } = getNavigationData(pathname, t, tQuick, { onNewGoal: openSheet });
   const { toggleSidebar } = useSidebar();
   return (
     <Sidebar
@@ -142,22 +151,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   GS
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">GoalShare</span>
-                  <span className="truncate text-xs text-muted-foreground">Alcanza tus metas</span>
+                  <span className="truncate font-semibold">{tApp("name")}</span>
+                  <span className="truncate text-xs text-muted-foreground">{tApp("tagline")}</span>
                 </div>
               </div>
             </SidebarMenuItem>
           </SidebarMenu>
           <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={toggleSidebar}>
             <PanelLeftClose className="h-4 w-4" />
-            <span className="sr-only">Ocultar navegación</span>
+            <span className="sr-only">{t("hideNavigation")}</span>
           </Button>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navMain.map((item) => (
@@ -180,7 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Acciones Rápidas</SidebarGroupLabel>
+          <SidebarGroupLabel>{tQuick("title")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {quickActions.map((item) => {

@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 import * as supabaseClient from "@/lib/supabase/client";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 const __mockSupabase: any = (supabaseClient as any).__mockSupabase;
 
 // jsdom default origin is http://localhost
@@ -14,7 +15,7 @@ describe("SignUpForm", () => {
   });
 
   it("renderiza encabezado y campos", () => {
-    render(<SignUpForm />);
+    render(withI18n(<SignUpForm />));
     expect(screen.getAllByText("Crear cuenta").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Correo electrónico")).toBeInTheDocument();
     expect(screen.getByLabelText("Contraseña")).toBeInTheDocument();
@@ -23,7 +24,7 @@ describe("SignUpForm", () => {
 
   it("registra con email/password", async () => {
     const user = userEvent.setup();
-    render(<SignUpForm />);
+    render(withI18n(<SignUpForm />));
 
     await user.type(screen.getByLabelText("Correo electrónico"), "jane@test.com");
     await user.type(screen.getByLabelText("Contraseña"), "secret123");
@@ -39,7 +40,7 @@ describe("SignUpForm", () => {
 
   it("botón Google dispara OAuth google", async () => {
     const user = userEvent.setup();
-    render(<SignUpForm />);
+    render(withI18n(<SignUpForm />));
 
     await user.click(screen.getByRole("button", { name: /google/i }));
 
@@ -50,7 +51,7 @@ describe("SignUpForm", () => {
 
   it("botón GitHub dispara OAuth github", async () => {
     const user = userEvent.setup();
-    render(<SignUpForm />);
+    render(withI18n(<SignUpForm />));
 
     await user.click(screen.getByRole("button", { name: /github/i }));
 

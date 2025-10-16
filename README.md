@@ -20,6 +20,53 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## 🌐 Internationalization (i18n)
+
+This project supports multiple languages using [next-intl](https://next-intl-docs.vercel.app/):
+
+- **Supported Languages**: Spanish (ES) and English (EN)
+- **Default Language**: Spanish (ES)
+- **Language Detection**: Cookie-based (no URL prefixes)
+
+### Usage in Components
+
+```tsx
+import { useTranslations } from "next-intl";
+
+export function MyComponent() {
+  const t = useTranslations("namespace");
+
+  return <h1>{t("title")}</h1>;
+}
+```
+
+### Adding Translations
+
+1. Add your keys to both language files:
+   - `i18n/messages/es.json`
+   - `i18n/messages/en.json`
+
+2. Use namespaces to organize translations by feature:
+   - `common.*` - Shared translations
+   - `auth.*` - Authentication
+   - `dashboard.*` - Dashboard
+   - `goals.*` - Goals management
+   - `communities.*` - Communities
+
+3. For detailed documentation, see `docs/I18N.md`
+
+### Testing i18n
+
+```bash
+# Run i18n-specific tests
+bun test tests/i18n
+
+# Test components with translations
+import { withI18n } from '@/tests/helpers/i18n-test-wrapper';
+
+render(withI18n(<YourComponent />));
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -11,6 +11,7 @@ import { useCommunitiesTopics } from "@/hooks/useCommunities";
 import { createGoal, createGoalMilestones } from "@/api-client/goals";
 import { CreateGoalForm, type CreateGoalFormValues } from "@/components/dashboard/create-goal/CreateGoalForm";
 import { CreateGoalPreview } from "@/components/dashboard/create-goal/CreateGoalPreview";
+import { useTranslations } from "next-intl";
 
 type Props = {
   open: boolean;
@@ -19,6 +20,9 @@ type Props = {
 };
 
 export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
+  const t = useTranslations("goals.create");
+  const tStates = useTranslations("common.states");
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState<string>("");
@@ -90,7 +94,7 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
         reset();
         onCreated?.();
       } catch {
-        setError("Error de red");
+        setError(tStates("networkError"));
       } finally {
         setPersisting(false);
       }
@@ -107,11 +111,8 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
     >
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
-          <SheetTitle>Crear nueva meta</SheetTitle>
-          <SheetDescription>
-            Define un título, una descripción y (opcional) una fecha límite. Después podrás revisar y ajustar los
-            milestones sugeridos antes de guardar.
-          </SheetDescription>
+          <SheetTitle>{t("sheetTitle")}</SheetTitle>
+          <SheetDescription>{t("sheetDescription")}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 px-4 space-y-4 flex-1 min-h-0 flex flex-col">
@@ -126,17 +127,17 @@ export function CreateGoalSheet({ open, onOpenChange, onCreated }: Props) {
             />
           ) : (
             <div className="rounded-md border p-3 space-y-2 text-sm">
-              <div className="font-medium">Resumen</div>
+              <div className="font-medium">{t("summary")}</div>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary">{title || "Sin título"}</Badge>
+                <Badge variant="secondary">{title || t("noTitle")}</Badge>
                 {deadline && <Badge variant="outline">{deadline}</Badge>}
                 {topicCommunityId && (
                   <Badge variant="default">
-                    {communities.find((c) => c.id === topicCommunityId)?.name || "Comunidad"}
+                    {communities.find((c) => c.id === topicCommunityId)?.name || t("community")}
                   </Badge>
                 )}
                 <Button variant="ghost" size="sm" className="ml-auto h-7 px-2" onClick={() => setStep("form")}>
-                  Editar datos
+                  {t("editData")}
                 </Button>
               </div>
             </div>

@@ -1,18 +1,509 @@
 {
   "app": {
     "name": "GoalShare",
-    "skipToContent": "Saltar al contenido principal"
+    "skipToContent": "Saltar al contenido principal",
+    "title": "GoalShare — Comparte y cumple tus objetivos",
+    "description": "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad. Defines objetivos, haces seguimiento y recibes feedback.",
+    "tagline": "Alcanza tus metas"
+  },
+  "common": {
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "create": "Crear",
+      "close": "Cerrar",
+      "confirm": "Confirmar",
+      "back": "Volver",
+      "next": "Siguiente",
+      "submit": "Enviar",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "sort": "Ordenar",
+      "view": "Ver",
+      "share": "Compartir",
+      "join": "Unirse",
+      "leave": "Salir",
+      "refresh": "Refrescar",
+      "retry": "Reintentar"
+    },
+    "states": {
+      "loading": "Cargando...",
+      "success": "¡Éxito!",
+      "error": "Error",
+      "empty": "Vacío",
+      "noResults": "Sin resultados",
+      "notFound": "No encontrado",
+      "saving": "Guardando...",
+      "deleting": "Eliminando...",
+      "generating": "Generando...",
+      "networkError": "Error de red"
+    },
+    "time": {
+      "justNow": "Actualizado hace instantes",
+      "minutesAgo": "{count} min",
+      "hoursAgo": "{count} h",
+      "daysAgo": "{count} d",
+      "monthsAgo": "{count} m",
+      "yearsAgo": "{count} a",
+      "updatedPrefix": "Actualizado hace"
+    }
   },
   "auth": {
     "login": "Iniciar sesión",
-    "signup": "Crear cuenta"
+    "signup": "Crear cuenta",
+    "logout": "Cerrar sesión",
+    "loginPage": {
+      "title": "Iniciar sesión",
+      "subtitle": "Ingresa a tu cuenta",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "submit": "Iniciar sesión",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes cuenta?",
+      "signupLink": "Crear cuenta",
+      "orContinueWith": "O continuar con"
+    },
+    "signupPage": {
+      "title": "Crear cuenta",
+      "subtitle": "Comienza tu viaje",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 6 caracteres",
+      "passwordHint": "Mínimo 6 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite tu contraseña",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Iniciar sesión",
+      "terms": "Al crear una cuenta, aceptas nuestros",
+      "termsLink": "Términos de Servicio",
+      "and": "y",
+      "privacyLink": "Política de Privacidad",
+      "orContinueWith": "O continuar con",
+      "emailConfirmation": "Revisa tu correo para confirmar tu cuenta"
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Te enviaremos un enlace para restablecer tu contraseña",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar enlace",
+      "backToLogin": "Volver a iniciar sesión",
+      "successMessage": "Revisa tu correo para restablecer tu contraseña"
+    },
+    "updatePassword": {
+      "title": "Actualizar contraseña",
+      "subtitle": "Ingresa tu nueva contraseña",
+      "newPassword": "Nueva contraseña",
+      "newPasswordPlaceholder": "Mínimo 6 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite tu contraseña",
+      "submit": "Actualizar contraseña",
+      "successMessage": "Contraseña actualizada exitosamente"
+    },
+    "oauth": {
+      "continueWithGoogle": "Continuar con Google",
+      "continueWithGithub": "Continuar con GitHub"
+    },
+    "errors": {
+      "unknown": "Error desconocido. Intenta de nuevo.",
+      "generic": "Error al procesar tu solicitud. Intenta de nuevo.",
+      "invalidLogin": "Correo o contraseña incorrectos",
+      "invalidCredentials": "Credenciales inválidas",
+      "emailNotConfirmed": "Por favor confirma tu correo antes de iniciar sesión",
+      "userAlreadyRegistered": "Este correo ya está registrado. Intenta iniciar sesión.",
+      "weakPassword": "La contraseña es muy débil. Usa al menos 6 caracteres.",
+      "oauthGeneric": "Error al conectar con el proveedor. Intenta de nuevo.",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    }
+  },
+  "landing": {
+    "hero": {
+      "badge": "Nuevo · Presentación de GoalShare",
+      "title": "Convierte tus metas en",
+      "titleHighlight": "progreso real",
+      "subtitle": "Define objetivos claros, comparte tu avance y mantén la motivación con tu comunidad.",
+      "feature1": "Establece metas con hitos y fechas límite",
+      "feature2": "Publica avances para rendir cuentas",
+      "feature3": "Recibe apoyo y feedback en cada paso",
+      "ctaPrimary": "Comenzar gratis",
+      "ctaSecondary": "Ver funciones",
+      "noCard": "Sin tarjeta requerida",
+      "quickSetup": "Configuración en 2 minutos"
+    },
+    "features": {
+      "badge": "Funcionalidades",
+      "title": "Todo lo que necesitas para avanzar",
+      "subtitle": "Define, mide y comparte tu progreso con claridad y mantén la motivación en cada paso.",
+      "goalsTitle": "Metas e hitos",
+      "goalsDescription": "Crea objetivos concretos, divídelos en hitos e impulsa tu ritmo con deadlines.",
+      "trackingTitle": "Seguimiento claro",
+      "trackingDescription": "Registra avances y visualiza tu progreso para no perder el foco.",
+      "shareTitle": "Comparte y colabora",
+      "shareDescription": "Invita a tu comunidad para recibir apoyo y mantener la constancia.",
+      "privacyTitle": "Privacidad flexible",
+      "privacyDescription": "Elige quién puede ver tus objetivos: privado, por enlace o público.",
+      "remindersTitle": "Recordatorios inteligentes",
+      "remindersDescription": "Recibe recordatorios y resúmenes para mantenerte en movimiento.",
+      "integrationsTitle": "Integraciones (próximamente)",
+      "integrationsDescription": "Conecta con tus herramientas favoritas para centralizar tu progreso."
+    },
+    "testimonials": {
+      "badge": "Testimonios",
+      "title": "Lo que dice nuestra comunidad",
+      "subtitle": "Historias reales de progreso y motivación de personas que han transformado sus metas en realidad.",
+      "testimonial1Quote": "Con GoalShare por fin mantengo mis metas visibles. El simple hecho de compartir avances me mantiene constante.",
+      "testimonial1Author": "María P.",
+      "testimonial1Role": "Creadora de contenido",
+      "testimonial2Quote": "Nuestro equipo alinea objetivos y ve el progreso en una sola vista. Mucho menos fricción en las dailies.",
+      "testimonial2Author": "Equipo Acme",
+      "testimonial2Role": "Startup de producto",
+      "testimonial3Quote": "Me encanta la simplicidad. Crear objetivos, registrar avances y pedir feedback es muy natural.",
+      "testimonial3Author": "Jorge R.",
+      "testimonial3Role": "Indie hacker"
+    },
+    "pricing": {
+      "badge": "Precios",
+      "title": "Planes simples y",
+      "titleHighlight": "claros",
+      "subtitle": "Comienza gratis y descubre el poder de GoalShare. Escala a Pro cuando estés listo para más funciones.",
+      "freeName": "Free",
+      "freePrice": "$0",
+      "freePeriod": "/mes",
+      "freeDescription": "Todo lo esencial para empezar y validar tu flujo.",
+      "freeFeature1": "Metas ilimitadas",
+      "freeFeature2": "Actualizaciones de progreso",
+      "freeFeature3": "Compartir por enlace público",
+      "freeCta": "Crear cuenta gratis",
+      "proName": "Pro",
+      "proPrice": "$9",
+      "proPeriod": "/mes",
+      "proDescription": "Colaboración avanzada, métricas y automatizaciones.",
+      "proFeature1": "Todo en Free",
+      "proFeature2": "Colaboradores con permisos",
+      "proFeature3": "Historial y recordatorios avanzados",
+      "proCta": "Mejorar a Pro",
+      "popularBadge": "Popular"
+    },
+    "finalCta": {
+      "title": "Listo para dar el",
+      "titleHighlight": "siguiente paso",
+      "subtitle": "Únete a miles de personas que ya están transformando sus metas en progreso real.",
+      "ctaPrimary": "Comenzar gratis",
+      "ctaSecondary": "Ver demo",
+      "feature1": "Sin tarjeta requerida",
+      "feature2": "Configuración en 2 minutos",
+      "feature3": "Soporte 24/7"
+    },
+    "footer": {
+      "productTitle": "Producto",
+      "features": "Funciones",
+      "pricing": "Precios",
+      "roadmap": "Roadmap",
+      "changelog": "Changelog",
+      "companyTitle": "Compañía",
+      "about": "Acerca de",
+      "blog": "Blog",
+      "careers": "Carreras",
+      "contact": "Contacto",
+      "legalTitle": "Legal",
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "security": "Seguridad",
+      "socialTitle": "Social",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "copyright": " 2025 GoalShare. Todos los derechos reservados."
+    }
+  },
+  "dashboard": {
+    "header": {
+      "greeting": "Hola",
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches",
+      "activeGoals": "Metas activas",
+      "avgProgress": "Progreso promedio",
+      "daysLeft": "Días restantes",
+      "monthProgress": "Progreso del mes",
+      "encouragement": "Tienes un progreso excelente. ¡Sigue así para alcanzar tus metas!",
+      "weekProgress": "+15% esta semana"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "goals": "Mis Metas",
+      "communities": "Comunidades",
+      "achievements": "Logros",
+      "progress": "Progreso",
+      "calendar": "Calendario",
+      "notifications": "Notificaciones",
+      "settings": "Configuración",
+      "profile": "Perfil",
+      "navigation": "Navegación",
+      "hideNavigation": "Ocultar navegación"
+    },
+    "stats": {
+      "activeGoals": "Metas Activas",
+      "avgProgress": "Progreso Promedio",
+      "communities": "Comunidades",
+      "achievements": "Logros",
+      "goalsDescription": "Objetivos en curso",
+      "progressDescription": "De tus metas",
+      "communitiesDescription": "Grupos activos",
+      "achievementsDescription": "Desbloqueados"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "createGoal": "Crear Meta",
+      "createGoalDescription": "Define un nuevo objetivo",
+      "shareProgress": "Compartir Progreso",
+      "shareProgressDescription": "Actualiza tu avance",
+      "joinCommunity": "Unirse a Comunidad",
+      "joinCommunityDescription": "Encuentra tu grupo",
+      "setReminder": "Programar Recordatorio",
+      "setReminderDescription": "No olvides tus metas"
+    },
+    "goalsSection": {
+      "title": "Mis Metas",
+      "viewAll": "Ver todas",
+      "empty": "No tienes metas activas",
+      "emptyDescription": "Crea tu primera meta para comenzar a compartir tu progreso con la comunidad.",
+      "createFirst": "Crear mi primera meta",
+      "errorTitle": "No pudimos cargar tus metas",
+      "participants": "participantes",
+      "daysLeft": "días restantes",
+      "progress": "Progreso"
+    },
+    "communitiesSection": {
+      "title": "Comunidades",
+      "explore": "Explorar",
+      "members": "miembros",
+      "activeGoals": "metas activas",
+      "recentActivity": "Actividad reciente",
+      "join": "Unirse"
+    },
+    "mobileNav": {
+      "home": "Inicio",
+      "goals": "Metas",
+      "communities": "Comunidades",
+      "notifications": "Notificaciones",
+      "profile": "Perfil"
+    }
+  },
+  "goals": {
+    "list": {
+      "title": "Mis Metas",
+      "pageTitle": "Gestión de Metas",
+      "pageDescription": "Administra todas tus metas: edita, elimina y sigue tu progreso",
+      "empty": "Aún no tienes metas",
+      "emptyDescription": "Crea tu primera meta para comenzar a gestionar tus objetivos y compartir tu progreso con la comunidad.",
+      "createFirst": "Crear mi primera meta",
+      "filter": "Filtrar",
+      "sort": "Ordenar",
+      "all": "Todas",
+      "active": "Activas",
+      "completed": "Completadas",
+      "inProgress": "en progreso",
+      "totalGoals": "metas totales",
+      "errorTitle": "No pudimos cargar tus metas",
+      "loadError": "No se pudieron cargar las metas",
+      "sortByDate": "Por fecha",
+      "sortByProgress": "Por progreso",
+      "sortByName": "Por nombre"
+    },
+    "create": {
+      "title": "Crear Meta",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ej: Correr 5K diarios",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe tu meta y cómo la medirás",
+      "generateDescription": "Generar descripción",
+      "deadline": "Fecha límite (opcional)",
+      "deadline1Week": "1 semana",
+      "deadline1Month": "1 mes",
+      "deadline6Months": "6 meses",
+      "deadline1Year": "1 año",
+      "type": "Tipo de meta",
+      "typePlaceholder": "Selecciona un tipo",
+      "community": "Comunidad (topic)",
+      "communityPlaceholder": "Selecciona una comunidad",
+      "communityHint": "Elige la comunidad temática a la que pertenece tu meta.",
+      "communityRequired": "Debes seleccionar una comunidad (topic)",
+      "submit": "Siguiente: Generar milestones",
+      "cancel": "Cancelar",
+      "successMessage": "Meta creada exitosamente",
+      "milestonesProposed": "Milestones propuestos",
+      "weightSum": "Suma de pesos",
+      "redistributeWeights": "Redistribuir pesos",
+      "adjustWeightsTo100": "Ajusta los pesos a 100%",
+      "createAndSave": "Crear meta y guardar milestones",
+      "sheetTitle": "Crear nueva meta",
+      "sheetDescription": "Define un título, una descripción y (opcional) una fecha límite. Después podrás revisar y ajustar los milestones sugeridos antes de guardar.",
+      "summary": "Resumen",
+      "noTitle": "Sin título",
+      "editData": "Editar datos",
+      "newGoalPageTitle": "Crear Nueva Meta",
+      "newGoalPageDescription": "Define una nueva meta y comienza tu camino hacia el éxito",
+      "redirecting": "Redirigiendo...",
+      "redirectMessage": "La funcionalidad para crear nuevas metas está disponible en la página de gestión de metas.",
+      "goToManagement": "Ir a Gestión de Metas"
+    },
+    "edit": {
+      "title": "Editar Meta",
+      "description": "Modifica los detalles de tu meta. Los cambios se guardarán automáticamente.",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ej: Aprender React",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Describe tu meta en detalle...",
+      "deadlineLabel": "Fecha límite (opcional)",
+      "statusLabel": "Estado",
+      "communityLabel": "Comunidad",
+      "communityPlaceholder": "Selecciona una comunidad",
+      "selectCommunityRequired": "Debes seleccionar una comunidad (topic)",
+      "updateError": "No se pudo actualizar la meta",
+      "saveButton": "Guardar cambios"
+    },
+    "delete": {
+      "title": "Eliminar Meta",
+      "description": "¿Estás seguro de que quieres eliminar esta meta? Esta acción no se puede deshacer.",
+      "deadlineLabel": "Fecha límite",
+      "warning": "Se eliminarán permanentemente todos los registros de progreso asociados a esta meta.",
+      "deleteError": "No se pudo eliminar la meta",
+      "deleteButton": "Eliminar meta"
+    },
+    "types": {
+      "metric": "Métrica",
+      "milestone": "Hito",
+      "checkin": "Check-in",
+      "manual": "Manual"
+    },
+    "typeDescriptions": {
+      "metric": "Mide tu progreso con números",
+      "milestone": "Alcanza objetivos específicos",
+      "checkin": "Registra tu avance regularmente",
+      "manual": "Actualiza manualmente tu progreso"
+    },
+    "status": {
+      "pending": "En progreso",
+      "completed": "Completada"
+    },
+    "labels": {
+      "completed": "Completada",
+      "noDeadline": "Sin fecha límite",
+      "dueToday": "Vence hoy",
+      "singleDay": "1 día restante",
+      "multipleDays": "{count} días restantes",
+      "progress": "Progreso",
+      "participants": "Participantes",
+      "category": "Categoría"
+    }
+  },
+  "communities": {
+    "explore": {
+      "title": "Explorar Comunidades",
+      "pageTitle": "Comunidades",
+      "pageDescription": "Únete a comunidades y comparte tu progreso con otros",
+      "available": "comunidades disponibles",
+      "yours": "comunidades tuyas",
+      "errorTitle": "No pudimos cargar las comunidades",
+      "loadError": "No se pudieron cargar las comunidades",
+      "search": "Buscar comunidades...",
+      "filter": "Filtrar",
+      "all": "Todas",
+      "joined": "Unidas",
+      "popular": "Populares",
+      "new": "Nuevas",
+      "empty": "No se encontraron comunidades",
+      "emptyDescription": "Intenta con otros términos de búsqueda"
+    },
+    "profile": {
+      "members": "miembros",
+      "activeGoals": "metas activas",
+      "activity": "Actividad",
+      "about": "Acerca de",
+      "join": "Unirse",
+      "leave": "Salir",
+      "joined": "Unido"
+    },
+    "myComm": {
+      "title": "Mis Comunidades",
+      "empty": "No te has unido a ninguna comunidad",
+      "emptyDescription": "Explora y únete a comunidades para compartir tus metas",
+      "create": "Crear comunidad",
+      "explore": "Explorar comunidades"
+    },
+    "tabs": {
+      "explore": "Explorar",
+      "myCommunities": "Mis Comunidades"
+    }
+  },
+  "notifications": {
+    "pageTitle": "Notificaciones",
+    "pageDescription": "Mantente al día con recordatorios y actualizaciones",
+    "comingSoon": "Próximamente",
+    "comingSoonDescription": "El sistema de notificaciones está en desarrollo. Pronto podrás recibir recordatorios sobre tus metas y actualizaciones de la comunidad."
+  },
+  "progress": {
+    "pageTitle": "Progreso",
+    "pageDescription": "Visualiza tus estadísticas y seguimiento de progreso",
+    "comingSoon": "Próximamente",
+    "comingSoonDescription": "Las estadísticas avanzadas y análisis de progreso están en desarrollo. Pronto podrás ver gráficos detallados de tu rendimiento."
+  },
+  "calendar": {
+    "pageTitle": "Calendario",
+    "pageDescription": "Organiza tus metas y deadlines en un calendario visual",
+    "comingSoon": "Próximamente",
+    "comingSoonDescription": "La vista de calendario está en desarrollo. Pronto podrás ver todas tus metas y deadlines organizados en un calendario interactivo."
+  },
+  "achievements": {
+    "title": "Logros",
+    "pageTitle": "Logros",
+    "pageDescription": "Desbloquea logros mientras alcanzas tus metas",
+    "earned": "Ganados",
+    "locked": "Bloqueados",
+    "progress": "Progreso",
+    "unlocked": "Desbloqueado",
+    "empty": "No tienes logros todavía",
+    "emptyDescription": "Completa metas para desbloquear logros",
+    "comingSoon": "Próximamente",
+    "comingSoonDescription": "El sistema de logros está en desarrollo. Pronto podrás ganar badges y reconocimientos por completar metas y mantener hábitos."
+  },
+  "errors": {
+    "generic": "Algo salió mal. Intenta de nuevo.",
+    "notFound": "No encontrado",
+    "unauthorized": "No autorizado",
+    "serverError": "Error del servidor",
+    "networkError": "Error de red. Verifica tu conexión.",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "email": "Correo electrónico inválido",
+    "minLength": "Mínimo {min} caracteres",
+    "maxLength": "Máximo {max} caracteres",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "futureDate": "La fecha debe ser futura"
   },
   "theme": {
-    "toggle": "Cambiar tema"
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
   },
   "language": {
     "label": "Idioma",
     "es": "Español",
     "en": "Inglés"
+  },
+  "userMenu": {
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
   }
 }

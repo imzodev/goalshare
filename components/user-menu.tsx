@@ -15,6 +15,7 @@ import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface UserMenuProps {
   user: {
@@ -30,6 +31,9 @@ interface UserMenuProps {
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations("userMenu");
+  const tErrors = useTranslations("errors");
+  const tCommon = useTranslations("common.states");
 
   const displayName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuario";
   const initials = displayName
@@ -46,12 +50,12 @@ export function UserMenu({ user }: UserMenuProps) {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      toast.error("Error al cerrar sesión", {
+      toast.error(tErrors("generic"), {
         description: error.message,
       });
       setIsLoading(false);
     } else {
-      toast.success("Sesión cerrada");
+      toast.success(tCommon("success"));
       // Use a reliable redirect: soft replace then hard navigation fallback
       try {
         router.replace("/");
@@ -89,11 +93,11 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/dashboard")} className="cursor-pointer">
           <UserIcon className="mr-2 h-4 w-4" />
-          <span>Mi Perfil</span>
+          <span>{t("profile")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="cursor-pointer">
           <Settings className="mr-2 h-4 w-4" />
-          <span>Configuración</span>
+          <span>{t("settings")}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -102,7 +106,7 @@ export function UserMenu({ user }: UserMenuProps) {
           className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>{isLoading ? "Cerrando sesión..." : "Cerrar Sesión"}</span>
+          <span>{isLoading ? `${tCommon("loading")}` : t("logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

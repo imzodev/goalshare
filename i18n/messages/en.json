@@ -1,18 +1,506 @@
 {
   "app": {
     "name": "GoalShare",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "title": "GoalShare — Share and achieve your goals",
+    "description": "Organize goals, share your progress and achieve results with the support of your community. Define objectives, track progress and receive feedback.",
+    "tagline": "Achieve your goals"
+  },
+  "common": {
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "close": "Close",
+      "confirm": "Confirm",
+      "back": "Back",
+      "next": "Next",
+      "submit": "Submit",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort",
+      "view": "View",
+      "share": "Share",
+      "join": "Join",
+      "leave": "Leave",
+      "refresh": "Refresh",
+      "retry": "Retry"
+    },
+    "states": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "empty": "Empty",
+      "noResults": "No results",
+      "notFound": "Not found",
+      "saving": "Saving...",
+      "deleting": "Deleting...",
+      "generating": "Generating...",
+      "networkError": "Network error"
+    },
+    "time": {
+      "justNow": "Updated just now",
+      "minutesAgo": "{count} min",
+      "hoursAgo": "{count} h",
+      "daysAgo": "{count} d",
+      "monthsAgo": "{count} mo",
+      "yearsAgo": "{count} y",
+      "updatedPrefix": "Updated"
+    }
   },
   "auth": {
     "login": "Log in",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "logout": "Log out",
+    "loginPage": {
+      "title": "Log in",
+      "subtitle": "Access your account",
+      "email": "Email",
+      "emailPlaceholder": "you@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "submit": "Log in",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up",
+      "orContinueWith": "Or continue with"
+    },
+    "signupPage": {
+      "title": "Sign up",
+      "subtitle": "Start your journey",
+      "email": "Email",
+      "emailPlaceholder": "you@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "At least 6 characters",
+      "passwordHint": "At least 6 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "terms": "By creating an account, you agree to our",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy",
+      "orContinueWith": "Or continue with",
+      "emailConfirmation": "Check your email to confirm your account"
+    },
+    "forgotPassword": {
+      "title": "Recover password",
+      "subtitle": "We'll send you a link to reset your password",
+      "email": "Email",
+      "emailPlaceholder": "you@email.com",
+      "submit": "Send link",
+      "backToLogin": "Back to log in",
+      "successMessage": "Check your email to reset your password"
+    },
+    "updatePassword": {
+      "title": "Update password",
+      "subtitle": "Enter your new password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "At least 6 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submit": "Update password",
+      "successMessage": "Password updated successfully"
+    },
+    "oauth": {
+      "continueWithGoogle": "Continue with Google",
+      "continueWithGithub": "Continue with GitHub"
+    },
+    "errors": {
+      "unknown": "Unknown error. Please try again.",
+      "generic": "Error processing your request. Please try again.",
+      "invalidLogin": "Invalid email or password",
+      "invalidCredentials": "Invalid credentials",
+      "emailNotConfirmed": "Please confirm your email before logging in",
+      "userAlreadyRegistered": "This email is already registered. Try logging in.",
+      "weakPassword": "Password is too weak. Use at least 6 characters.",
+      "oauthGeneric": "Error connecting with provider. Please try again.",
+      "passwordMismatch": "Passwords don't match"
+    }
+  },
+  "landing": {
+    "hero": {
+      "badge": "New · Introducing GoalShare",
+      "title": "Turn your goals into",
+      "titleHighlight": "real progress",
+      "subtitle": "Define clear objectives, share your progress and stay motivated with your community.",
+      "feature1": "Set goals with milestones and deadlines",
+      "feature2": "Post updates for accountability",
+      "feature3": "Get support and feedback at every step",
+      "ctaPrimary": "Get started free",
+      "ctaSecondary": "See features",
+      "noCard": "No credit card required",
+      "quickSetup": "2-minute setup"
+    },
+    "features": {
+      "badge": "Features",
+      "title": "Everything you need to move forward",
+      "subtitle": "Define, measure and share your progress with clarity and stay motivated at every step.",
+      "goalsTitle": "Goals & milestones",
+      "goalsDescription": "Create concrete objectives, break them into milestones and boost your pace with deadlines.",
+      "trackingTitle": "Clear tracking",
+      "trackingDescription": "Record progress and visualize your advancement to stay focused.",
+      "shareTitle": "Share & collaborate",
+      "shareDescription": "Invite your community to receive support and maintain consistency.",
+      "privacyTitle": "Flexible privacy",
+      "privacyDescription": "Choose who can see your goals: private, by link or public.",
+      "remindersTitle": "Smart reminders",
+      "remindersDescription": "Get reminders and summaries to keep you moving forward.",
+      "integrationsTitle": "Integrations (coming soon)",
+      "integrationsDescription": "Connect with your favorite tools to centralize your progress."
+    },
+    "testimonials": {
+      "badge": "Testimonials",
+      "title": "What our community says",
+      "subtitle": "Real stories of progress and motivation from people who have transformed their goals into reality.",
+      "testimonial1Quote": "With GoalShare I finally keep my goals visible. The simple act of sharing progress keeps me consistent.",
+      "testimonial1Author": "Maria P.",
+      "testimonial1Role": "Content creator",
+      "testimonial2Quote": "Our team aligns objectives and sees progress in one view. Much less friction in dailies.",
+      "testimonial2Author": "Acme Team",
+      "testimonial2Role": "Product startup",
+      "testimonial3Quote": "I love the simplicity. Creating goals, recording progress and asking for feedback is very natural.",
+      "testimonial3Author": "Jorge R.",
+      "testimonial3Role": "Indie hacker"
+    },
+    "pricing": {
+      "badge": "Pricing",
+      "title": "Simple and",
+      "titleHighlight": "clear plans",
+      "subtitle": "Start free and discover the power of GoalShare. Scale to Pro when you're ready for more features.",
+      "freeName": "Free",
+      "freePrice": "$0",
+      "freePeriod": "/month",
+      "freeDescription": "Everything essential to start and validate your workflow.",
+      "freeFeature1": "Unlimited goals",
+      "freeFeature2": "Progress updates",
+      "freeFeature3": "Share via public link",
+      "freeCta": "Create free account",
+      "proName": "Pro",
+      "proPrice": "$9",
+      "proPeriod": "/month",
+      "proDescription": "Advanced collaboration, metrics and automations.",
+      "proFeature1": "Everything in Free",
+      "proFeature2": "Collaborators with permissions",
+      "proFeature3": "History and advanced reminders",
+      "proCta": "Upgrade to Pro",
+      "popularBadge": "Popular"
+    },
+    "finalCta": {
+      "title": "Ready to take the",
+      "titleHighlight": "next step",
+      "subtitle": "Join thousands of people who are already transforming their goals into real progress.",
+      "ctaPrimary": "Get started free",
+      "ctaSecondary": "See demo",
+      "feature1": "No credit card required",
+      "feature2": "2-minute setup",
+      "feature3": "24/7 support"
+    },
+    "footer": {
+      "productTitle": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "roadmap": "Roadmap",
+      "changelog": "Changelog",
+      "companyTitle": "Company",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact",
+      "legalTitle": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security",
+      "socialTitle": "Social",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "copyright": " 2025 GoalShare. All rights reserved."
+    }
+  },
+  "dashboard": {
+    "header": {
+      "greeting": "Hello",
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "activeGoals": "Active goals",
+      "avgProgress": "Average progress",
+      "daysLeft": "Days left",
+      "monthProgress": "Month progress",
+      "encouragement": "You have excellent progress. Keep it up to reach your goals!",
+      "weekProgress": "+15% this week"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "goals": "My Goals",
+      "communities": "Communities",
+      "achievements": "Achievements",
+      "progress": "Progress",
+      "calendar": "Calendar",
+      "notifications": "Notifications",
+      "settings": "Settings",
+      "profile": "Profile",
+      "navigation": "Navigation",
+      "hideNavigation": "Hide navigation"
+    },
+    "stats": {
+      "activeGoals": "Active Goals",
+      "avgProgress": "Average Progress",
+      "communities": "Communities",
+      "achievements": "Achievements",
+      "goalsDescription": "Ongoing objectives",
+      "progressDescription": "Of your goals",
+      "communitiesDescription": "Active groups",
+      "achievementsDescription": "Unlocked"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createGoal": "Create Goal",
+      "createGoalDescription": "Define a new objective",
+      "shareProgress": "Share Progress",
+      "shareProgressDescription": "Update your advancement",
+      "joinCommunity": "Join Community",
+      "joinCommunityDescription": "Find your group",
+      "setReminder": "Set Reminder",
+      "setReminderDescription": "Don't forget your goals"
+    },
+    "goalsSection": {
+      "title": "My Goals",
+      "viewAll": "View all",
+      "empty": "You have no active goals",
+      "emptyDescription": "Create your first goal to start sharing your progress with the community.",
+      "createFirst": "Create my first goal",
+      "errorTitle": "We couldn't load your goals",
+      "participants": "participants",
+      "daysLeft": "days left",
+      "progress": "Progress"
+    },
+    "communitiesSection": {
+      "title": "Communities",
+      "explore": "Explore",
+      "members": "members",
+      "activeGoals": "active goals",
+      "recentActivity": "Recent activity",
+      "join": "Join"
+    },
+    "mobileNav": {
+      "home": "Home",
+      "goals": "Goals",
+      "communities": "Communities",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    }
+  },
+  "goals": {
+    "list": {
+      "title": "My Goals",
+      "pageTitle": "Goals Management",
+      "pageDescription": "Manage all your goals: edit, delete and track your progress",
+      "empty": "You don't have any goals yet",
+      "emptyDescription": "Create your first goal to start managing your objectives and sharing your progress with the community.",
+      "createFirst": "Create my first goal",
+      "filter": "Filter",
+      "sort": "Sort",
+      "all": "All",
+      "active": "Active",
+      "completed": "completed",
+      "inProgress": "in progress",
+      "totalGoals": "total goals",
+      "errorTitle": "We couldn't load your goals",
+      "loadError": "Could not load goals",
+      "sortByDate": "By date",
+      "sortByProgress": "By progress",
+      "sortByName": "By name"
+    },
+    "create": {
+      "title": "Title",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g: Run 5K daily",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your goal and how you'll measure it",
+      "generateDescription": "Generate description",
+      "deadline": "Deadline (optional)",
+      "deadline1Week": "1 week",
+      "deadline1Month": "1 month",
+      "deadline6Months": "6 months",
+      "deadline1Year": "1 year",
+      "type": "Goal type",
+      "typePlaceholder": "Select a type",
+      "community": "Community (topic)",
+      "communityPlaceholder": "Select a community",
+      "communityHint": "Choose the thematic community your goal belongs to.",
+      "communityRequired": "You must select a community (topic)",
+      "submit": "Next: Generate milestones",
+      "cancel": "Cancel",
+      "successMessage": "Goal created successfully",
+      "milestonesProposed": "Proposed milestones",
+      "weightSum": "Weight sum",
+      "redistributeWeights": "Redistribute weights",
+      "adjustWeightsTo100": "Adjust weights to 100%",
+      "createAndSave": "Create goal and save milestones",
+      "sheetTitle": "Create new goal",
+      "sheetDescription": "Define a title, description and (optional) deadline. Then you can review and adjust the suggested milestones before saving.",
+      "summary": "Summary",
+      "noTitle": "No title",
+      "editData": "Edit data",
+      "newGoalPageTitle": "Create New Goal",
+      "newGoalPageDescription": "Define a new goal and start your journey to success",
+      "redirecting": "Redirecting...",
+      "redirectMessage": "The functionality to create new goals is available on the goals management page.",
+      "goToManagement": "Go to Goals Management"
+    },
+    "edit": {
+      "title": "Edit Goal",
+      "description": "Modify your goal details. Changes will be saved automatically.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g: Learn React",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe your goal in detail...",
+      "deadlineLabel": "Deadline (optional)",
+      "statusLabel": "Status",
+      "communityLabel": "Community",
+      "communityPlaceholder": "Select a community",
+      "selectCommunityRequired": "You must select a community (topic)",
+      "updateError": "Could not update goal",
+      "saveButton": "Save changes"
+    },
+    "delete": {
+      "title": "Delete Goal",
+      "description": "Are you sure you want to delete this goal? This action cannot be undone.",
+      "deadlineLabel": "Deadline",
+      "warning": "All progress records associated with this goal will be permanently deleted.",
+      "deleteError": "Could not delete goal",
+      "deleteButton": "Delete goal"
+    },
+    "types": {
+      "metric": "Metric",
+      "milestone": "Milestone",
+      "checkin": "Check-in",
+      "manual": "Manual"
+    },
+    "typeDescriptions": {
+      "metric": "Measure your progress with numbers",
+      "milestone": "Reach specific objectives",
+      "checkin": "Record your progress regularly",
+      "manual": "Update your progress manually"
+    },
+    "status": {
+      "pending": "In progress",
+      "completed": "Completed"
+    },
+    "labels": {
+      "completed": "Completed",
+      "noDeadline": "No deadline",
+      "dueToday": "Due today",
+      "singleDay": "1 day left",
+      "multipleDays": "{count} days left",
+      "progress": "Progress",
+      "participants": "Participants",
+      "category": "Category"
+    }
+  },
+  "communities": {
+    "explore": {
+      "title": "Explore Communities",
+      "pageTitle": "Communities",
+      "pageDescription": "Join communities and share your progress with others",
+      "available": "communities available",
+      "yours": "your communities",
+      "errorTitle": "We couldn't load communities",
+      "loadError": "Could not load communities",
+      "search": "Search communities...",
+      "filter": "Filter",
+      "all": "All",
+      "joined": "Joined",
+      "popular": "Popular",
+      "new": "New"
+    },
+    "profile": {
+      "members": "Members",
+      "activeGoals": "Active goals",
+      "join": "Join",
+      "leave": "Leave",
+      "joined": "Joined",
+      "about": "About",
+      "recentActivity": "Recent activity"
+    },
+    "myComm": {
+      "title": "My Communities",
+      "empty": "You haven't joined any communities yet",
+      "emptyDescription": "Explore and join communities to connect with others",
+      "explore": "Explore communities"
+    },
+    "tabs": {
+      "explore": "Explore",
+      "myCommunities": "My Communities"
+    }
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "pageDescription": "Stay up to date with reminders and updates",
+    "comingSoon": "Coming Soon",
+    "comingSoonDescription": "The notification system is under development. Soon you'll be able to receive reminders about your goals and community updates."
+  },
+  "progress": {
+    "pageTitle": "Progress",
+    "pageDescription": "Visualize your statistics and progress tracking",
+    "comingSoon": "Coming Soon",
+    "comingSoonDescription": "Advanced statistics and progress analysis are under development. Soon you'll be able to see detailed charts of your performance."
+  },
+  "calendar": {
+    "pageTitle": "Calendar",
+    "pageDescription": "Organize your goals and deadlines in a visual calendar",
+    "comingSoon": "Coming Soon",
+    "comingSoonDescription": "The calendar view is under development. Soon you'll be able to see all your goals and deadlines organized in an interactive calendar."
+  },
+  "achievements": {
+    "title": "Achievements",
+    "pageTitle": "Achievements",
+    "pageDescription": "Unlock achievements as you reach your goals",
+    "earned": "Earned",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "progress": "Progress",
+    "empty": "No achievements yet",
+    "emptyDescription": "Complete goals to unlock achievements",
+    "comingSoon": "Coming Soon",
+    "comingSoonDescription": "The achievements system is under development. Soon you'll be able to earn badges and recognition for completing goals and maintaining habits."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "serverError": "Server error",
+    "networkError": "Network error. Check your connection.",
+    "tryAgain": "Try again"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Invalid email",
+    "minLength": "Minimum {min} characters",
+    "maxLength": "Maximum {max} characters",
+    "passwordMismatch": "Passwords do not match",
+    "futureDate": "Date must be in the future"
   },
   "theme": {
-    "toggle": "Toggle theme"
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "language": {
     "label": "Language",
     "es": "Spanish",
     "en": "English"
+  },
+  "userMenu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out"
   }
 }

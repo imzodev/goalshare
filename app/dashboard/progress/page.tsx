@@ -2,8 +2,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Construction } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ProgressPage() {
+  const t = useTranslations("progress");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
       <div className="mb-8">
@@ -13,9 +16,9 @@ export default function ProgressPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Progreso
+              {t("pageTitle")}
             </h1>
-            <p className="text-muted-foreground">Visualiza tus estadísticas y seguimiento de progreso</p>
+            <p className="text-muted-foreground">{t("pageDescription")}</p>
           </div>
         </div>
       </div>
@@ -24,14 +27,11 @@ export default function ProgressPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Construction className="h-5 w-5 text-amber-500" />
-            Próximamente
+            {t("comingSoon")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Las estadísticas avanzadas y análisis de progreso están en desarrollo. Pronto podrás ver gráficos detallados
-            de tu rendimiento.
-          </p>
+          <p className="text-muted-foreground">{t("comingSoonDescription")}</p>
         </CardContent>
       </Card>
     </div>

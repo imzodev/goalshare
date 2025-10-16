@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, TrendingUp, Target, Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-function resolveGreetingByHour(hour: number) {
-  if (hour < 12) return "Buenos días";
-  if (hour < 18) return "Buenas tardes";
-  return "Buenas noches";
+// TODO: Analizar como podriamos reenderizar el greeting al mismo tiempo que todo el component, sin esperar al objeto de traduccion de useTranslations
+function resolveGreetingByHour(hour: number, t: (key: string) => string) {
+  if (hour < 12) return t("morning");
+  if (hour < 18) return t("afternoon");
+  return t("evening");
 }
 
 interface DashboardHeaderProps {
@@ -23,12 +25,13 @@ export function DashboardHeader({
   daysRemaining,
   loading = false,
 }: DashboardHeaderProps) {
-  const [greeting, setGreeting] = useState("Hola");
+  const t = useTranslations("dashboard.header");
+  const [greeting, setGreeting] = useState(t("greeting"));
 
   useEffect(() => {
     const currentHour = new Date().getHours();
-    setGreeting(resolveGreetingByHour(currentHour));
-  }, []);
+    setGreeting(resolveGreetingByHour(currentHour, t));
+  }, [t]);
 
   const userName = "Irving"; // En una app real, esto vendría del contexto de usuario
 
@@ -59,16 +62,14 @@ export function DashboardHeader({
                 {greeting}, {userName}! 👋
               </h1>
             </div>
-            <p className="text-slate-600 text-sm md:text-base dark:text-blue-100">
-              Tienes un progreso excelente. ¡Sigue así para alcanzar tus metas!
-            </p>
+            <p className="text-slate-600 text-sm md:text-base dark:text-blue-100">{t("encouragement")}</p>
             <div className="flex items-center gap-2">
               <Badge
                 variant="secondary"
                 className="border-blue-600/30 bg-blue-600/10 text-blue-800 backdrop-blur-sm dark:border-white/30 dark:bg-white/15 dark:text-white"
               >
                 <TrendingUp className="mr-1 h-3 w-3 text-blue-700 dark:text-white" />
-                +15% esta semana
+                {t("weekProgress")}
               </Badge>
             </div>
           </div>
@@ -78,17 +79,17 @@ export function DashboardHeader({
             <div className="rounded-xl border border-blue-200/40 bg-white/60 p-3 text-center shadow-sm backdrop-blur-lg transition-colors hover:border-blue-300/50 dark:border-blue-200/20 dark:bg-white/10">
               <Target className="mx-auto mb-1 h-5 w-5 text-blue-600 dark:text-blue-200" />
               <div className="text-lg font-bold">{loading ? "..." : (activeGoals ?? "0")}</div>
-              <div className="text-xs text-slate-600 dark:text-blue-200">Metas activas</div>
+              <div className="text-xs text-slate-600 dark:text-blue-200">{t("activeGoals")}</div>
             </div>
             <div className="rounded-xl border border-blue-200/40 bg-white/60 p-3 text-center shadow-sm backdrop-blur-lg transition-colors hover:border-blue-300/50 dark:border-blue-200/20 dark:bg-white/10">
               <TrendingUp className="mx-auto mb-1 h-5 w-5 text-blue-600 dark:text-blue-200" />
               <div className="text-lg font-bold">{loading ? "..." : `${averageProgress ?? 0}%`}</div>
-              <div className="text-xs text-slate-600 dark:text-blue-200">Progreso</div>
+              <div className="text-xs text-slate-600 dark:text-blue-200">{t("avgProgress")}</div>
             </div>
             <div className="col-span-2 rounded-xl border border-blue-200/40 bg-white/60 p-3 text-center shadow-sm backdrop-blur-lg transition-colors hover:border-blue-300/50 dark:border-blue-200/20 dark:bg-white/10 md:col-span-1">
               <Clock className="mx-auto mb-1 h-5 w-5 text-blue-600 dark:text-blue-200" />
               <div className="text-lg font-bold">{loading ? "..." : (daysRemaining ?? "–")}</div>
-              <div className="text-xs text-slate-600 dark:text-blue-200">Días restantes</div>
+              <div className="text-xs text-slate-600 dark:text-blue-200">{t("daysLeft")}</div>
             </div>
           </div>
         </div>
@@ -96,7 +97,7 @@ export function DashboardHeader({
         {/* Barra de progreso general */}
         <div className="mt-6 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-slate-600 dark:text-blue-100">Progreso general del mes</span>
+            <span className="text-slate-600 dark:text-blue-100">{t("monthProgress")}</span>
             <span className="font-medium">{loading ? "..." : `${averageProgress ?? 0}%`}</span>
           </div>
           <div className="w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">

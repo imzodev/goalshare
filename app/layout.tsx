@@ -18,33 +18,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: {
-    default: "GoalShare — Comparte y cumple tus objetivos",
-    template: "%s — GoalShare",
-  },
-  description:
-    "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad. Defines objetivos, haces seguimiento y recibes feedback.",
-  openGraph: {
-    type: "website",
-    url: "/",
-    siteName: "GoalShare",
-    title: "GoalShare — Comparte y cumple tus objetivos",
-    description: "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
-    images: [{ url: "/og.svg", width: 1200, height: 630, alt: "GoalShare" }],
-    locale: "es_MX",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "GoalShare — Comparte y cumple tus objetivos",
-    description: "Organiza metas, comparte tu progreso y logra resultados con el apoyo de tu comunidad.",
-    images: ["/og.svg"],
-  },
-  alternates: {
-    canonical: "/",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("app");
+  const locale = await getLocale();
+
+  return {
+    metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
+    title: {
+      default: t("title"),
+      template: "%s — GoalShare",
+    },
+    description: t("description"),
+    openGraph: {
+      type: "website",
+      url: "/",
+      siteName: "GoalShare",
+      title: t("title"),
+      description: t("description"),
+      images: [{ url: "/og.svg", width: 1200, height: 630, alt: "GoalShare" }],
+      locale: locale === "es" ? "es_MX" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+      images: ["/og.svg"],
+    },
+    alternates: {
+      canonical: "/",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

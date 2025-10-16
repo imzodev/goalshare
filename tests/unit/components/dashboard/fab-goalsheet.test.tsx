@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { I18nTestWrapper } from "@/tests/helpers/i18n-test-wrapper";
 
 import { FloatingActionButton } from "@/components/dashboard/floating-action-button";
 import { GoalSheetProvider } from "@/components/dashboard/goal-sheet-provider";
@@ -13,7 +14,11 @@ vi.mock("next/navigation", () => ({
 }));
 
 function Wrapper({ children }: { children: React.ReactNode }) {
-  return <GoalSheetProvider>{children}</GoalSheetProvider>;
+  return (
+    <I18nTestWrapper>
+      <GoalSheetProvider>{children}</GoalSheetProvider>
+    </I18nTestWrapper>
+  );
 }
 
 describe("FAB -> CreateGoalSheet", () => {

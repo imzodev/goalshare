@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import { MilestonesList } from "@/components/dashboard/create-goal/MilestonesList";
 import type { MilestoneItem } from "@/types/goals";
 
@@ -18,15 +19,17 @@ describe("MilestonesList", () => {
     const onChangeWeight = vi.fn();
 
     render(
-      <MilestonesList
-        milestones={items}
-        expanded={{ 1: true }}
-        onToggle={onToggle}
-        onChangeTitle={onChangeTitle}
-        onChangeDue={onChangeDue}
-        onChangeDescription={onChangeDescription}
-        onChangeWeight={onChangeWeight}
-      />
+      withI18n(
+        <MilestonesList
+          milestones={items}
+          expanded={{ 1: true }}
+          onToggle={onToggle}
+          onChangeTitle={onChangeTitle}
+          onChangeDue={onChangeDue}
+          onChangeDescription={onChangeDescription}
+          onChangeWeight={onChangeWeight}
+        />
+      )
     );
 
     // Comprueba que se hayan renderizado los títulos (inputs con valores)

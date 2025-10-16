@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 
 import { GoalSheetProvider, useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
 import { applyDomPolyfills } from "@/tests/test-utils/jsdom-polyfills";
@@ -79,14 +80,14 @@ describe("CreateGoalSheet flow", () => {
 
     const dispatchSpy = vi.spyOn(window, "dispatchEvent");
 
-    render(<Wrapper />);
+    render(withI18n(<Wrapper />));
 
     // Abre el sheet
     await user.click(screen.getByRole("button", { name: /Abrir Sheet/i }));
 
-    // Form step: llena campos mínimos
-    await user.type(screen.getByLabelText(/Título/i), "Correr 5K diarios");
-    await user.type(screen.getByLabelText(/Descripción/i), "Correr todos los días por la mañana");
+    // Form step: llena campos mínimos (usar placeholders i18n)
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Correr 5K diarios");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Correr todos los días por la mañana");
 
     // Seleccionar comunidad (topics ya mockeado)
     const combo = screen.getByRole("combobox");

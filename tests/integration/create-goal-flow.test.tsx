@@ -2,6 +2,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 import { GoalSheetProvider, useGoalSheet } from "@/components/dashboard/goal-sheet-provider";
 
 function TestOpener() {
@@ -67,13 +68,13 @@ describe("CreateGoalSheet integration - errores y edición", () => {
 
     global.fetch = fetchMock as any;
 
-    render(<Wrapper />);
+    render(withI18n(<Wrapper />));
 
     await user.click(screen.getByRole("button", { name: /Abrir Sheet/i }));
 
     // Completar form mínimo
-    await user.type(screen.getByLabelText(/Título/i), "Meta A");
-    await user.type(screen.getByLabelText(/Descripción/i), "Descripción suficiente");
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Meta A");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Descripción suficiente");
     const combo = screen.getByRole("combobox");
     await user.click(combo);
     await user.keyboard("{ArrowDown}{Enter}");
@@ -127,12 +128,12 @@ describe("CreateGoalSheet integration - errores y edición", () => {
 
     global.fetch = fetchMock as any;
 
-    render(<Wrapper />);
+    render(withI18n(<Wrapper />));
 
     await user.click(screen.getByRole("button", { name: /Abrir Sheet/i }));
 
-    await user.type(screen.getByLabelText(/Título/i), "Meta B");
-    await user.type(screen.getByLabelText(/Descripción/i), "Descripción suficiente");
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Meta B");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Descripción suficiente");
     const combo = screen.getByRole("combobox");
     await user.click(combo);
     await user.keyboard("{ArrowDown}{Enter}");
@@ -195,12 +196,12 @@ describe("CreateGoalSheet integration - errores y edición", () => {
 
     global.fetch = fetchMock as any;
 
-    render(<Wrapper />);
+    render(withI18n(<Wrapper />));
 
     await user.click(screen.getByRole("button", { name: /Abrir Sheet/i }));
 
-    await user.type(screen.getByLabelText(/Título/i), "Meta C");
-    await user.type(screen.getByLabelText(/Descripción/i), "Descripción suficiente");
+    await user.type(screen.getByPlaceholderText(/Correr 5K diarios/i), "Meta C");
+    await user.type(screen.getByPlaceholderText(/Describe tu meta/i), "Descripción suficiente");
     const combo = screen.getByRole("combobox");
     await user.click(combo);
     await user.keyboard("{ArrowDown}{Enter}");
@@ -211,7 +212,7 @@ describe("CreateGoalSheet integration - errores y edición", () => {
     await user.click(screen.getByRole("button", { name: /Editar datos/i }));
 
     // Editar el título y volver a generar
-    const titleInput = screen.getByLabelText(/Título/i) as HTMLInputElement;
+    const titleInput = screen.getByPlaceholderText(/Correr 5K diarios/i) as HTMLInputElement;
     await user.clear(titleInput);
     await user.type(titleInput, "Meta C Editada");
 

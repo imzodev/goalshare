@@ -9,8 +9,13 @@ import type { CommunitySummary } from "@/types/communities";
 import { CommunitiesGrid } from "@/components/communities/communities-grid";
 import { MyCommunitiesGrid } from "@/components/communities/my-communities-grid";
 import { getCommunityGradient } from "@/utils/community-utils";
+import { useTranslations } from "next-intl";
 
 export default function CommunitiesPage() {
+  const t = useTranslations("communities.explore");
+  const tTabs = useTranslations("communities.tabs");
+  const tCommon = useTranslations("common.actions");
+
   const [allCommunities, setAllCommunities] = useState<CommunitySummary[]>([]);
   const [userCommunities, setUserCommunities] = useState<CommunitySummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +41,7 @@ export default function CommunitiesPage() {
 
       const allData = await allResponse.json();
       if (!allResponse.ok) {
-        throw new Error(allData?.error ?? "No se pudieron cargar las comunidades");
+        throw new Error(allData?.error ?? t("loadError"));
       }
 
       const allCommunitiesList = Array.isArray(allData?.communities) ? allData.communities : [];
@@ -48,7 +53,7 @@ export default function CommunitiesPage() {
       setUserCommunities(userCommunitiesList);
     } catch (err) {
       console.error("[CommunitiesPage]", err);
-      setError(err instanceof Error ? err.message : "No se pudieron cargar las comunidades");
+      setError(err instanceof Error ? err.message : t("loadError"));
       setAllCommunities([]);
       setUserCommunities([]);
     } finally {
@@ -75,9 +80,9 @@ export default function CommunitiesPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Comunidades
+              {t("pageTitle")}
             </h1>
-            <p className="text-muted-foreground">Únete a comunidades y comparte tu progreso con otros</p>
+            <p className="text-muted-foreground">{t("pageDescription")}</p>
           </div>
         </div>
 
@@ -99,18 +104,22 @@ export default function CommunitiesPage() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>{allCommunities.length} comunidades disponibles</span>
+                  <span>
+                    {allCommunities.length} {t("available")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  <span>{userCommunities.length} comunidades tuyas</span>
+                  <span>
+                    {userCommunities.length} {t("yours")}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
                   {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                  Refrescar
+                  {tCommon("refresh")}
                 </Button>
               </div>
             </div>
@@ -134,10 +143,10 @@ export default function CommunitiesPage() {
               <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm">
                 <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
                 <div>
-                  <p className="font-medium text-destructive">No pudimos cargar las comunidades</p>
+                  <p className="font-medium text-destructive">{t("errorTitle")}</p>
                   <p className="text-muted-foreground">{error}</p>
                   <Button variant="outline" size="sm" className="mt-2" onClick={handleRefresh}>
-                    Reintentar
+                    {tCommon("retry")}
                   </Button>
                 </div>
               </div>
@@ -149,8 +158,8 @@ export default function CommunitiesPage() {
         {!loading && !error && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="explore">Explorar Comunidades</TabsTrigger>
-              <TabsTrigger value="my-communities">Mis Comunidades</TabsTrigger>
+              <TabsTrigger value="explore">{tTabs("explore")}</TabsTrigger>
+              <TabsTrigger value="my-communities">{tTabs("myCommunities")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="explore" className="space-y-6">

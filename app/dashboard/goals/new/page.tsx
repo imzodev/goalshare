@@ -4,8 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function NewGoalPage() {
+  const t = useTranslations("goals.create");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
       <div className="mb-8">
@@ -15,9 +18,9 @@ export default function NewGoalPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Crear Nueva Meta
+              {t("newGoalPageTitle")}
             </h1>
-            <p className="text-muted-foreground">Define una nueva meta y comienza tu camino hacia el éxito</p>
+            <p className="text-muted-foreground">{t("newGoalPageDescription")}</p>
           </div>
         </div>
       </div>
@@ -26,17 +29,15 @@ export default function NewGoalPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ArrowRight className="h-5 w-5 text-blue-500" />
-            Redirigiendo...
+            {t("redirecting")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            La funcionalidad para crear nuevas metas está disponible en la página de gestión de metas.
-          </p>
+          <p className="text-muted-foreground">{t("redirectMessage")}</p>
           <Link href="/dashboard/goals">
             <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
               <ArrowRight className="h-4 w-4 mr-2" />
-              Ir a Gestión de Metas
+              {t("goToManagement")}
             </Button>
           </Link>
         </CardContent>

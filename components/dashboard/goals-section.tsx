@@ -11,8 +11,12 @@ import { GoalCard } from "@/components/goals/goal-card";
 import { EditGoalDialog } from "@/components/goals/edit-goal-dialog";
 import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
 import { useGoalManagement } from "@/hooks/use-goal-management";
+import { useTranslations } from "next-intl";
 
 export function GoalsSection() {
+  const t = useTranslations("dashboard.goalsSection");
+  const tCommon = useTranslations("common.actions");
+
   const { goals, loading, refreshing, error, fetchGoals } = useGoals();
   const { openSheet } = useGoalSheet();
 
@@ -55,14 +59,14 @@ export function GoalsSection() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Target className="h-5 w-5 text-blue-600" />
-          Mis Metas
+          {t("title")}
         </CardTitle>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
             {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           </Button>
           <Button size="sm" onClick={() => openSheet()}>
-            Crear meta
+            {tCommon("create")}
           </Button>
         </div>
       </CardHeader>
@@ -73,7 +77,7 @@ export function GoalsSection() {
           <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm">
             <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
             <div>
-              <p className="font-medium text-destructive">No pudimos cargar tus metas</p>
+              <p className="font-medium text-destructive">{t("errorTitle")}</p>
               <p className="text-muted-foreground">{error}</p>
             </div>
           </div>
@@ -82,12 +86,10 @@ export function GoalsSection() {
         {!loading && !error && goals.length === 0 && (
           <div className="rounded-lg border border-dashed bg-white/50 dark:bg-gray-800/40 px-6 py-10 text-center">
             <Target className="mx-auto h-10 w-10 text-blue-500" />
-            <h3 className="mt-4 text-base font-semibold">Aún no tienes metas activas</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Crea tu primera meta para comenzar a compartir tu progreso con la comunidad.
-            </p>
+            <h3 className="mt-4 text-base font-semibold">{t("empty")}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("emptyDescription")}</p>
             <Button className="mt-4" onClick={() => openSheet()}>
-              Crear mi primera meta
+              {t("createFirst")}
             </Button>
           </div>
         )}

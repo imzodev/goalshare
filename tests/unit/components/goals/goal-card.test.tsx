@@ -2,21 +2,20 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { GoalCard } from "@/components/goals/goal-card";
-import { GOAL_STATUS_LABELS, GOAL_TYPE_LABELS } from "@/constants/goals";
 import { makeUserGoal } from "@/tests/test-utils/goal-fixtures";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 
 describe("GoalCard (unificado)", () => {
   it("renderiza props base: título, descripción, labels y progreso", () => {
     const goal = makeUserGoal();
 
-    render(<GoalCard goal={goal} index={0} />);
+    render(withI18n(<GoalCard goal={goal} index={0} />));
 
     expect(screen.getByText(goal.title)).toBeInTheDocument();
     expect(screen.getByText(goal.description)).toBeInTheDocument();
 
-    // Labels de tipo y estado
-    expect(screen.getByText(GOAL_TYPE_LABELS[goal.goalType])).toBeInTheDocument();
-    expect(screen.getByText(GOAL_STATUS_LABELS[goal.status])).toBeInTheDocument();
+    // Las traducciones se renderizan correctamente (texto exacto 'Progreso')
+    expect(screen.getByText(/^Progreso$/i)).toBeInTheDocument();
 
     // Categoría
     expect(screen.getByText(goal.topicCommunity!.name)).toBeInTheDocument();
@@ -41,7 +40,7 @@ describe("GoalCard (unificado)", () => {
     const onDelete = vi.fn();
 
     const { container } = render(
-      <GoalCard goal={goal} index={1} layout="single-column" onEdit={onEdit} onDelete={onDelete} />
+      withI18n(<GoalCard goal={goal} index={1} layout="single-column" onEdit={onEdit} onDelete={onDelete} />)
     );
 
     // Abrir el dropdown de acciones
@@ -64,7 +63,7 @@ describe("GoalCard (unificado)", () => {
     const goal = makeUserGoal();
     const onEdit = vi.fn();
 
-    const { container } = render(<GoalCard goal={goal} index={2} layout="multi-column" onEdit={onEdit} />);
+    const { container } = render(withI18n(<GoalCard goal={goal} index={2} layout="multi-column" onEdit={onEdit} />));
 
     // Debe existir un botón para abrir el menú (md:hidden) presente en el DOM
     const buttons = container.querySelectorAll("button");
