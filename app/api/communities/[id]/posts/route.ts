@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-import { env } from "@/config/env";
+import { parseJsonOr415 } from "@/lib/http/guards";
 import { PostsService, createCommunityPostSchema } from "@/services/posts-service";
 
 interface RouteParams {
@@ -60,23 +60,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const userId = user.id;
-    // TODO: Refactorizar, esto no deberia estar aqui, esto debe ser manejado por un middleware
-    const origin = request.headers.get("origin") || "";
-    if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
-      return NextResponse.json({ error: "Origin no permitido" }, { status: 403 });
-    }
-
-    const contentType = (request.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      return NextResponse.json({ error: "Content-Type inválido" }, { status: 415 });
-    }
 
     const { id: communityId } = await params;
     if (!communityId) {
       return NextResponse.json({ error: "ID de comunidad requerido" }, { status: 400 });
     }
 
-    const body = await request.json();
+    const bodyOrRes = await parseJsonOr415<Record<string, unknown>>(request);
+    if (bodyOrRes instanceof NextResponse) return bodyOrRes;
+    const body = bodyOrRes;
     const parsed = createCommunityPostSchema.safeParse({ ...body, communityId });
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });

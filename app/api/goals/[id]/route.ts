@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { env } from "@/config/env";
+import { parseJsonOr415 } from "@/lib/http/guards";
 import { GoalsService } from "@/services/goals-service";
 
 const UpdateGoalSchema = z
@@ -98,25 +98,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const userId = user.id;
 
-    // CSRF / Origin check (solo aceptar same-origin)
-    const origin = req.headers.get("origin") || "";
-    if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
-      return NextResponse.json({ error: "Origin no permitido" }, { status: 403 });
-    }
-
-    // Content-Type check (solo application/json)
-    const contentType = (req.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      return NextResponse.json({ error: "Content-Type inválido" }, { status: 415 });
-    }
-
     const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: "ID de meta requerido" }, { status: 400 });
     }
 
-    const json = await req.json();
-    const parsed = UpdateGoalSchema.safeParse(json);
+    const jsonOrRes = await parseJsonOr415<Record<string, unknown>>(req);
+    if (jsonOrRes instanceof NextResponse) return jsonOrRes;
+    const parsed = UpdateGoalSchema.safeParse(jsonOrRes);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
@@ -144,7 +133,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient();
     const {
@@ -158,12 +147,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     }
 
     const userId = user.id;
-
-    // CSRF / Origin check (solo aceptar same-origin)
-    const origin = req.headers.get("origin") || "";
-    if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
-      return NextResponse.json({ error: "Origin no permitido" }, { status: 403 });
-    }
 
     const { id } = await params;
     if (!id) {

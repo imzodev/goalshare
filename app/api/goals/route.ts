@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { goals, profiles } from "@/db/schema";
 import { eq, sql as dsql } from "drizzle-orm";
 import { withUserContext } from "@/lib/db-context";
-import { env } from "@/config/env";
 import { GoalsService } from "@/services/goals-service";
 import { toNumericString } from "@/utils/type-converters";
+import { parseJsonOr415 } from "@/lib/http/guards";
 
 const CreateGoalSchema = z
   .object({
@@ -99,20 +99,9 @@ export async function POST(req: NextRequest) {
 
     const userId = user.id;
 
-    // CSRF / Origin check (solo aceptar same-origin)
-    const origin = req.headers.get("origin") || "";
-    if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
-      return NextResponse.json({ error: "Origin no permitido" }, { status: 403 });
-    }
-
-    // Content-Type check (solo application/json)
-    const contentType = (req.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      return NextResponse.json({ error: "Content-Type inválido" }, { status: 415 });
-    }
-
-    const json = await req.json();
-    const parsed = CreateGoalSchema.safeParse(json);
+    const jsonOrRes = await parseJsonOr415<Record<string, unknown>>(req);
+    if (jsonOrRes instanceof NextResponse) return jsonOrRes;
+    const parsed = CreateGoalSchema.safeParse(jsonOrRes);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }

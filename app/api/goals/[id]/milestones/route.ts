@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { env } from "@/config/env";
+import { parseJsonOr415 } from "@/lib/http/guards";
 import { MilestoneItemSchema } from "@/lib/ai";
 import { MilestonesService } from "@/services/milestones-service";
 
@@ -24,25 +24,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const userId = user.id;
 
-    // CSRF / Origin check (solo aceptar same-origin)
-    const origin = req.headers.get("origin") || "";
-    if (!origin || !origin.startsWith(env.NEXT_PUBLIC_APP_URL)) {
-      return NextResponse.json({ error: "Origin no permitido" }, { status: 403 });
-    }
-
-    // Content-Type check (solo application/json)
-    const contentType = (req.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/json")) {
-      return NextResponse.json({ error: "Content-Type inválido" }, { status: 415 });
-    }
-
     const { id: goalId } = await params;
     if (!goalId) {
       return NextResponse.json({ error: "ID de meta requerido" }, { status: 400 });
     }
 
-    const json = await req.json();
-    const parsed = PersistMilestonesSchema.safeParse(json);
+    const jsonOrRes = await parseJsonOr415<Record<string, unknown>>(req);
+    if (jsonOrRes instanceof NextResponse) return jsonOrRes;
+    const parsed = PersistMilestonesSchema.safeParse(jsonOrRes);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
