@@ -28,7 +28,7 @@ export function SignUpForm() {
 
   const signUpSchema = z
     .object({
-      email: z.string().email(tValidation("invalidEmail")),
+      email: z.string().email(tValidation("email")),
       password: z.string().min(6, tValidation("minLength", { min: 6 })),
       confirmPassword: z.string(),
     })
