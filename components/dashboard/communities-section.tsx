@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Users, MessageCircle, TrendingUp, Plus, Loader2 } from "lucide-react";
+import { Users, MessageCircle, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { CommunitySummary } from "@/types/communities";
 import { getCommunityGradient } from "@/utils/community-utils";
+import { CommunityCard } from "@/components/communities/community-card";
 
 export function CommunitiesSection() {
   const [communities, setCommunities] = useState<CommunitySummary[]>([]);
@@ -115,63 +116,40 @@ export function CommunitiesSection() {
               const gradient = getCommunityGradient(community.id);
               const isJoining = joiningCommunity === community.id;
 
+              const subtitle =
+                community.kind === "topic"
+                  ? "Comunidad de tema"
+                  : community.kind === "domain"
+                    ? "Comunidad de dominio"
+                    : community.kind === "cohort"
+                      ? "Cohorte"
+                      : "Comunidad";
+
               return (
-                <Card
+                <CommunityCard
                   key={community.id}
-                  className="w-[280px] shrink-0 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-0 bg-gradient-to-br from-white/50 to-gray-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`p-2 rounded-full bg-gradient-to-br ${gradient} shadow-lg`}>
-                        <Users className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm truncate">{community.name}</h3>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {community.description || "Sin descripción"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                        <div className="text-sm font-semibold">{community.memberCount.toLocaleString()}</div>
-                        <div className="text-xs text-muted-foreground">Miembros</div>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                        <div className="text-sm font-semibold">0</div>
-                        <div className="text-xs text-muted-foreground">Metas activas</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                      <TrendingUp className="h-3 w-3" />
-                      <span className="truncate">
-                        {community.kind === "topic"
-                          ? "Comunidad de tema"
-                          : community.kind === "domain"
-                            ? "Comunidad de dominio"
-                            : community.kind === "cohort"
-                              ? "Cohorte"
-                              : "Comunidad"}
-                      </span>
-                    </div>
-
-                    <Button
-                      size="sm"
-                      disabled={isJoining}
-                      onClick={() => handleJoinCommunity(community)}
-                      className={`w-full bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`}
-                    >
-                      {isJoining ? (
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      ) : (
-                        <MessageCircle className="h-3 w-3 mr-1" />
-                      )}
-                      {isJoining ? "Procesando..." : community.isMember ? "Salir" : "Unirse"}
-                    </Button>
-                  </CardContent>
-                </Card>
+                  community={community}
+                  gradientClass={gradient}
+                  badges={undefined}
+                  subtitle={<span className="truncate">{subtitle}</span>}
+                  compact
+                  rootClassName="w-[280px] shrink-0 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-0 bg-gradient-to-br from-white/50 to-gray-50/50 dark:from-gray-800/50 dark:to-gray-900/50"
+                  contentClassName="p-4"
+                  titleClassName="truncate"
+                  descriptionClassName="truncate"
+                  activeGoalsCount={0}
+                  primaryAction={{
+                    label: isJoining ? "Procesando..." : community.isMember ? "Salir" : "Unirse",
+                    icon: isJoining ? (
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    ) : (
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                    ),
+                    disabled: isJoining,
+                    onClick: () => handleJoinCommunity(community),
+                    className: `bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`,
+                  }}
+                />
               );
             })}
           </div>

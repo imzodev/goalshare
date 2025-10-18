@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Users, MessageCircle, Loader2, TrendingUp } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowUpRight, Users, MessageCircle, Loader2 } from "lucide-react";
 import type { CommunitySummary } from "@/types/communities";
+import { CommunityCard } from "@/components/communities/community-card";
 
 interface CommunitiesGridProps {
   communities: CommunitySummary[];
@@ -55,89 +54,49 @@ export function CommunitiesGrid({ communities, onCommunityAction, getCommunityGr
         const gradient = getCommunityGradient(community.id);
         const isJoining = joiningCommunity === community.id;
 
+        const kindLabel =
+          community.kind === "topic"
+            ? "Tema"
+            : community.kind === "domain"
+              ? "Dominio"
+              : community.kind === "cohort"
+                ? "Cohorte"
+                : "Comunidad";
+
         return (
-          <Card
+          <CommunityCard
             key={community.id}
-            className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
-          >
-            <div
-              className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
-            />
-
-            <CardHeader className="relative pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{community.name}</CardTitle>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/20 dark:text-blue-300">
-                      {community.kind === "topic"
-                        ? "Tema"
-                        : community.kind === "domain"
-                          ? "Dominio"
-                          : community.kind === "cohort"
-                            ? "Cohorte"
-                            : "Comunidad"}
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg"
-                  style={{ background: `linear-gradient(135deg, var(--tw-gradient-stops))` }}
-                >
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="relative space-y-4">
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {community.description || "Sin descripción disponible"}
-              </p>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                  <div className="text-sm font-semibold">{community.memberCount.toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">Miembros</div>
-                </div>
-                <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                  <div className="text-sm font-semibold">-</div>
-                  <div className="text-xs text-muted-foreground">Metas activas</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3" />
-                <span>Comunidad {community.kind}</span>
-              </div>
-
-              {community.isMember ? (
-                <Button
-                  asChild
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:shadow-xl"
-                >
-                  <Link href={`/dashboard/communities/${community.id}`}>
-                    <ArrowUpRight className="mr-1 h-3 w-3" /> Ver comunidad
-                  </Link>
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  disabled={isJoining}
-                  onClick={() => handleJoinCommunity(community)}
-                  className={`w-full bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`}
-                >
-                  {isJoining ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                  ) : (
-                    <MessageCircle className="mr-1 h-3 w-3" />
-                  )}
-                  {isJoining ? "Uniéndose..." : "Unirse"}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+            community={community}
+            gradientClass={gradient}
+            badges={
+              <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/20 dark:text-blue-300">
+                {kindLabel}
+              </span>
+            }
+            subtitle={<>Comunidad {community.kind}</>}
+            primaryAction={
+              community.isMember
+                ? {
+                    asLink: true,
+                    href: `/dashboard/communities/${community.id}`,
+                    label: "Ver comunidad",
+                    icon: <ArrowUpRight className="mr-1 h-3 w-3" />,
+                    className:
+                      "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:shadow-xl",
+                  }
+                : {
+                    label: isJoining ? "Uniéndose..." : "Unirse",
+                    icon: isJoining ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <MessageCircle className="mr-1 h-3 w-3" />
+                    ),
+                    disabled: isJoining,
+                    onClick: () => handleJoinCommunity(community),
+                    className: `bg-gradient-to-r ${gradient} hover:shadow-lg transition-all disabled:opacity-50`,
+                  }
+            }
+          />
         );
       })}
     </div>
