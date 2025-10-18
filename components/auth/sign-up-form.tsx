@@ -66,7 +66,7 @@ export function SignUpForm() {
     });
 
     if (error) {
-      toast.error(getAuthErrorMessage(error.message));
+      toast.error(getAuthErrorMessage(error.message, tErrors));
       setIsLoading(false);
     } else {
       toast.success(tCommon("success"), {
@@ -87,13 +87,13 @@ export function SignUpForm() {
         },
       });
       if (error) {
-        toast.error(getAuthErrorMessage(error.message));
+        toast.error(getAuthErrorMessage(error.message, tErrors));
         setIsGithubLoading(false);
       }
       return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      toast.error(getAuthErrorMessage(msg));
+      toast.error(getAuthErrorMessage(msg, tErrors));
       setIsGithubLoading(false);
     }
   }
@@ -109,13 +109,13 @@ export function SignUpForm() {
         },
       });
       if (error) {
-        toast.error(getAuthErrorMessage(error.message));
+        toast.error(getAuthErrorMessage(error.message, tErrors));
         setIsGoogleLoading(false);
       }
       return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      toast.error(getAuthErrorMessage(msg));
+      toast.error(getAuthErrorMessage(msg, tErrors));
       setIsGoogleLoading(false);
     }
   }

@@ -13,15 +13,27 @@ export const AUTH_ERROR_CODES = {
   OAUTH_ERROR: "oauth_error",
 } as const;
 
-// User-friendly Spanish messages used by the app UI
+// i18n keys for user-friendly messages (namespace: auth.errors)
+export const AUTH_ERROR_KEYS = {
+  UNKNOWN: "unknown",
+  GENERIC: "generic",
+  INVALID_LOGIN: "invalidLogin",
+  INVALID_CREDENTIALS: "invalidCredentials",
+  EMAIL_NOT_CONFIRMED: "emailNotConfirmed",
+  USER_ALREADY_REGISTERED: "userAlreadyRegistered",
+  WEAK_PASSWORD: "weakPassword",
+  OAUTH_GENERIC: "oauthGeneric",
+} as const;
+
+// User-friendly Spanish messages used by the app UI (legacy fallback)
 export const AUTH_ERROR_MESSAGES = {
-  UNKNOWN: "Error desconocido. Intenta de nuevo.",
-  GENERIC: "Error al procesar tu solicitud. Intenta de nuevo.",
-  INVALID_LOGIN: "Correo o contraseña incorrectos",
-  EMAIL_NOT_CONFIRMED: "Por favor confirma tu correo antes de iniciar sesión",
-  USER_ALREADY_REGISTERED: "Este correo ya está registrado. Intenta iniciar sesión.",
-  WEAK_PASSWORD: "La contraseña es muy débil. Usa al menos 6 caracteres.",
-  OAUTH_GENERIC: "Error al conectar con el proveedor. Intenta de nuevo.",
+  UNKNOWN: "Unknown error. Please try again.",
+  GENERIC: "Error processing your request. Please try again.",
+  INVALID_LOGIN: "Invalid email or password",
+  EMAIL_NOT_CONFIRMED: "Please confirm your email before logging in",
+  USER_ALREADY_REGISTERED: "This email is already registered. Try logging in.",
+  WEAK_PASSWORD: "Password is too weak. Use at least 6 characters.",
+  OAUTH_GENERIC: "Error connecting with provider. Please try again.",
 } as const;
 
 export type AuthErrorCode = (typeof AUTH_ERROR_CODES)[keyof typeof AUTH_ERROR_CODES];
