@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, TrendingUp, Target, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-// TODO: Analizar como podriamos reenderizar el greeting al mismo tiempo que todo el component, sin esperar al objeto de traduccion de useTranslations
 function resolveGreetingByHour(hour: number, t: (key: string) => string) {
   if (hour < 12) return t("morning");
   if (hour < 18) return t("afternoon");
@@ -26,12 +25,8 @@ export function DashboardHeader({
   loading = false,
 }: DashboardHeaderProps) {
   const t = useTranslations("dashboard.header");
-  const [greeting, setGreeting] = useState(t("greeting"));
-
-  useEffect(() => {
-    const currentHour = new Date().getHours();
-    setGreeting(resolveGreetingByHour(currentHour, t));
-  }, [t]);
+  const hour = useMemo(() => new Date().getHours(), []);
+  const greeting = resolveGreetingByHour(hour, t);
 
   const userName = "Irving"; // En una app real, esto vendría del contexto de usuario
 
