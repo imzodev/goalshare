@@ -435,11 +435,14 @@
     "profile": {
       "members": "Members",
       "activeGoals": "Active goals",
+      "activity": "Activity",
       "join": "Join",
       "leave": "Leave",
       "joined": "Joined",
       "about": "About",
-      "recentActivity": "Recent activity"
+      "recentActivity": "Recent activity",
+      "noDescription": "No description",
+      "noDescriptionAvailable": "No description available"
     },
     "myComm": {
       "title": "My Communities",

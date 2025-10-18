@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, TrendingUp } from "lucide-react";
 import type { CommunitySummary } from "@/types/communities";
+import { useTranslations } from "next-intl";
 
 interface ActionButton {
   asLink?: boolean;
@@ -50,6 +51,7 @@ export function CommunityCard({
   membersLabel = "Miembros",
   activeGoalsLabel = "Metas activas",
 }: CommunityCardProps) {
+  const tProfile = useTranslations("communities.profile");
   return (
     <Card
       className={`group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] gap-0 ${rootClassName ?? ""}`}
@@ -71,7 +73,7 @@ export function CommunityCard({
                 {community.name}
               </CardTitle>
               <p className={`text-xs text-muted-foreground ${descriptionClassName ?? ""} truncate`}>
-                {community.description || "Sin descripción"}
+                {community.description || tProfile("noDescription")}
               </p>
             </div>
           </div>
@@ -101,7 +103,7 @@ export function CommunityCard({
           <p
             className={`${compact ? "text-xs truncate" : "text-sm line-clamp-3"} text-muted-foreground ${descriptionClassName ?? ""}`}
           >
-            {community.description || "Sin descripción disponible"}
+            {community.description || tProfile("noDescriptionAvailable")}
           </p>
         )}
 

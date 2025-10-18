@@ -441,7 +441,10 @@
       "about": "Acerca de",
       "join": "Unirse",
       "leave": "Salir",
-      "joined": "Unido"
+      "joined": "Unido",
+      "recentActivity": "Actividad reciente",
+      "noDescription": "Sin descripción",
+      "noDescriptionAvailable": "Sin descripción disponible"
     },
     "myComm": {
       "title": "Mis Comunidades",
