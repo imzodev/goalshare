@@ -256,7 +256,11 @@
       "goalsDescription": "Objetivos en curso",
       "progressDescription": "De tus metas",
       "communitiesDescription": "Grupos activos",
-      "achievementsDescription": "Desbloqueados"
+      "achievementsDescription": "Desbloqueados",
+      "changeActiveWeek": "+{count} esta semana",
+      "changeAvgMonth": "+{percent}% este mes",
+      "changeCommunitiesActive": "Activo en {count}",
+      "changeAchievementsMonth": "+{count} este mes"
     },
     "quickActions": {
       "title": "Acciones Rápidas",

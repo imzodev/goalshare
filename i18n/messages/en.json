@@ -256,7 +256,11 @@
       "goalsDescription": "Ongoing objectives",
       "progressDescription": "Of your goals",
       "communitiesDescription": "Active groups",
-      "achievementsDescription": "Unlocked"
+      "achievementsDescription": "Unlocked",
+      "changeActiveWeek": "+{count} this week",
+      "changeAvgMonth": "+{percent}% this month",
+      "changeCommunitiesActive": "Active in {count}",
+      "changeAchievementsMonth": "+{count} this month"
     },
     "quickActions": {
       "title": "Quick Actions",

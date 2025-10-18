@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Target, TrendingUp, Users, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface StatsCardsProps {
   activeGoals?: number;
@@ -19,35 +20,36 @@ export function StatsCards({
   achievementsCount = 8,
   loading = false,
 }: StatsCardsProps) {
+  const t = useTranslations("dashboard.stats");
   const stats = [
     {
-      title: "Metas Activas",
+      title: t("activeGoals"),
       value: loading ? "..." : String(activeGoals ?? 0),
-      change: "+2 esta semana",
+      change: t("changeActiveWeek", { count: 2 }),
       icon: Target,
       gradient: "from-blue-500 to-cyan-500",
       bgGradient: "from-blue-50 to-cyan-50",
     },
     {
-      title: "Progreso Promedio",
+      title: t("avgProgress"),
       value: loading ? "..." : `${averageProgress ?? 0}%`,
-      change: "+12% este mes",
+      change: t("changeAvgMonth", { percent: 12 }),
       icon: TrendingUp,
       gradient: "from-green-500 to-emerald-500",
       bgGradient: "from-green-50 to-emerald-50",
     },
     {
-      title: "Comunidades",
+      title: t("communities"),
       value: loading ? "..." : String(communitiesCount),
-      change: "Activo en ambas",
+      change: t("changeCommunitiesActive", { count: communitiesCount }),
       icon: Users,
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-50 to-pink-50",
     },
     {
-      title: "Logros",
+      title: t("achievements"),
       value: loading ? "..." : String(achievementsCount),
-      change: "+3 este mes",
+      change: t("changeAchievementsMonth", { count: 3 }),
       icon: Trophy,
       gradient: "from-orange-500 to-red-500",
       bgGradient: "from-orange-50 to-red-50",
