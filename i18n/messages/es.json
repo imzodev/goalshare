@@ -409,6 +409,14 @@
     }
   },
   "communities": {
+    "kinds": {
+      "labels": {
+        "topic": "Comunidad de tema",
+        "domain": "Comunidad de dominio",
+        "cohort": "Cohorte",
+        "community": "Comunidad"
+      }
+    },
     "explore": {
       "title": "Explorar Comunidades",
       "pageTitle": "Comunidades",

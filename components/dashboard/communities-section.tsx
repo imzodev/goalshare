@@ -9,8 +9,15 @@ import { toast } from "sonner";
 import type { CommunitySummary } from "@/types/communities";
 import { getCommunityGradient } from "@/utils/community-utils";
 import { CommunityCard } from "@/components/communities/community-card";
+import { useTranslations } from "next-intl";
 
 export function CommunitiesSection() {
+  const tSection = useTranslations("dashboard.communitiesSection");
+  const tActions = useTranslations("common.actions");
+  const tStates = useTranslations("common.states");
+  const tErrors = useTranslations("errors");
+  const tExplore = useTranslations("communities.explore");
+  const tKinds = useTranslations("communities.kinds.labels");
   const [communities, setCommunities] = useState<CommunitySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [joiningCommunity, setJoiningCommunity] = useState<string | null>(null);
@@ -23,13 +30,14 @@ export function CommunitiesSection() {
   const fetchCommunities = async () => {
     try {
       const response = await fetch("/api/communities");
-      if (!response.ok) throw new Error("Error al cargar comunidades");
+      if (!response.ok) throw new Error("loadError");
 
       const data = await response.json();
       setCommunities(data.communities);
     } catch (error) {
       console.error("Error fetching communities:", error);
-      toast.error("Error al cargar las comunidades");
+      const msgKey = (error as Error)?.message;
+      toast.error(msgKey === "loadError" ? tExplore("loadError") : tExplore("errorTitle"));
     } finally {
       setLoading(false);
     }
@@ -44,14 +52,14 @@ export function CommunitiesSection() {
           method: "DELETE",
         });
 
-        if (!response.ok) throw new Error("Error al salir de la comunidad");
+        if (!response.ok) throw new Error("leaveError");
 
-        toast.success(`Has salido de ${community.name}`);
+        toast.success(`${tActions("leave")} ${community.name}`);
         // Recargar comunidades para actualizar el estado
         await fetchCommunities();
       } catch (error) {
         console.error("Error leaving community:", error);
-        toast.error("Error al salir de la comunidad");
+        toast.error(tErrors("generic"));
       } finally {
         setJoiningCommunity(null);
       }
@@ -63,14 +71,14 @@ export function CommunitiesSection() {
           method: "POST",
         });
 
-        if (!response.ok) throw new Error("Error al unirte a la comunidad");
+        if (!response.ok) throw new Error("joinError");
 
-        toast.success(`Te has unido a ${community.name}!`);
+        toast.success(`${tActions("join")} ${community.name}`);
         // Recargar comunidades para actualizar el estado
         await fetchCommunities();
       } catch (error) {
         console.error("Error joining community:", error);
-        toast.error("Error al unirte a la comunidad");
+        toast.error(tErrors("generic"));
       } finally {
         setJoiningCommunity(null);
       }
@@ -83,11 +91,11 @@ export function CommunitiesSection() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-purple-600" />
-            Comunidades
+            {tSection("title")}
           </CardTitle>
           <Button variant="outline" size="sm" disabled>
             <Plus className="h-4 w-4 mr-1" />
-            Explorar
+            {tSection("explore")}
           </Button>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-8">
@@ -102,11 +110,11 @@ export function CommunitiesSection() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5 text-purple-600" />
-          Comunidades
+          {tSection("title")}
         </CardTitle>
         <Button variant="outline" size="sm">
           <Plus className="h-4 w-4 mr-1" />
-          Explorar
+          {tSection("explore")}
         </Button>
       </CardHeader>
       <CardContent className="overflow-hidden">
@@ -116,14 +124,11 @@ export function CommunitiesSection() {
               const gradient = getCommunityGradient(community.id);
               const isJoining = joiningCommunity === community.id;
 
-              const subtitle =
-                community.kind === "topic"
-                  ? "Comunidad de tema"
-                  : community.kind === "domain"
-                    ? "Comunidad de dominio"
-                    : community.kind === "cohort"
-                      ? "Cohorte"
-                      : "Comunidad";
+              const kindKey =
+                community.kind === "topic" || community.kind === "domain" || community.kind === "cohort"
+                  ? community.kind
+                  : "community";
+              const subtitle = tKinds(kindKey);
 
               return (
                 <CommunityCard
@@ -138,8 +143,10 @@ export function CommunitiesSection() {
                   titleClassName="truncate"
                   descriptionClassName="truncate"
                   activeGoalsCount={0}
+                  membersLabel={tSection("members")}
+                  activeGoalsLabel={tSection("activeGoals")}
                   primaryAction={{
-                    label: isJoining ? "Procesando..." : community.isMember ? "Salir" : "Unirse",
+                    label: isJoining ? tStates("loading") : community.isMember ? tActions("leave") : tActions("join"),
                     icon: isJoining ? (
                       <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                     ) : (

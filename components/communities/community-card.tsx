@@ -30,6 +30,8 @@ interface CommunityCardProps {
   titleClassName?: string;
   descriptionClassName?: string;
   activeGoalsCount?: number | null;
+  membersLabel?: string;
+  activeGoalsLabel?: string;
 }
 
 export function CommunityCard({
@@ -45,6 +47,8 @@ export function CommunityCard({
   titleClassName,
   descriptionClassName,
   activeGoalsCount = null,
+  membersLabel = "Miembros",
+  activeGoalsLabel = "Metas activas",
 }: CommunityCardProps) {
   return (
     <Card
@@ -104,11 +108,11 @@ export function CommunityCard({
         <div className="grid grid-cols-2 gap-2">
           <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
             <div className="text-sm font-semibold">{community.memberCount.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Miembros</div>
+            <div className="text-xs text-muted-foreground">{membersLabel}</div>
           </div>
           <div className="text-center p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
             <div className="text-sm font-semibold">{activeGoalsCount ?? "-"}</div>
-            <div className="text-xs text-muted-foreground">Metas activas</div>
+            <div className="text-xs text-muted-foreground">{activeGoalsLabel}</div>
           </div>
         </div>
 
