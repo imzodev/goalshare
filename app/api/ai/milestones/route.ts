@@ -9,6 +9,8 @@ import { defaultTracer } from "../../../../utils/ai-ops/trace";
  */
 export async function POST(req: Request) {
   try {
+    const h = new Headers();
+    // auth and rate limiting handled in middleware
     const body = await req.json();
     console.log("body", body);
     const input = MilestonesRequestSchema.parse(body);
@@ -19,11 +21,11 @@ export async function POST(req: Request) {
     const deadline = typeof (input.context as any)?.deadline === "string" ? (input.context as any).deadline : undefined;
     const locale = input.locale || "es";
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
-    const user = `Objetivo: ${input.goal}\nHoy: ${today}\n${deadline ? `Fecha límite de la meta: ${deadline}` : "Sin fecha límite especificada"}\nIdioma: ${locale}`;
+    const userContent = `Objetivo: ${input.goal}\nHoy: ${today}\n${deadline ? `Fecha límite de la meta: ${deadline}` : "Sin fecha límite especificada"}\nIdioma: ${locale}`;
 
     // Execute planner agent
     const agent = AgentFactory.create("planner");
-    const result = await agent.execute({ payload: user }, { traceId, locale });
+    const result = await agent.execute({ payload: userContent }, { traceId, locale });
     console.log("result", result);
     // Best-effort parse of agent output
     const raw = (result as any)?.data?.finalOutput ?? (result as any)?.data ?? result;
@@ -50,7 +52,7 @@ export async function POST(req: Request) {
     // Validate against schema; if invalid, fallback to dummy but keep traceId
     const safe = MilestonesResponseSchema.safeParse(parsed);
     if (safe.success) {
-      return NextResponse.json({ ...safe.data, traceId: safe.data.traceId || traceId });
+      return NextResponse.json({ ...safe.data, traceId: safe.data.traceId || traceId }, { headers: h });
     }
 
     // Fallback DUMMY (same behavior as antes) para resiliencia
@@ -102,7 +104,7 @@ export async function POST(req: Request) {
     const span = await defaultTracer.startSpan("ai.milestones.fallback", { traceId });
     await defaultTracer.annotate?.(span, { count: milestones.length });
     await defaultTracer.endSpan(span);
-    return NextResponse.json({ milestones, traceId });
+    return NextResponse.json({ milestones, traceId }, { headers: h });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid request";
     return NextResponse.json({ error: message }, { status: 400 });

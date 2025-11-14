@@ -81,3 +81,48 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Rate Limiting (Distributed with Upstash Redis)
+
+This project includes a distributed rate limiter integrated in `middleware.ts`. It uses **Upstash Redis** when credentials are provided, and falls back to an in-memory limiter in local development.
+
+### Setup
+
+1. Install dependency (already added):
+
+```bash
+bun add @upstash/redis
+```
+
+2. Configure environment variables (see `.env.example`):
+
+```bash
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+
+# Optional (defaults in parentheses)
+RATE_LIMIT_WINDOW_SECONDS=60
+RATE_LIMIT_LIMIT_AUTHED=60
+RATE_LIMIT_LIMIT_ANON=60
+```
+
+3. Behavior
+
+- Limits are enforced per identity and window:
+  - Authenticated users: `uid:{userId}`
+  - Anonymous users: `ip:{ip}`
+- Headers are attached on `/api/*` responses:
+  - `X-RateLimit-Limit`
+  - `X-RateLimit-Remaining`
+  - `X-RateLimit-Reset` (unix seconds)
+- When exceeded, responses return `429` with `Retry-After` seconds.
+
+4. Local development
+
+- If Upstash credentials are not present, an in-memory limiter is used.
+- This is sufficient for dev but not distributed in production.
+
+5. Notes
+
+- Keep existing CORS/CSRF checks before the limiter.
+- You can tune limits via envs without code changes.

@@ -5,6 +5,7 @@
 export interface RateLimiterConsumeOptions {
   points?: number; // default 1
   windowMs?: number; // optional override window
+  limit?: number; // optional override limit for this consume call
 }
 
 export interface RateLimiter {
