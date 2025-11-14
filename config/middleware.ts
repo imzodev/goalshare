@@ -7,3 +7,4 @@ export const ALLOWED_ORIGINS = [DEFAULT_APP_URL, "http://localhost:3000", "https
 export const GENERAL_WINDOW_SECONDS = Number(env.RATE_LIMIT_WINDOW_SECONDS || "60");
 export const GENERAL_LIMIT_AUTHED = Number(env.RATE_LIMIT_LIMIT_AUTHED || "60");
 export const GENERAL_LIMIT_ANON = Number(env.RATE_LIMIT_LIMIT_ANON || "60");
+export const GENERAL_RATE_LIMIT_BACKEND = env.GENERAL_RATE_LIMIT_BACKEND === "upstash" ? "upstash" : "memory";

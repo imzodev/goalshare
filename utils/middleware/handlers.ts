@@ -51,8 +51,19 @@ export async function handleGeneralApiRequest(params: {
   limitAnon: number;
   upstashUrl?: string | null;
   upstashToken?: string | null;
+  backendMode?: "upstash" | "memory";
 }) {
-  const { req, userId, supabaseResponse, windowSeconds, limitAuthed, limitAnon, upstashUrl, upstashToken } = params;
+  const {
+    req,
+    userId,
+    supabaseResponse,
+    windowSeconds,
+    limitAuthed,
+    limitAnon,
+    upstashUrl,
+    upstashToken,
+    backendMode,
+  } = params;
 
   const { limited, limit, remaining, resetAt } = await enforceGeneralRateLimit({
     req,
@@ -62,6 +73,7 @@ export async function handleGeneralApiRequest(params: {
     limitAnon,
     upstashUrl,
     upstashToken,
+    backendMode,
   });
 
   supabaseResponse.headers.set("X-RateLimit-Limit", String(limit));

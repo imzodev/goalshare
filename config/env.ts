@@ -46,4 +46,6 @@ export const env = {
   RATE_LIMIT_WINDOW_SECONDS: process.env.RATE_LIMIT_WINDOW_SECONDS ?? "60",
   RATE_LIMIT_LIMIT_AUTHED: process.env.RATE_LIMIT_LIMIT_AUTHED ?? "60",
   RATE_LIMIT_LIMIT_ANON: process.env.RATE_LIMIT_LIMIT_ANON ?? "60",
+  // "memory" (default) or "upstash" for general API rate limiting
+  GENERAL_RATE_LIMIT_BACKEND: process.env.GENERAL_RATE_LIMIT_BACKEND ?? "memory",
 } as const;

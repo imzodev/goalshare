@@ -6,7 +6,14 @@ import { isApiRoute, isAiRoute, isProtectedRoute, isAuthRoute } from "@/utils/mi
 import { handleAiRequest, handleGeneralApiRequest } from "@/utils/middleware/handlers";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/config/env";
-import { DEFAULT_APP_URL, ALLOWED_ORIGINS } from "@/config/middleware";
+import {
+  DEFAULT_APP_URL,
+  ALLOWED_ORIGINS,
+  GENERAL_RATE_LIMIT_BACKEND,
+  GENERAL_WINDOW_SECONDS,
+  GENERAL_LIMIT_AUTHED,
+  GENERAL_LIMIT_ANON,
+} from "@/config/middleware";
 import { ROUTES } from "@/config/constants";
 
 export async function middleware(req: NextRequest) {
@@ -78,18 +85,16 @@ export async function middleware(req: NextRequest) {
       });
     }
 
-    const windowSeconds = Number(env.RATE_LIMIT_WINDOW_SECONDS || "60");
-    const limitAuthed = Number(env.RATE_LIMIT_LIMIT_AUTHED || "60");
-    const limitAnon = Number(env.RATE_LIMIT_LIMIT_ANON || "60");
     return handleGeneralApiRequest({
       req,
       userId,
       supabaseResponse,
-      windowSeconds,
-      limitAuthed,
-      limitAnon,
+      windowSeconds: GENERAL_WINDOW_SECONDS,
+      limitAuthed: GENERAL_LIMIT_AUTHED,
+      limitAnon: GENERAL_LIMIT_ANON,
       upstashUrl: env.UPSTASH_REDIS_REST_URL,
       upstashToken: env.UPSTASH_REDIS_REST_TOKEN,
+      backendMode: GENERAL_RATE_LIMIT_BACKEND,
     });
   }
 

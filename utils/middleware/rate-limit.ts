@@ -23,12 +23,14 @@ export async function enforceGeneralRateLimit(params: {
   limitAnon: number;
   upstashUrl?: string | null;
   upstashToken?: string | null;
+  backendMode?: "upstash" | "memory";
 }): Promise<{ limited: boolean; limit: number; remaining: number; resetAt: number }> {
-  const { req, userId, windowSeconds, limitAuthed, limitAnon, upstashUrl, upstashToken } = params;
+  const { req, userId, windowSeconds, limitAuthed, limitAnon, upstashUrl, upstashToken, backendMode } = params;
   const keyIdentity = getClientKey(req, userId || undefined);
   const limit = userId ? limitAuthed : limitAnon;
 
-  const useUpstash = Boolean(upstashUrl && upstashToken);
+  const mode = backendMode ?? "memory";
+  const useUpstash = mode === "upstash" && Boolean(upstashUrl && upstashToken);
   if (useUpstash) {
     const { Redis } = await import("@upstash/redis");
     const redis = new Redis({ url: upstashUrl as string, token: upstashToken as string });
