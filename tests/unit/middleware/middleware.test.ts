@@ -68,7 +68,7 @@ describe("middleware rate limiting with Upstash", () => {
     (env as any).UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     (env as any).UPSTASH_REDIS_REST_TOKEN = "token";
     (env as any).RATE_LIMIT_WINDOW_SECONDS = "60";
-    (env as any).RATE_LIMIT_LIMIT_AUTHED = "2";
+    (env as any).GENERAL_RATE_LIMIT_BACKEND = "upstash";
 
     // Mock updateSession for authenticated flow
     (updateSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
@@ -84,8 +84,8 @@ describe("middleware rate limiting with Upstash", () => {
     const req = makeRequest("http://localhost:3000/api/test", { ip: "1.2.3.4" });
     const res = (await middleware(req as any)) as TestResponse;
 
-    expect(res.headers.get("X-RateLimit-Limit")).toBe("2");
-    expect(res.headers.get("X-RateLimit-Remaining")).toBe("1");
+    expect(res.headers.get("X-RateLimit-Limit")).toBe("60");
+    expect(res.headers.get("X-RateLimit-Remaining")).toBe("59");
     expect(Number(res.headers.get("X-RateLimit-Reset"))).toBeGreaterThan(0);
   });
 
@@ -93,7 +93,7 @@ describe("middleware rate limiting with Upstash", () => {
     (env as any).UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     (env as any).UPSTASH_REDIS_REST_TOKEN = "token";
     (env as any).RATE_LIMIT_WINDOW_SECONDS = "60";
-    (env as any).RATE_LIMIT_LIMIT_AUTHED = "2";
+    (env as any).GENERAL_RATE_LIMIT_BACKEND = "upstash";
 
     (updateSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       supabaseResponse: { headers: new Headers() } as unknown as Response,
@@ -101,7 +101,7 @@ describe("middleware rate limiting with Upstash", () => {
     });
 
     const { __mock } = await import("@upstash/redis");
-    __mock.incr.mockResolvedValueOnce(3); // over limit
+    __mock.incr.mockResolvedValueOnce(61); // over limit for limit=60
     __mock.expire.mockResolvedValueOnce("OK");
     __mock.ttl.mockResolvedValueOnce(30);
 
@@ -110,7 +110,7 @@ describe("middleware rate limiting with Upstash", () => {
 
     expect((res as any).status).toBe(429);
     expect(res.headers.get("Retry-After")).toBeDefined();
-    expect(res.headers.get("X-RateLimit-Limit")).toBe("2");
+    expect(res.headers.get("X-RateLimit-Limit")).toBe("60");
     expect(res.headers.get("X-RateLimit-Remaining")).toBe("0");
     expect(Number(res.headers.get("X-RateLimit-Reset"))).toBeGreaterThan(0);
   });

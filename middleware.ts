@@ -9,7 +9,6 @@ import { env } from "@/config/env";
 import {
   DEFAULT_APP_URL,
   ALLOWED_ORIGINS,
-  GENERAL_RATE_LIMIT_BACKEND,
   GENERAL_WINDOW_SECONDS,
   GENERAL_LIMIT_AUTHED,
   GENERAL_LIMIT_ANON,
@@ -85,16 +84,21 @@ export async function middleware(req: NextRequest) {
       });
     }
 
+    const windowSeconds = GENERAL_WINDOW_SECONDS;
+    const limitAuthed = GENERAL_LIMIT_AUTHED;
+    const limitAnon = GENERAL_LIMIT_ANON;
+    const backendMode: "memory" | "upstash" = env.GENERAL_RATE_LIMIT_BACKEND === "upstash" ? "upstash" : "memory";
+
     return handleGeneralApiRequest({
       req,
       userId,
       supabaseResponse,
-      windowSeconds: GENERAL_WINDOW_SECONDS,
-      limitAuthed: GENERAL_LIMIT_AUTHED,
-      limitAnon: GENERAL_LIMIT_ANON,
+      windowSeconds,
+      limitAuthed,
+      limitAnon,
       upstashUrl: env.UPSTASH_REDIS_REST_URL,
       upstashToken: env.UPSTASH_REDIS_REST_TOKEN,
-      backendMode: GENERAL_RATE_LIMIT_BACKEND,
+      backendMode,
     });
   }
 
