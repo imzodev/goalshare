@@ -1,3 +1,8 @@
+/*
+ @import "@fullcalendar/core/main.css";
+ @import "@fullcalendar/daygrid/main.css";
+ @import "@fullcalendar/timegrid/main.css";
+*/
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -79,6 +84,46 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  /* FullCalendar variables */
+  --fc-border-color: var(--border);
+  --fc-daygrid-day-bg-color: var(--card);
+  --fc-today-bg-color: oklch(from var(--accent) l c h / 15%);
+  --fc-event-bg-color: var(--primary);
+  --fc-event-text-color: var(--primary-foreground);
+  --fc-button-bg-color: var(--secondary);
+  --fc-button-text-color: var(--secondary-foreground);
+  --fc-button-border-color: var(--border);
+  --fc-button-hover-bg-color: var(--muted);
+  --fc-button-active-bg-color: var(--muted);
+  --fc-button-active-border-color: var(--border);
+  --fc-button-hover-border-color: var(--border);
+  --fc-daygrid-day-number-color: var(--foreground);
+  --fc-col-header-cell-cushion-color: var(--foreground);
+  --fc-day-header-cushion-color: var(--foreground);
+  --fc-list-event-hover-bg-color: var(--muted);
+  --fc-page-bg-color: var(--background);
+  --fc-theme-standard-view-bg-color: var(--background);
+  --fc-daygrid-day-frame-color: transparent;
+  --fc-day-today-bg-color: oklch(from var(--accent) l c h / 15%);
+  --fc-event-border-color: var(--primary);
+  --fc-event-selected-bg-color: oklch(from var(--primary) l c h / 80%);
+  --fc-event-selected-border-color: var(--primary);
+  --fc-event-resizer-color: var(--primary-foreground);
+  --fc-more-link-bg-color: var(--secondary);
+  --fc-more-link-text-color: var(--secondary-foreground);
+  --fc-non-business-color: var(--muted);
+  --fc-bg-event-color: oklch(from var(--primary) l c h / 30%);
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: oklch(from var(--primary) l c h / 20%);
+  --fc-popover-bg-color: var(--popover);
+  --fc-popover-border-color: var(--border);
+  --fc-popover-header-bg-color: var(--card);
+  --fc-popover-header-text-color: var(--card-foreground);
+  --fc-popover-body-text-color: var(--popover-foreground);
+  --fc-daygrid-event-dot-width: 8px;
+  --fc-list-day-text-color: var(--foreground);
+  --fc-list-day-side-text-color: var(--muted-foreground);
 }
 
 .dark {
@@ -116,6 +161,46 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: var(--ring);
+
+  /* FullCalendar variables */
+  --fc-border-color: var(--border);
+  --fc-daygrid-day-bg-color: var(--card);
+  --fc-today-bg-color: oklch(from var(--accent) l c h / 15%);
+  --fc-event-bg-color: var(--primary);
+  --fc-event-text-color: var(--primary-foreground);
+  --fc-button-bg-color: var(--secondary);
+  --fc-button-text-color: var(--secondary-foreground);
+  --fc-button-border-color: var(--border);
+  --fc-button-hover-bg-color: var(--muted);
+  --fc-button-active-bg-color: var(--muted);
+  --fc-button-active-border-color: var(--border);
+  --fc-button-hover-border-color: var(--border);
+  --fc-daygrid-day-number-color: var(--foreground);
+  --fc-col-header-cell-cushion-color: var(--foreground);
+  --fc-day-header-cushion-color: var(--foreground);
+  --fc-list-event-hover-bg-color: var(--muted);
+  --fc-page-bg-color: var(--background);
+  --fc-theme-standard-view-bg-color: var(--background);
+  --fc-daygrid-day-frame-color: transparent;
+  --fc-day-today-bg-color: oklch(from var(--accent) l c h / 15%);
+  --fc-event-border-color: var(--primary);
+  --fc-event-selected-bg-color: oklch(from var(--primary) l c h / 80%);
+  --fc-event-selected-border-color: var(--primary);
+  --fc-event-resizer-color: var(--primary-foreground);
+  --fc-more-link-bg-color: var(--secondary);
+  --fc-more-link-text-color: var(--secondary-foreground);
+  --fc-non-business-color: var(--muted);
+  --fc-bg-event-color: oklch(from var(--primary) l c h / 30%);
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: oklch(from var(--primary) l c h / 20%);
+  --fc-popover-bg-color: var(--popover);
+  --fc-popover-border-color: var(--border);
+  --fc-popover-header-bg-color: var(--card);
+  --fc-popover-header-text-color: var(--card-foreground);
+  --fc-popover-body-text-color: var(--popover-foreground);
+  --fc-daygrid-event-dot-width: 8px;
+  --fc-list-day-text-color: var(--foreground);
+  --fc-list-day-side-text-color: var(--muted-foreground);
 }
 
 @layer base {
