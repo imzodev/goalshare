@@ -40,4 +40,12 @@ export const env = {
 
   AI_PROVIDER_AUTOCOMPLETE: process.env.AI_PROVIDER_AUTOCOMPLETE ?? "",
   AI_MODEL_AUTOCOMPLETE: process.env.AI_MODEL_AUTOCOMPLETE ?? "",
+
+  UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL ?? "",
+  UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN ?? "",
+  RATE_LIMIT_WINDOW_SECONDS: process.env.RATE_LIMIT_WINDOW_SECONDS ?? "60",
+  RATE_LIMIT_LIMIT_AUTHED: process.env.RATE_LIMIT_LIMIT_AUTHED ?? "60",
+  RATE_LIMIT_LIMIT_ANON: process.env.RATE_LIMIT_LIMIT_ANON ?? "60",
+  // "memory" (default) or "upstash" for general API rate limiting
+  GENERAL_RATE_LIMIT_BACKEND: process.env.GENERAL_RATE_LIMIT_BACKEND ?? "memory",
 } as const;
