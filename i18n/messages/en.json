@@ -406,6 +406,19 @@
       "progress": "Progress",
       "participants": "Participants",
       "category": "Category"
+    },
+    "milestones": {
+      "titlePlaceholder": "Milestone {index}",
+      "weeksToCompleteSingle": "1 week to complete",
+      "weeksToCompleteMultiple": "{count} weeks to complete",
+      "noDate": "No date",
+      "weightAriaLabel": "Milestone {index} weight",
+      "dueDateLabel": "Target date (YYYY-MM-DD)",
+      "dueDatePlaceholder": "YYYY-MM-DD",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Description (optional)",
+      "edit": "Edit",
+      "hideDetails": "Hide details"
     }
   },
   "communities": {

@@ -406,6 +406,19 @@
       "progress": "Progreso",
       "participants": "Participantes",
       "category": "Categoría"
+    },
+    "milestones": {
+      "titlePlaceholder": "Hito {index}",
+      "weeksToCompleteSingle": "1 semana para completar",
+      "weeksToCompleteMultiple": "{count} semanas para completar",
+      "noDate": "Sin fecha",
+      "weightAriaLabel": "Peso del hito {index}",
+      "dueDateLabel": "Fecha objetivo (YYYY-MM-DD)",
+      "dueDatePlaceholder": "YYYY-MM-DD",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Descripción (opcional)",
+      "edit": "Editar",
+      "hideDetails": "Ocultar detalles"
     }
   },
   "communities": {

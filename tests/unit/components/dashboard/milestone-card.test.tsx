@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
+import { withI18n } from "@/tests/helpers/i18n-test-wrapper";
 
 // Mock date utils to avoid relying on fake timers; use a fixed base date (2025-01-01)
 vi.mock("@/utils/date-utils", () => {
@@ -44,7 +45,7 @@ function setup(overrides: Partial<React.ComponentProps<typeof MilestoneCard>> = 
     ...overrides,
   } as React.ComponentProps<typeof MilestoneCard>;
 
-  const utils = render(<MilestoneCard {...props} />);
+  const utils = render(withI18n(<MilestoneCard {...props} />));
   return { utils, props, onToggle, onChangeTitle, onChangeDue, onChangeDescription, onChangeWeight };
 }
 
