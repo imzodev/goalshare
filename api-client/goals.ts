@@ -36,3 +36,19 @@ export async function createGoalMilestones(goalId: string, items: MilestoneItem[
     throw new Error(typeof msg === "string" ? msg : "No se pudieron guardar los milestones");
   }
 }
+
+export async function getGoalMilestones(goalId: string): Promise<MilestoneItem[]> {
+  const res = await fetch(`/api/goals/${goalId}/milestones`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    const msg = data?.error || "No se pudieron cargar los milestones";
+    throw new Error(typeof msg === "string" ? msg : "No se pudieron cargar los milestones");
+  }
+
+  return Array.isArray(data?.milestones) ? data.milestones : [];
+}
