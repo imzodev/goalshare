@@ -70,7 +70,9 @@ export async function middleware(req: NextRequest) {
     }
 
     // AI routes: delegate to handler
-    if (isAiRoute(url.pathname)) {
+    // EXCEPTION: GET requests (like fetching history) should use the general rate limit
+    // so they don't consume the strict AI generation quota.
+    if (isAiRoute(url.pathname) && req.method !== "GET") {
       if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }

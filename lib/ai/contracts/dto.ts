@@ -118,3 +118,18 @@ export const AutocompleteDescriptionResponseSchema = z.object({
   traceId: z.string().optional(),
 });
 export type AutocompleteDescriptionResponse = z.infer<typeof AutocompleteDescriptionResponseSchema>;
+
+/** Coaching Chat */
+export const CoachRequestSchema = z.object({
+  goalId: z.string().uuid(),
+  message: z.string().min(1),
+  locale: LocaleSchema.optional(),
+  traceId: TraceIdSchema,
+});
+export type CoachRequest = z.infer<typeof CoachRequestSchema>;
+
+export const CoachResponseSchema = z.object({
+  response: z.string(),
+  traceId: z.string().optional(),
+});
+export type CoachResponse = z.infer<typeof CoachResponseSchema>;
