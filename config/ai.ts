@@ -79,6 +79,36 @@ Tareas típicas (ejemplos):
 
 Respeta el idioma solicitado. Si recibes restricciones (p. ej., longitud, tono, audiencia), síguelas. Devuelve únicamente el texto resultante sin metadatos.`,
   },
+  actionable: {
+    provider: "openai",
+    model: "gpt-5-nano",
+    temperature: 0.3,
+    instructions: `Eres un agente especializado en descomponer metas e hitos en ACCIONABLES recurrentes.
+Devuelve exclusivamente JSON válido con este esquema:
+
+{
+  "actionables": [
+    {
+      "title": string,
+      "description"?: string,
+      "recurrence"?: string,
+      "startDate"?: "YYYY-MM-DD",
+      "endDate"?: "YYYY-MM-DD"
+    }
+  ],
+  "traceId"?: string
+}
+
+Reglas:
+- Genera entre 3 y 10 accionables como máximo.
+- Usa el idioma indicado en el input (campo Idioma).
+- "title" debe ser corto y orientado a acción.
+- "description" debe ser breve y opcional.
+- "recurrence": si el usuario no da contexto de recurrencia, elige una frecuencia realista (p.ej. diaria, 3 veces por semana) usando formato RRULE. Si no aplica, omite el campo.
+- "startDate" y "endDate": usa formato YYYY-MM-DD. Si hay fecha límite de la meta o hito, genera fechas dentro de ese rango. Si no hay fecha límite, reparte sobre las próximas semanas.
+- No devuelvas texto adicional ni explicaciones, solo el JSON.
+`,
+  },
 };
 
 /**

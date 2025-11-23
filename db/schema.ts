@@ -341,6 +341,26 @@ export const subscriptions = pgTable(
   ]
 );
 
+export const goalActionables = pgTable(
+  "goalshare_goal_actionables",
+  {
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    goalId: uuid("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
+    milestoneId: uuid("milestone_id").references(() => goalMilestones.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    recurrence: text("recurrence"),
+    startDate: date("start_date"),
+    endDate: date("end_date"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [index("goal_actionables_goal_idx").on(t.goalId), index("goal_actionables_milestone_idx").on(t.milestoneId)]
+);
+
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type PlanPermission = typeof planPermissions.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;

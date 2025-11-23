@@ -8,7 +8,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { useGoals } from "@/hooks/use-goals";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { UserGoalSummary } from "@/types/goals";
@@ -17,12 +18,14 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { formatDeadline } from "@/utils/date-utils";
 import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
+import { ActionablesPanel } from "@/components/goals/actionables/actionables-panel";
 
 export default function CalendarPage() {
   const t = useTranslations("calendar");
   const { goals, loading, fetchGoals } = useGoals();
   const [selectedGoal, setSelectedGoal] = useState<UserGoalSummary | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [actionablesOpen, setActionablesOpen] = useState(false);
 
   useEffect(() => {
     fetchGoals();
@@ -42,16 +45,29 @@ export default function CalendarPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
-            <CalendarIcon className="h-6 w-6" />
+        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
+              <CalendarIcon className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {t("pageTitle")}
+              </h1>
+              <p className="text-muted-foreground">{t("pageDescription")}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {t("pageTitle")}
-            </h1>
-            <p className="text-muted-foreground">{t("pageDescription")}</p>
-          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="gap-2"
+            onClick={() => setActionablesOpen(true)}
+            disabled={loading || goals.length === 0}
+          >
+            <Sparkles className="h-4 w-4 text-purple-500" />
+            Plan de accionables
+          </Button>
         </div>
       </div>
 
@@ -156,6 +172,12 @@ export default function CalendarPage() {
               )}
             </DialogContent>
           </Dialog>
+          <ActionablesPanel
+            open={actionablesOpen}
+            onOpenChange={setActionablesOpen}
+            goals={goals}
+            initialGoalId={selectedGoal?.id ?? null}
+          />
         </CardContent>
       </Card>
     </div>
