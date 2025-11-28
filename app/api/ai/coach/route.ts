@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request", details: validation.error }, { status: 400 });
     }
 
-    const { goalId, message, traceId } = validation.data;
+    const { goalId, message, traceId, stream } = validation.data;
     const coachingService = new CoachingService();
 
     // 1. Verify goal ownership and get context
@@ -65,14 +65,46 @@ USER: ${message}
 ASSISTANT:
 `.trim();
 
+    // 4. Save user message to DB immediately
+    await coachingService.saveMessage(userId, goalId, "user", message);
+
+    if (stream && agent.stream) {
+      const { stream: textStream, completed } = await agent.stream(fullPrompt, { traceId });
+      let fullResponse = "";
+
+      const transformStream = new TransformStream({
+        transform(chunk, controller) {
+          // The chunk is already a string from toTextStream()
+          const text = typeof chunk === "string" ? chunk : String(chunk);
+          fullResponse += text;
+          controller.enqueue(chunk);
+        },
+      });
+
+      // Save the assistant message after the stream completes
+      completed
+        .then(() => {
+          coachingService.saveMessage(userId, goalId, "assistant", fullResponse);
+        })
+        .catch((err) => {
+          console.error("[Coaching API] Error saving streamed message:", err);
+        });
+
+      return new NextResponse(textStream.pipeThrough(transformStream), {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Transfer-Encoding": "chunked",
+        },
+      });
+    }
+
     const result = await agent.execute(fullPrompt, { traceId });
 
     // The result.data.finalOutput is 'unknown', usually string for simple agents
     const aiResponseText =
       typeof result.data.finalOutput === "string" ? result.data.finalOutput : JSON.stringify(result.data.finalOutput);
 
-    // 4. Save messages to DB
-    await coachingService.saveMessage(userId, goalId, "user", message);
+    // 4. Save assistant message to DB
     await coachingService.saveMessage(userId, goalId, "assistant", aiResponseText);
 
     return NextResponse.json({
@@ -110,8 +142,8 @@ export async function GET(req: NextRequest) {
     try {
       const messages = await coachingService.getHistory(user.id, goalId);
       return NextResponse.json({ messages });
-    } catch (error: any) {
-      if (error.message === "Goal not found or access denied") {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message === "Goal not found or access denied") {
         return NextResponse.json({ error: error.message }, { status: 404 });
       }
       throw error;

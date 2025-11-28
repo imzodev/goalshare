@@ -86,7 +86,7 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
     }
   }, [messages, isHistoryLoading]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (useStreaming: boolean = true) => {
     if (!inputValue.trim() || isLoading) return;
 
     const userMsg: Message = {
@@ -107,21 +107,58 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
         body: JSON.stringify({
           goalId,
           message: userMsg.content,
+          stream: useStreaming,
         }),
       });
 
       if (!response.ok) throw new Error(t("errorMessage"));
 
-      const data = await response.json();
+      if (useStreaming && response.body) {
+        // Handle streaming response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = "";
 
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.response,
-        createdAt: new Date(),
-      };
+        // Create a placeholder message for the assistant
+        const aiMsgId = (Date.now() + 1).toString();
+        const aiMsg: Message = {
+          id: aiMsgId,
+          role: "assistant",
+          content: "",
+          createdAt: new Date(),
+        };
+        setMessages((prev) => [...prev, aiMsg]);
 
-      setMessages((prev) => [...prev, aiMsg]);
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            accumulatedContent += chunk;
+
+            // Update the message content
+            setMessages((prev) =>
+              prev.map((msg) => (msg.id === aiMsgId ? { ...msg, content: accumulatedContent } : msg))
+            );
+          }
+        } catch (streamError) {
+          console.error("Stream reading error:", streamError);
+          throw streamError;
+        }
+      } else {
+        // Handle non-streaming response
+        const data = await response.json();
+
+        const aiMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: data.response,
+          createdAt: new Date(),
+        };
+
+        setMessages((prev) => [...prev, aiMsg]);
+      }
     } catch (error) {
       console.error("Coaching error:", error);
       // Optionally show error message in chat

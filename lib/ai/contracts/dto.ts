@@ -123,6 +123,7 @@ export type AutocompleteDescriptionResponse = z.infer<typeof AutocompleteDescrip
 export const CoachRequestSchema = z.object({
   goalId: z.string().uuid(),
   message: z.string().min(1),
+  stream: z.boolean().optional(),
   locale: LocaleSchema.optional(),
   traceId: TraceIdSchema,
 });
