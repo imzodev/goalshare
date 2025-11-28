@@ -47,8 +47,8 @@ Reglas:
     instructions: `Eres un agente que reescribe metas al formato SMART. Responde sólo texto.`,
   },
   coach: {
-    provider: "openai",
-    model: "gpt-5-nano",
+    provider: "groq",
+    model: "groq/compound",
     temperature: 0.5,
     instructions: `Eres un agente de coaching. Responde consejos prácticos y concisos.`,
   },

@@ -3,7 +3,7 @@
  * These contracts are provider-agnostic and do not import any SDKs.
  */
 
-export type ProviderKey = "openai" | "anthropic" | "openrouter" | "deepseek";
+export type ProviderKey = "openai" | "anthropic" | "openrouter" | "deepseek" | "groq";
 
 export interface ModelConfig {
   provider: ProviderKey;
