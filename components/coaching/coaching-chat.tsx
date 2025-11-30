@@ -4,12 +4,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Loader2, Sparkles } from "lucide-react";
+import { Send, Bot, User, Loader2, Sparkles, Maximize2, Minimize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCoachingChat } from "@/hooks/use-coaching-chat";
 import { MessageContent } from "./message-content";
+import { useState } from "react";
 
 interface CoachingChatProps {
   goalId: string;
@@ -20,13 +21,30 @@ interface CoachingChatProps {
 
 export function CoachingChat({ goalId, goalTitle, open, onOpenChange }: CoachingChatProps) {
   const t = useTranslations("coaching");
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const { messages, inputValue, setInputValue, isLoading, isHistoryLoading, handleSendMessage, scrollRef } =
     useCoachingChat({ goalId, goalTitle, open });
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col h-full p-0 overflow-hidden">
+      <SheetContent
+        className={cn(
+          "w-full flex flex-col h-full p-0 overflow-hidden",
+          isFullscreen ? "sm:max-w-full" : "sm:max-w-md"
+        )}
+        headerActions={
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="hidden sm:flex opacity-70 hover:opacity-100"
+            title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
+        }
+      >
         <SheetHeader className="p-6 border-b shrink-0">
           <SheetTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
