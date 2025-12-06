@@ -341,6 +341,23 @@ export const subscriptions = pgTable(
   ]
 );
 
+// coaching_messages
+export const coachingMessages = pgTable(
+  "goalshare_coaching_messages",
+  {
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    goalId: uuid("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
+    role: text("role").notNull(), // 'user' | 'assistant'
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [index("coaching_messages_goal_created_idx").on(t.goalId, t.createdAt)]
+);
+
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type PlanPermission = typeof planPermissions.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
@@ -352,3 +369,4 @@ export type Post = typeof posts.$inferSelect;
 export type Comment = typeof comments.$inferSelect;
 export type Friendship = typeof friendships.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
+export type CoachingMessage = typeof coachingMessages.$inferSelect;
