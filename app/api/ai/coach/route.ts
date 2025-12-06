@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Goal not found or access denied" }, { status: 404 });
     }
 
+    // TODO: Revisar si es eficiente estar mandando el contexto cada vez que mandamos un mensaje
     // 2. Fetch recent chat history for context
     const conversationHistory = await coachingService.getHistoryForContext(userId, goalId);
 
@@ -131,17 +132,32 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const goalId = searchParams.get("goalId");
+    const limitParam = searchParams.get("limit");
+    const offsetParam = searchParams.get("offset");
 
     if (!goalId) {
       return NextResponse.json({ error: "Missing goalId" }, { status: 400 });
     }
 
+    // Parse pagination parameters
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+    const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
+
     const coachingService = new CoachingService();
 
     // Service handles ownership verification internally
     try {
-      const messages = await coachingService.getHistory(user.id, goalId);
-      return NextResponse.json({ messages });
+      const messages = await coachingService.getHistory(user.id, goalId, { limit, offset });
+
+      // Return messages with metadata about pagination
+      return NextResponse.json({
+        messages,
+        pagination: {
+          limit,
+          offset,
+          count: messages.length,
+        },
+      });
     } catch (error: unknown) {
       if (error instanceof Error && error.message === "Goal not found or access denied") {
         return NextResponse.json({ error: error.message }, { status: 404 });

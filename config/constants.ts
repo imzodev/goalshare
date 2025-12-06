@@ -16,3 +16,8 @@ export const ROUTES = {
   AUTH_LOGIN: "/auth/login",
   DASHBOARD: "/dashboard",
 } as const;
+
+export const CHAT_PAGINATION = {
+  INITIAL_PAGE_SIZE: 5,
+  PAGE_SIZE: 5,
+} as const;

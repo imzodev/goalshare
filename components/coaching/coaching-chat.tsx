@@ -23,8 +23,19 @@ export function CoachingChat({ goalId, goalTitle, open, onOpenChange }: Coaching
   const t = useTranslations("coaching");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const { messages, inputValue, setInputValue, isLoading, isHistoryLoading, handleSendMessage, scrollRef } =
-    useCoachingChat({ goalId, goalTitle, open });
+  const {
+    messages,
+    inputValue,
+    setInputValue,
+    isLoading,
+    isHistoryLoading,
+    isLoadingMore,
+    hasMore,
+    handleSendMessage,
+    scrollRef,
+    scrollContainerRef,
+    topTriggerRef,
+  } = useCoachingChat({ goalId, goalTitle, open });
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -55,8 +66,18 @@ export function CoachingChat({ goalId, goalTitle, open, onOpenChange }: Coaching
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 min-h-0 w-full max-w-full" type="always">
+        <ScrollArea className="flex-1 min-h-0 w-full max-w-full" type="always" ref={scrollContainerRef}>
           <div className="space-y-4 p-3 w-full">
+            {/* Infinite scroll trigger - placed at top */}
+            {hasMore && !isHistoryLoading && <div ref={topTriggerRef} className="h-1" />}
+
+            {/* Loading indicator for pagination */}
+            {isLoadingMore && (
+              <div className="flex justify-center py-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
+
             {isHistoryLoading ? (
               <div className="space-y-6 p-2">
                 {[1, 2, 3].map((i) => (

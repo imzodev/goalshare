@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { useTranslations } from "next-intl";
+import { CHAT_PAGINATION } from "@/config/constants";
 
 export interface Message {
   id: string;
@@ -22,32 +23,80 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
 
-  // Fetch history on open
+  /* eslint-disable react-hooks/exhaustive-deps */
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const topTriggerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const prevScrollHeightRef = useRef(0);
+  const prevScrollTopRef = useRef(0);
+  const shouldRestoreScrollRef = useRef(false);
+
+  // Helper to get the actual scrollable viewport inside ScrollArea
+  const getScrollViewport = useCallback(() => {
+    if (!scrollContainerRef.current) return null;
+    // Radix ScrollArea uses a viewport element with data-slot="scroll-area-viewport"
+    return scrollContainerRef.current.querySelector('[data-slot="scroll-area-viewport"]') as HTMLElement | null;
+  }, []);
+
+  // TODO: Revisar rendimiento del codigo para ver si hay manera de optimizarlo
+  // Restore scroll position when older messages are loaded
+  useLayoutEffect(() => {
+    if (shouldRestoreScrollRef.current) {
+      const viewport = getScrollViewport();
+      if (viewport) {
+        const newScrollHeight = viewport.scrollHeight;
+        const diff = newScrollHeight - prevScrollHeightRef.current;
+
+        if (diff > 0) {
+          // Restore scroll position: add the height difference to where the user was
+          // This keeps their view at the same relative position
+          viewport.scrollTop = prevScrollTopRef.current + diff;
+        }
+      }
+      shouldRestoreScrollRef.current = false;
+    }
+  }, [messages, getScrollViewport]);
+
+  // Fetch initial history on open
   useEffect(() => {
     if (open && goalId) {
       const fetchHistory = async () => {
         setIsHistoryLoading(true);
+        setOffset(0);
+        setHasMore(true);
+
         try {
-          const res = await fetch(`/api/ai/coach?goalId=${goalId}`);
+          const res = await fetch(`/api/ai/coach?goalId=${goalId}&limit=${CHAT_PAGINATION.INITIAL_PAGE_SIZE}`);
+
           if (!res.ok) {
             const errorText = await res.text();
             throw new Error(`Failed to fetch history: ${res.status} ${res.statusText} - ${errorText}`);
           }
+
           const data = await res.json();
 
           if (data.messages && data.messages.length > 0) {
-            setMessages(
-              data.messages.map(
-                (m: { id: string; role: "user" | "assistant"; content: string; createdAt: string }) => ({
-                  id: m.id,
-                  role: m.role,
-                  content: m.content,
-                  createdAt: new Date(m.createdAt),
-                })
-              )
+            const mappedMessages = data.messages.map(
+              (m: { id: string; role: "user" | "assistant"; content: string; createdAt: string }) => ({
+                id: m.id,
+                role: m.role,
+                content: m.content,
+                createdAt: new Date(m.createdAt),
+              })
             );
+
+            setMessages(mappedMessages);
+            setOffset(data.messages.length);
+
+            // If we got fewer messages than requested, there are no more
+            if (data.messages.length < CHAT_PAGINATION.INITIAL_PAGE_SIZE) {
+              setHasMore(false);
+            }
           } else {
             // Only show welcome message if no history exists
             setMessages([
@@ -58,6 +107,7 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
                 createdAt: new Date(),
               },
             ]);
+            setHasMore(false);
           }
         } catch (error) {
           console.error("Error fetching history:", error);
@@ -70,6 +120,7 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
               createdAt: new Date(),
             },
           ]);
+          setHasMore(false);
         } finally {
           setIsHistoryLoading(false);
         }
@@ -79,12 +130,99 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
     }
   }, [open, goalId, goalTitle, t]);
 
-  // Scroll to bottom on new messages
+  // Load more messages (infinite scroll)
+  const loadMoreMessages = useCallback(async () => {
+    if (!hasMore || isLoadingMore || isHistoryLoading) return;
+
+    setIsLoadingMore(true);
+
+    try {
+      // Save current scroll state from the actual viewport
+      const viewport = getScrollViewport();
+      if (viewport) {
+        prevScrollHeightRef.current = viewport.scrollHeight;
+        prevScrollTopRef.current = viewport.scrollTop;
+      }
+
+      const res = await fetch(`/api/ai/coach?goalId=${goalId}&limit=${CHAT_PAGINATION.PAGE_SIZE}&offset=${offset}`);
+
+      if (!res.ok) {
+        throw new Error("Failed to load more messages");
+      }
+
+      const data = await res.json();
+
+      if (data.messages && data.messages.length > 0) {
+        const olderMessages = data.messages.map(
+          (m: { id: string; role: "user" | "assistant"; content: string; createdAt: string }) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            createdAt: new Date(m.createdAt),
+          })
+        );
+
+        // Signal that we need to restore scroll after render
+        shouldRestoreScrollRef.current = true;
+
+        // Prepend older messages
+        setMessages((prev) => [...olderMessages, ...prev]);
+        setOffset((prev) => prev + data.messages.length);
+
+        // If we got fewer messages than requested, there are no more
+        if (data.messages.length < CHAT_PAGINATION.PAGE_SIZE) {
+          setHasMore(false);
+        }
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error loading more messages:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [goalId, offset, hasMore, isLoadingMore, isHistoryLoading, getScrollViewport]);
+
+  // Setup Intersection Observer for infinite scroll
   useEffect(() => {
-    if (scrollRef.current) {
+    if (!open || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Don't trigger if we're in the process of restoring scroll position
+        // or if already loading
+        if (shouldRestoreScrollRef.current || isLoadingMore) return;
+
+        if (entries[0]?.isIntersecting && hasMore && !isHistoryLoading) {
+          loadMoreMessages();
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    observerRef.current = observer;
+
+    if (topTriggerRef.current) {
+      observer.observe(topTriggerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [open, hasMore, isLoadingMore, isHistoryLoading, loadMoreMessages]);
+
+  // Scroll to bottom on new messages (but not when loading more)
+  const lastMessageId = messages[messages.length - 1]?.id;
+  useEffect(() => {
+    if (scrollRef.current && !isLoadingMore) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isHistoryLoading]);
+  }, [lastMessageId, isHistoryLoading]);
 
   const handleSendMessage = async (useStreaming: boolean = true) => {
     if (!inputValue.trim() || isLoading) return;
@@ -173,7 +311,11 @@ export function useCoachingChat({ goalId, goalTitle, open }: UseCoachingChatProp
     setInputValue,
     isLoading,
     isHistoryLoading,
+    isLoadingMore,
+    hasMore,
     handleSendMessage,
     scrollRef,
+    scrollContainerRef,
+    topTriggerRef,
   };
 }
