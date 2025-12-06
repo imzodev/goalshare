@@ -60,9 +60,9 @@ class SdkAgentAdapter implements IAgent<unknown, AgentOutput<SdkAgentData>> {
       input &&
       typeof input === "object" &&
       "payload" in (input as Record<string, unknown>) &&
-      typeof (input as any).payload === "string"
+      typeof (input as Record<string, unknown>).payload === "string"
     ) {
-      userInput = (input as any).payload as string;
+      userInput = (input as Record<string, unknown>).payload as string;
     } else {
       userInput = JSON.stringify(input ?? {});
     }
@@ -75,6 +75,33 @@ class SdkAgentAdapter implements IAgent<unknown, AgentOutput<SdkAgentData>> {
         agent: this.key,
         finalOutput: result.finalOutput,
       },
+    };
+  }
+
+  async stream(input: unknown, _ctx?: AgentContext): Promise<{ stream: ReadableStream<any>; completed: Promise<any> }> {
+    // Derive a basic input string for the SDK.
+    let userInput: string;
+    if (typeof input === "string") {
+      userInput = input;
+    } else if (
+      input &&
+      typeof input === "object" &&
+      "payload" in (input as Record<string, unknown>) &&
+      typeof (input as Record<string, unknown>).payload === "string"
+    ) {
+      userInput = (input as Record<string, unknown>).payload as string;
+    } else {
+      userInput = JSON.stringify(input ?? {});
+    }
+
+    const result = await run(this.sdkAgent, userInput, { stream: true });
+
+    const textStream = result.toTextStream({ compatibleWithNodeStreams: false });
+
+    // Return both the stream and the completed promise
+    return {
+      stream: textStream as unknown as ReadableStream<string>,
+      completed: result.completed,
     };
   }
 }

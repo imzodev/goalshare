@@ -38,12 +38,18 @@ interface GoalCardProps {
   onDelete?: (goal: UserGoalSummary) => void;
 }
 
+import { CoachingChat } from "@/components/coaching/coaching-chat";
+import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+
 export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelete }: GoalCardProps) {
   const t = useTranslations("goals");
   const tLabels = useTranslations("goals.labels");
   const tCommon = useTranslations("common.actions");
   const tStates = useTranslations("common.states");
   const tTime = useTranslations("common.time");
+
+  const [chatOpen, setChatOpen] = useState(false);
 
   const gradient = colorPalette[index % colorPalette.length];
   const statusKey = getGoalStatusKey(goal.status);
@@ -151,135 +157,152 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
   };
 
   return (
-    <Card className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
-      <div
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
-      />
+    <>
+      <Card className="group relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border-white/20 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+        <div
+          className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
+        />
 
-      <CardHeader className="relative pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{goal.title}</CardTitle>
-            <div className="flex flex-wrap gap-2 mb-3">
-              <Badge variant="outline" className="text-xs">
-                {t(`types.${typeKey}`)}
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                {goal.topicCommunity?.name || t("labels.noCategory")}
-              </Badge>
-              <Badge
-                className={`text-xs capitalize ${
-                  goal.status === "completed"
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                }`}
-              >
-                {t(`status.${statusKey}`)}
-              </Badge>
+        <CardHeader className="relative pb-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">{goal.title}</CardTitle>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <Badge variant="outline" className="text-xs">
+                  {t(`types.${typeKey}`)}
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {goal.topicCommunity?.name || t("labels.noCategory")}
+                </Badge>
+                <Badge
+                  className={`text-xs capitalize ${
+                    goal.status === "completed"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  }`}
+                >
+                  {t(`status.${statusKey}`)}
+                </Badge>
+              </div>
             </div>
-          </div>
 
-          {/* Acciones */}
-          {renderActions()}
-        </div>
-      </CardHeader>
-
-      <CardContent className="relative space-y-4">
-        <p className="text-sm text-muted-foreground line-clamp-3">{goal.description}</p>
-
-        {/* Información temporal */}
-        <div className="space-y-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{deadlineText}</span>
+            {/* Acciones */}
+            {renderActions()}
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" />
-            <span>{daysLeftText}</span>
-          </div>
-          {lastUpdateLabel && (
+        </CardHeader>
+
+        <CardContent className="relative space-y-4">
+          <p className="text-sm text-muted-foreground line-clamp-3">{goal.description}</p>
+
+          {/* Información temporal */}
+          <div className="space-y-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{deadlineText}</span>
+            </div>
             <div className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              <span>{lastUpdateLabel}</span>
+              <span>{daysLeftText}</span>
             </div>
-          )}
-        </div>
-
-        {/* Barra de progreso */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("labels.progress")}</span>
-            <span className="font-medium">{goal.progress}%</span>
+            {lastUpdateLabel && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{lastUpdateLabel}</span>
+              </div>
+            )}
           </div>
-          <Progress value={goal.progress} className="h-2" />
-        </div>
 
-        <div className="mt-2 border-t pt-3 space-y-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 text-xs flex items-center gap-2 text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              const nextOpen = !milestonesOpen;
-              setMilestonesOpen(nextOpen);
-              if (nextOpen && !loaded) {
-                load();
-              }
-            }}
-          >
-            <ChevronDown className={`h-3 w-3 transition-transform ${milestonesOpen ? "rotate-180" : "rotate-0"}`} />
-            <span>{t("milestones.title", { count: milestones.length || 0 })}</span>
-          </Button>
-
-          {milestonesOpen && (
-            <div className="space-y-2 text-xs text-muted-foreground">
-              {milestonesLoading && (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  <span>{tStates("loading")}</span>
-                </div>
-              )}
-
-              {milestonesError && !milestonesLoading && (
-                <p className="text-xs text-red-500 dark:text-red-400">{milestonesError}</p>
-              )}
-
-              {!milestonesLoading && !milestonesError && milestones.length === 0 && (
-                <p className="text-xs text-muted-foreground">{t("milestones.empty")}</p>
-              )}
-
-              {!milestonesLoading && !milestonesError && milestones.length > 0 && (
-                <ul className="space-y-1.5">
-                  {milestones.map((m, idx) => (
-                    <li
-                      key={`${m.title}-${idx}`}
-                      className="flex items-start justify-between gap-2 rounded-md bg-muted/60 px-2 py-1.5"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium truncate">{m.title}</p>
-                        {(m.dueDate || m.description) && (
-                          <p className="text-[11px] text-muted-foreground truncate">
-                            {m.dueDate}
-                            {m.dueDate && m.description ? " · " : ""}
-                            {!m.dueDate && m.description
-                              ? m.description
-                              : m.dueDate && m.description
-                                ? m.description
-                                : null}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="secondary" className="text-[10px] px-2 py-0.5 shrink-0">
-                        {m.weight}%
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
-              )}
+          {/* Barra de progreso */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t("labels.progress")}</span>
+              <span className="font-medium">{goal.progress}%</span>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <Progress value={goal.progress} className="h-2" />
+          </div>
+
+          {/* Chat Button */}
+          <div className="pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-900/20"
+              onClick={() => setChatOpen(true)}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Coach
+            </Button>
+          </div>
+
+          <div className="mt-2 border-t pt-3 space-y-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const nextOpen = !milestonesOpen;
+                setMilestonesOpen(nextOpen);
+                if (nextOpen && !loaded) {
+                  load();
+                }
+              }}
+            >
+              <ChevronDown className={`h-3 w-3 transition-transform ${milestonesOpen ? "rotate-180" : "rotate-0"}`} />
+              <span>{t("milestones.title", { count: milestones.length || 0 })}</span>
+            </Button>
+
+            {milestonesOpen && (
+              <div className="space-y-2 text-xs text-muted-foreground">
+                {milestonesLoading && (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>{tStates("loading")}</span>
+                  </div>
+                )}
+
+                {milestonesError && !milestonesLoading && (
+                  <p className="text-xs text-red-500 dark:text-red-400">{milestonesError}</p>
+                )}
+
+                {!milestonesLoading && !milestonesError && milestones.length === 0 && (
+                  <p className="text-xs text-muted-foreground">{t("milestones.empty")}</p>
+                )}
+
+                {!milestonesLoading && !milestonesError && milestones.length > 0 && (
+                  <ul className="space-y-1.5">
+                    {milestones.map((m, idx) => (
+                      <li
+                        key={`${m.title}-${idx}`}
+                        className="flex items-start justify-between gap-2 rounded-md bg-muted/60 px-2 py-1.5"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{m.title}</p>
+                          {(m.dueDate || m.description) && (
+                            <p className="text-[11px] text-muted-foreground truncate">
+                              {m.dueDate}
+                              {m.dueDate && m.description ? " · " : ""}
+                              {!m.dueDate && m.description
+                                ? m.description
+                                : m.dueDate && m.description
+                                  ? m.description
+                                  : null}
+                            </p>
+                          )}
+                        </div>
+                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 shrink-0">
+                          {m.weight}%
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <CoachingChat goalId={goal.id} goalTitle={goal.title} open={chatOpen} onOpenChange={setChatOpen} />
+    </>
   );
 }

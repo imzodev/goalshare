@@ -534,5 +534,12 @@
     "profile": "Perfil",
     "settings": "Configuración",
     "logout": "Cerrar sesión"
+  },
+  "coaching": {
+    "title": "Coach IA",
+    "descriptionPrefix": "Recibe consejos personalizados para",
+    "inputPlaceholder": "Pide un consejo...",
+    "welcomeMessage": "¡Hola! Soy tu coach para \"{goalTitle}\". ¿Cómo puedo ayudarte a lograr esta meta hoy?",
+    "errorMessage": "Error al obtener consejo"
   }
 }

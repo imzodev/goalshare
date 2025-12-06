@@ -531,5 +531,12 @@
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Log out"
+  },
+  "coaching": {
+    "title": "AI Coach",
+    "descriptionPrefix": "Get personalized advice for",
+    "inputPlaceholder": "Ask for advice...",
+    "welcomeMessage": "Hi! I'm your coach for \"{goalTitle}\". How can I help you achieve this goal today?",
+    "errorMessage": "Failed to get advice"
   }
 }

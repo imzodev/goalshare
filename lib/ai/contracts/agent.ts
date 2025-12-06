@@ -73,6 +73,10 @@ export interface IAgent<TIn = unknown, TOut = unknown> {
    */
   execute(input: TIn, ctx?: AgentContext): Promise<TOut>;
   /**
+   * Executes the agent and returns a readable stream of the output.
+   */
+  stream?(input: TIn, ctx?: AgentContext): Promise<{ stream: ReadableStream<string>; completed: Promise<unknown> }>;
+  /**
    * Expose this agent as a callable tool for other agents.
    * Mirrors SDK capability like `agent.asTool()`.
    */
