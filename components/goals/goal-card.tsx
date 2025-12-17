@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CoachingChat } from "@/components/coaching/coaching-chat";
+import { MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,10 +39,6 @@ interface GoalCardProps {
   onEdit?: (goal: UserGoalSummary) => void;
   onDelete?: (goal: UserGoalSummary) => void;
 }
-
-import { CoachingChat } from "@/components/coaching/coaching-chat";
-import { useState } from "react";
-import { MessageCircle } from "lucide-react";
 
 export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelete }: GoalCardProps) {
   const t = useTranslations("goals");
