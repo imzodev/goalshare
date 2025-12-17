@@ -28,10 +28,35 @@ Se debe crear una nueva tabla, `goal_actionables`.
   - `recurrence`: `text` (NULO). Almacenará una cadena en formato [RRULE](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html) (ej: `FREQ=WEEKLY;BYDAY=MO,WE`).
   - `startDate`: `date` (NULO)
   - `endDate`: `date` (NULO)
+  - `startTime`: `time` (NULO). Hora local de inicio del accionable (ej: `07:30:00`).
+  - `durationMinutes`: `integer` (NULO). Duración del bloque en minutos (ej: 15, 30, 60).
+  - `timezone`: `text` (NULO). Zona horaria IANA para interpretar `startTime` (ej: `America/Mexico_City`).
+  - `isPaused`: `boolean` (NULO). Si está pausado, no debe generar eventos.
+  - `pausedUntil`: `timestamp` (NULO). Si existe, el accionable está pausado hasta esa fecha/hora.
+  - `isArchived`: `boolean` (NULO). Si está archivado, puede ocultarse del calendario por defecto.
+  - `color`: `text` (NULO). Color o etiqueta visual para UI.
+  - `category`: `text` (NULO). Categoría para agrupación/filtrado.
+  - `priority`: `integer` (NULO). Prioridad opcional para ordenar.
+  - `reminderMinutesBefore`: `integer` (NULO). Minutos antes para recordatorio (si se implementan notificaciones).
+  - `exDates`: `text` (NULO). Fechas/instancias excluidas de la recurrencia (formato a definir).
   - `createdAt`: `timestamp`, `default now()`
 - **Índices:**
   - Índice en `goalId`.
   - Índice en `milestoneId`.
+
+Se debe crear una nueva tabla para registrar la completitud por ocurrencia del accionable.
+
+- **Nombre de la tabla:** `goal_actionable_completions`
+- **Columnas:**
+  - `id`: `uuid`, clave primaria, `default gen_random_uuid()`
+  - `actionableId`: `uuid`, clave foránea a `goal_actionables.id` (NO NULO, `onDelete: "cascade"`)
+  - `occurrenceStart`: `timestamp` (NO NULO). Fecha/hora de inicio de la ocurrencia materializada.
+  - `notes`: `text` (NULO). Notas específicas de esa ocurrencia.
+  - `completedAt`: `timestamp` (NO NULO, `default now()`). Cuándo se marcó como completado.
+  - `createdAt`: `timestamp` (NO NULO, `default now()`).
+- **Índices / Unicidad:**
+  - Índice en `actionableId`.
+  - Unicidad en (`actionableId`, `occurrenceStart`).
 
 ### 2. Endpoints de la API del Backend
 
@@ -50,6 +75,7 @@ Se requerirán nuevos endpoints en la API para gestionar los accionables.
   - Este endpoint debe ser actualizado.
   - Además de las metas y los hitos, ahora debe consultar `goal_actionables`.
   - Para cada accionable con una regla de `recurrence`, debe calcular las ocurrencias de eventos individuales dentro del rango de fechas solicitado y devolverlas para mostrarlas en el calendario.
+  - Cada ocurrencia debe mapearse a un evento con hora: `start = startDate + startTime` (interpretado en `timezone`) y `end = start + durationMinutes`.
 
 - **`PUT /api/actionables/{actionableId}`**
   - Actualiza un accionable existente.
