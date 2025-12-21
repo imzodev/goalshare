@@ -9,6 +9,21 @@ export interface ActionableInput {
   startDate?: string;
   /** Date-only end date in YYYY-MM-DD */
   endDate?: string;
+  /** Time-only start time in HH:MM or HH:MM:SS */
+  startTime?: string;
+  /** Duration in minutes */
+  durationMinutes?: number;
+  /** IANA timezone, e.g. America/Mexico_City */
+  timezone?: string;
+  /** Optional pause/archive/presentation fields */
+  isPaused?: boolean;
+  pausedUntil?: string;
+  isArchived?: boolean;
+  color?: string;
+  category?: string;
+  priority?: number;
+  reminderMinutesBefore?: number;
+  exDates?: string;
   /** Optional milestone this actionable belongs to */
   milestoneId?: string | null;
 }
@@ -31,6 +46,20 @@ export const ActionableItemInputSchema = z.object({
     .string()
     .regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
     .optional(),
+  startTime: z
+    .string()
+    .regex(/^[0-9]{2}:[0-9]{2}(:[0-9]{2})?$/)
+    .optional(),
+  durationMinutes: z.number().int().positive().optional(),
+  timezone: z.string().optional(),
+  isPaused: z.boolean().optional(),
+  pausedUntil: z.string().optional(),
+  isArchived: z.boolean().optional(),
+  color: z.string().optional(),
+  category: z.string().optional(),
+  priority: z.number().int().optional(),
+  reminderMinutesBefore: z.number().int().optional(),
+  exDates: z.string().optional(),
   milestoneId: z.string().uuid().optional(),
 });
 
@@ -51,6 +80,20 @@ export const UpdateActionableSchema = z
       .string()
       .regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
       .optional(),
+    startTime: z
+      .string()
+      .regex(/^[0-9]{2}:[0-9]{2}(:[0-9]{2})?$/)
+      .optional(),
+    durationMinutes: z.number().int().positive().optional(),
+    timezone: z.string().optional(),
+    isPaused: z.boolean().optional(),
+    pausedUntil: z.string().optional(),
+    isArchived: z.boolean().optional(),
+    color: z.string().optional(),
+    category: z.string().optional(),
+    priority: z.number().int().optional(),
+    reminderMinutesBefore: z.number().int().optional(),
+    exDates: z.string().optional(),
     milestoneId: z.string().uuid().nullable().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {

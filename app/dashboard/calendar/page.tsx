@@ -1,46 +1,42 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useGoals } from "@/hooks/use-goals";
+import { useCalendarPageController } from "@/hooks/use-calendar-page-controller";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import type { UserGoalSummary } from "@/types/goals";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { formatDeadline } from "@/utils/date-utils";
 import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
 import { ActionablesPanel } from "@/components/goals/actionables/actionables-panel";
+import { ActionableCompletionDialog } from "@/components/calendar/actionable-completion-dialog";
 
 export default function CalendarPage() {
   const t = useTranslations("calendar");
-  const { goals, loading, fetchGoals } = useGoals();
-  const [selectedGoal, setSelectedGoal] = useState<UserGoalSummary | null>(null);
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [actionablesOpen, setActionablesOpen] = useState(false);
-
-  useEffect(() => {
-    fetchGoals();
-  }, [fetchGoals]);
-
-  const events = useMemo(() => {
-    return goals.map((goal) => ({
-      title: goal.title,
-      start: goal.deadline ? new Date(goal.deadline) : new Date(goal.createdAt),
-      allDay: true,
-      extendedProps: {
-        ...goal,
-      },
-    }));
-  }, [goals]);
+  const {
+    goals,
+    loading,
+    selectedGoal,
+    detailDialogOpen,
+    handleGoalDialogOpenChange,
+    actionablesOpen,
+    setActionablesOpen,
+    completionOpen,
+    completionData,
+    handleCompletionOpenChange,
+    fetchCalendarEvents,
+    handleEventClick,
+    refreshCalendar,
+    setCalendarRef,
+  } = useCalendarPageController();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 p-4 md:p-6 lg:p-8">
@@ -78,6 +74,9 @@ export default function CalendarPage() {
           ) : (
             <div className="calendar-container">
               <FullCalendar
+                ref={(ref) => {
+                  setCalendarRef(ref);
+                }}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 headerToolbar={{
@@ -85,7 +84,7 @@ export default function CalendarPage() {
                   center: "title",
                   right: "dayGridMonth,timeGridWeek,timeGridDay",
                 }}
-                events={events}
+                events={fetchCalendarEvents}
                 editable={true}
                 selectable={true}
                 selectMirror={true}
@@ -99,24 +98,12 @@ export default function CalendarPage() {
                   week: "Semana",
                   day: "Día",
                 }}
-                eventClick={(info) => {
-                  const goal = info.event.extendedProps as UserGoalSummary;
-                  setSelectedGoal(goal);
-                  setDetailDialogOpen(true);
-                }}
+                eventClick={handleEventClick}
               />
             </div>
           )}
 
-          <Dialog
-            open={detailDialogOpen && !!selectedGoal}
-            onOpenChange={(open) => {
-              setDetailDialogOpen(open);
-              if (!open) {
-                setSelectedGoal(null);
-              }
-            }}
-          >
+          <Dialog open={detailDialogOpen && !!selectedGoal} onOpenChange={handleGoalDialogOpenChange}>
             <DialogContent className="max-w-3xl sm:max-w-2xl md:max-w-3xl">
               {selectedGoal && (
                 <>
@@ -177,6 +164,13 @@ export default function CalendarPage() {
             onOpenChange={setActionablesOpen}
             goals={goals}
             initialGoalId={selectedGoal?.id ?? null}
+            onChanged={refreshCalendar}
+          />
+          <ActionableCompletionDialog
+            open={completionOpen}
+            onOpenChange={handleCompletionOpenChange}
+            data={completionData}
+            onChanged={refreshCalendar}
           />
         </CardContent>
       </Card>

@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import { Sparkles, ListChecks } from "lucide-react";
 
 interface ActionableSuggestion {
@@ -14,6 +15,17 @@ interface ActionableSuggestion {
   recurrence?: string;
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  durationMinutes?: number;
+  timezone?: string;
+  isPaused?: boolean;
+  pausedUntil?: string;
+  isArchived?: boolean;
+  color?: string;
+  category?: string;
+  priority?: number;
+  reminderMinutesBefore?: number;
+  exDates?: string;
 }
 
 interface ExistingActionable {
@@ -23,6 +35,17 @@ interface ExistingActionable {
   recurrence: string | null;
   startDate: string | null;
   endDate: string | null;
+  startTime: string | null;
+  durationMinutes: number | null;
+  timezone: string | null;
+  isPaused: boolean | null;
+  pausedUntil: string | null;
+  isArchived: boolean | null;
+  color: string | null;
+  category: string | null;
+  priority: number | null;
+  reminderMinutesBefore: number | null;
+  exDates: string | null;
 }
 
 interface ActionablesPanelProps {
@@ -30,6 +53,7 @@ interface ActionablesPanelProps {
   onOpenChange: (open: boolean) => void;
   goals: UserGoalSummary[];
   initialGoalId?: string | null;
+  onChanged?: () => void;
 }
 
 const DAY_LABELS: Record<string, string> = {
@@ -105,7 +129,7 @@ function formatRecurrenceLabel(rule: string | null): string | null {
   }
 }
 
-export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: ActionablesPanelProps) {
+export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId, onChanged }: ActionablesPanelProps) {
   const [selectedGoalId, setSelectedGoalId] = useState<string | "">(initialGoalId ?? "");
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -116,6 +140,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editStartDate, setEditStartDate] = useState("");
   const [editEndDate, setEditEndDate] = useState("");
+  const [editStartTime, setEditStartTime] = useState("07:30");
+  const [editDurationMinutes, setEditDurationMinutes] = useState("15");
+  const [editTimezone, setEditTimezone] = useState("");
+  const [editIsPaused, setEditIsPaused] = useState(false);
+  const [editPausedUntil, setEditPausedUntil] = useState("");
+  const [editIsArchived, setEditIsArchived] = useState(false);
+  const [editColor, setEditColor] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editPriority, setEditPriority] = useState("3");
+  const [editReminderMinutesBefore, setEditReminderMinutesBefore] = useState("");
+  const [editExDates, setEditExDates] = useState("");
   const [editFreq, setEditFreq] = useState("");
   const [editInterval, setEditInterval] = useState("1");
   const [editDays, setEditDays] = useState<string[]>([]);
@@ -125,8 +160,27 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
   const [suggStartDate, setSuggStartDate] = useState("");
   const [suggEndDate, setSuggEndDate] = useState("");
   const [suggDays, setSuggDays] = useState<string[]>([]);
+  const [suggStartTime, setSuggStartTime] = useState("07:30");
+  const [suggDurationMinutes, setSuggDurationMinutes] = useState("15");
+  const [suggTimezone, setSuggTimezone] = useState("");
+  const [suggIsPaused, setSuggIsPaused] = useState(false);
+  const [suggPausedUntil, setSuggPausedUntil] = useState("");
+  const [suggIsArchived, setSuggIsArchived] = useState(false);
+  const [suggColor, setSuggColor] = useState("");
+  const [suggCategory, setSuggCategory] = useState("");
+  const [suggPriority, setSuggPriority] = useState("3");
+  const [suggReminderMinutesBefore, setSuggReminderMinutesBefore] = useState("");
+  const [suggExDates, setSuggExDates] = useState("");
 
   const goalsOptions = useMemo(() => goals, [goals]);
+
+  const browserTimeZone = useMemo(() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    } catch {
+      return "";
+    }
+  }, []);
 
   useEffect(() => {
     if (!selectedGoalId && goalsOptions.length > 0) {
@@ -192,6 +246,7 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
     try {
       setSaving(true);
       const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}/;
+      const defaultTimezone = browserTimeZone || "UTC";
       const items = Array.from(selectedIndexes)
         .map((idx) => suggestions[idx]!)
         .map((s) => ({
@@ -200,6 +255,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
           recurrence: normalizeRecurrence(s.recurrence),
           startDate: s.startDate && dateRegex.test(String(s.startDate)) ? String(s.startDate).slice(0, 10) : undefined,
           endDate: s.endDate && dateRegex.test(String(s.endDate)) ? String(s.endDate).slice(0, 10) : undefined,
+          startTime: typeof s.startTime === "string" ? s.startTime : "07:30:00",
+          durationMinutes: typeof s.durationMinutes === "number" ? s.durationMinutes : 15,
+          timezone: typeof s.timezone === "string" ? s.timezone : defaultTimezone,
+          isPaused: typeof s.isPaused === "boolean" ? s.isPaused : undefined,
+          pausedUntil: typeof s.pausedUntil === "string" && s.pausedUntil ? s.pausedUntil : undefined,
+          isArchived: typeof s.isArchived === "boolean" ? s.isArchived : undefined,
+          color: typeof s.color === "string" && s.color ? s.color : undefined,
+          category: typeof s.category === "string" && s.category ? s.category : undefined,
+          priority: typeof s.priority === "number" ? s.priority : undefined,
+          reminderMinutesBefore: typeof s.reminderMinutesBefore === "number" ? s.reminderMinutesBefore : undefined,
+          exDates: typeof s.exDates === "string" && s.exDates ? s.exDates : undefined,
         }));
       const res = await fetch(`/api/goals/${selectedGoalId}/actionables`, {
         method: "POST",
@@ -215,6 +281,7 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
       setExisting(data.actionables ?? existing);
       setSuggestions([]);
       setSelectedIndexes(new Set());
+      onChanged?.();
     } catch (e) {
       console.error("Error saving actionables", e);
     } finally {
@@ -242,12 +309,34 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
     }
     setEditStartDate(a.startDate ? String(a.startDate).slice(0, 10) : "");
     setEditEndDate(a.endDate ? String(a.endDate).slice(0, 10) : "");
+    setEditStartTime(a.startTime ? String(a.startTime).slice(0, 5) : "07:30");
+    setEditDurationMinutes(a.durationMinutes != null ? String(a.durationMinutes) : "15");
+    setEditTimezone(a.timezone ?? browserTimeZone ?? "UTC");
+    setEditIsPaused(Boolean(a.isPaused));
+    setEditPausedUntil(a.pausedUntil ? new Date(a.pausedUntil).toISOString().slice(0, 16) : "");
+    setEditIsArchived(Boolean(a.isArchived));
+    setEditColor(a.color ?? "");
+    setEditCategory(a.category ?? "");
+    setEditPriority(a.priority != null ? String(a.priority) : "3");
+    setEditReminderMinutesBefore(a.reminderMinutesBefore != null ? String(a.reminderMinutesBefore) : "");
+    setEditExDates(a.exDates ?? "");
   };
 
   const cancelEditing = () => {
     setEditingId(null);
     setEditStartDate("");
     setEditEndDate("");
+    setEditStartTime("07:30");
+    setEditDurationMinutes("15");
+    setEditTimezone("");
+    setEditIsPaused(false);
+    setEditPausedUntil("");
+    setEditIsArchived(false);
+    setEditColor("");
+    setEditCategory("");
+    setEditPriority("3");
+    setEditReminderMinutesBefore("");
+    setEditExDates("");
     setEditFreq("");
     setEditInterval("1");
     setEditDays([]);
@@ -277,6 +366,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
 
     setSuggStartDate(s.startDate ? String(s.startDate).slice(0, 10) : "");
     setSuggEndDate(s.endDate ? String(s.endDate).slice(0, 10) : "");
+    setSuggStartTime(s.startTime ? String(s.startTime).slice(0, 5) : "07:30");
+    setSuggDurationMinutes(s.durationMinutes != null ? String(s.durationMinutes) : "15");
+    setSuggTimezone(s.timezone ?? browserTimeZone ?? "UTC");
+    setSuggIsPaused(Boolean(s.isPaused));
+    setSuggPausedUntil(s.pausedUntil ? new Date(s.pausedUntil).toISOString().slice(0, 16) : "");
+    setSuggIsArchived(Boolean(s.isArchived));
+    setSuggColor(s.color ?? "");
+    setSuggCategory(s.category ?? "");
+    setSuggPriority(s.priority != null ? String(s.priority) : "3");
+    setSuggReminderMinutesBefore(s.reminderMinutesBefore != null ? String(s.reminderMinutesBefore) : "");
+    setSuggExDates(s.exDates ?? "");
   };
 
   const cancelEditingSuggestion = () => {
@@ -286,6 +386,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
     setSuggDays([]);
     setSuggStartDate("");
     setSuggEndDate("");
+    setSuggStartTime("07:30");
+    setSuggDurationMinutes("15");
+    setSuggTimezone("");
+    setSuggIsPaused(false);
+    setSuggPausedUntil("");
+    setSuggIsArchived(false);
+    setSuggColor("");
+    setSuggCategory("");
+    setSuggPriority("3");
+    setSuggReminderMinutesBefore("");
+    setSuggExDates("");
   };
 
   const applyEditingSuggestion = () => {
@@ -314,6 +425,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
         recurrence: normalizeRecurrence(recurrence),
         startDate: suggStartDate || undefined,
         endDate: suggEndDate || undefined,
+        startTime: suggStartTime ? `${suggStartTime}:00` : undefined,
+        durationMinutes: suggDurationMinutes ? Number(suggDurationMinutes) || 15 : undefined,
+        timezone: suggTimezone || browserTimeZone || "UTC",
+        isPaused: suggIsPaused,
+        pausedUntil: suggPausedUntil ? new Date(suggPausedUntil).toISOString() : undefined,
+        isArchived: suggIsArchived,
+        color: suggColor || undefined,
+        category: suggCategory || undefined,
+        priority: suggPriority ? Number(suggPriority) || 3 : undefined,
+        reminderMinutesBefore: suggReminderMinutesBefore ? Number(suggReminderMinutesBefore) || undefined : undefined,
+        exDates: suggExDates || undefined,
       };
       return next;
     });
@@ -343,6 +465,17 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
         recurrence: normalizeRecurrence(recurrence),
         startDate: editStartDate || undefined,
         endDate: editEndDate || undefined,
+        startTime: editStartTime ? `${editStartTime}:00` : undefined,
+        durationMinutes: editDurationMinutes ? Number(editDurationMinutes) || undefined : undefined,
+        timezone: editTimezone || browserTimeZone || "UTC",
+        isPaused: editIsPaused,
+        pausedUntil: editPausedUntil ? new Date(editPausedUntil).toISOString() : undefined,
+        isArchived: editIsArchived,
+        color: editColor || undefined,
+        category: editCategory || undefined,
+        priority: editPriority ? Number(editPriority) || 3 : undefined,
+        reminderMinutesBefore: editReminderMinutesBefore ? Number(editReminderMinutesBefore) || undefined : undefined,
+        exDates: editExDates || undefined,
       };
 
       const res = await fetch(`/api/actionables/${editingId}`, {
@@ -358,6 +491,7 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
       const updated = data.actionable as ExistingActionable;
       setExisting((prev) => prev.map((a) => (a.id === updated.id ? { ...a, ...updated } : a)));
       cancelEditing();
+      onChanged?.();
     } catch (e) {
       console.error("Error updating actionable", e);
     } finally {
@@ -567,6 +701,165 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
                                   />
                                 </div>
                               </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-time-${idx}`}>
+                                    Hora
+                                  </label>
+                                  <input
+                                    type="time"
+                                    id={`sugg-time-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggStartTime}
+                                    onChange={(e) => setSuggStartTime(e.target.value)}
+                                  />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-duration-${idx}`}>
+                                    Duración (min)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    id={`sugg-duration-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggDurationMinutes}
+                                    onChange={(e) => setSuggDurationMinutes(e.target.value)}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-tz-${idx}`}>
+                                  Timezone
+                                </label>
+                                <input
+                                  type="text"
+                                  id={`sugg-tz-${idx}`}
+                                  className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                  value={suggTimezone}
+                                  onChange={(e) => setSuggTimezone(e.target.value)}
+                                  placeholder={browserTimeZone || "UTC"}
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-2">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-paused-${idx}`}>
+                                    Pausado
+                                  </label>
+                                  <Switch
+                                    id={`sugg-paused-${idx}`}
+                                    checked={suggIsPaused}
+                                    onCheckedChange={(v) => setSuggIsPaused(Boolean(v))}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-2">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-archived-${idx}`}>
+                                    Archivado
+                                  </label>
+                                  <Switch
+                                    id={`sugg-archived-${idx}`}
+                                    checked={suggIsArchived}
+                                    onCheckedChange={(v) => setSuggIsArchived(Boolean(v))}
+                                  />
+                                </div>
+                              </div>
+
+                              {suggIsPaused && (
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`sugg-paused-until-${idx}`}
+                                  >
+                                    Pausado hasta
+                                  </label>
+                                  <input
+                                    type="datetime-local"
+                                    id={`sugg-paused-until-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggPausedUntil}
+                                    onChange={(e) => setSuggPausedUntil(e.target.value)}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-color-${idx}`}>
+                                    Color
+                                  </label>
+                                  <input
+                                    type="color"
+                                    id={`sugg-color-${idx}`}
+                                    className="h-8 w-full rounded-md border bg-background px-1 py-1"
+                                    value={suggColor || "#6366f1"}
+                                    onChange={(e) => setSuggColor(e.target.value)}
+                                  />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-category-${idx}`}>
+                                    Categoría
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id={`sugg-category-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggCategory}
+                                    onChange={(e) => setSuggCategory(e.target.value)}
+                                    placeholder="Ej: Salud"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-priority-${idx}`}>
+                                    Prioridad
+                                  </label>
+                                  <select
+                                    id={`sugg-priority-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggPriority}
+                                    onChange={(e) => setSuggPriority(e.target.value)}
+                                  >
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                  </select>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-reminder-${idx}`}>
+                                    Recordatorio (min)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    id={`sugg-reminder-${idx}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={suggReminderMinutesBefore}
+                                    onChange={(e) => setSuggReminderMinutesBefore(e.target.value)}
+                                    placeholder="Ej: 10"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[11px] text-muted-foreground" htmlFor={`sugg-exdates-${idx}`}>
+                                  ExDates (CSV)
+                                </label>
+                                <input
+                                  type="text"
+                                  id={`sugg-exdates-${idx}`}
+                                  className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                  value={suggExDates}
+                                  onChange={(e) => setSuggExDates(e.target.value)}
+                                  placeholder="YYYY-MM-DD,YYYY-MM-DD"
+                                />
+                              </div>
                               <div className="flex items-center justify-end gap-2">
                                 <Button
                                   type="button"
@@ -733,6 +1026,180 @@ export function ActionablesPanel({ open, onOpenChange, goals, initialGoalId }: A
                                     onChange={(e) => setEditEndDate(e.target.value)}
                                   />
                                 </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`edit-time-${a.id}`}>
+                                    Hora
+                                  </label>
+                                  <input
+                                    type="time"
+                                    id={`edit-time-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editStartTime}
+                                    onChange={(e) => setEditStartTime(e.target.value)}
+                                  />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-duration-${a.id}`}
+                                  >
+                                    Duración (min)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    id={`edit-duration-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editDurationMinutes}
+                                    onChange={(e) => setEditDurationMinutes(e.target.value)}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[11px] text-muted-foreground" htmlFor={`edit-tz-${a.id}`}>
+                                  Timezone
+                                </label>
+                                <input
+                                  type="text"
+                                  id={`edit-tz-${a.id}`}
+                                  className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                  value={editTimezone}
+                                  onChange={(e) => setEditTimezone(e.target.value)}
+                                  placeholder={browserTimeZone || "UTC"}
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-2">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`edit-paused-${a.id}`}>
+                                    Pausado
+                                  </label>
+                                  <Switch
+                                    id={`edit-paused-${a.id}`}
+                                    checked={editIsPaused}
+                                    onCheckedChange={(v) => setEditIsPaused(Boolean(v))}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-2">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-archived-${a.id}`}
+                                  >
+                                    Archivado
+                                  </label>
+                                  <Switch
+                                    id={`edit-archived-${a.id}`}
+                                    checked={editIsArchived}
+                                    onCheckedChange={(v) => setEditIsArchived(Boolean(v))}
+                                  />
+                                </div>
+                              </div>
+
+                              {editIsPaused && (
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-paused-until-${a.id}`}
+                                  >
+                                    Pausado hasta
+                                  </label>
+                                  <input
+                                    type="datetime-local"
+                                    id={`edit-paused-until-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editPausedUntil}
+                                    onChange={(e) => setEditPausedUntil(e.target.value)}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[11px] text-muted-foreground" htmlFor={`edit-color-${a.id}`}>
+                                    Color
+                                  </label>
+                                  <input
+                                    type="color"
+                                    id={`edit-color-${a.id}`}
+                                    className="h-8 w-full rounded-md border bg-background px-1 py-1"
+                                    value={editColor || "#6366f1"}
+                                    onChange={(e) => setEditColor(e.target.value)}
+                                  />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-category-${a.id}`}
+                                  >
+                                    Categoría
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id={`edit-category-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editCategory}
+                                    onChange={(e) => setEditCategory(e.target.value)}
+                                    placeholder="Ej: Salud"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-priority-${a.id}`}
+                                  >
+                                    Prioridad
+                                  </label>
+                                  <select
+                                    id={`edit-priority-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editPriority}
+                                    onChange={(e) => setEditPriority(e.target.value)}
+                                  >
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                  </select>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    className="text-[11px] text-muted-foreground"
+                                    htmlFor={`edit-reminder-${a.id}`}
+                                  >
+                                    Recordatorio (min)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    id={`edit-reminder-${a.id}`}
+                                    className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                    value={editReminderMinutesBefore}
+                                    onChange={(e) => setEditReminderMinutesBefore(e.target.value)}
+                                    placeholder="Ej: 10"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[11px] text-muted-foreground" htmlFor={`edit-exdates-${a.id}`}>
+                                  ExDates (CSV)
+                                </label>
+                                <input
+                                  type="text"
+                                  id={`edit-exdates-${a.id}`}
+                                  className="w-full rounded-md border bg-background px-2 py-1 text-xs"
+                                  value={editExDates}
+                                  onChange={(e) => setEditExDates(e.target.value)}
+                                  placeholder="YYYY-MM-DD,YYYY-MM-DD"
+                                />
                               </div>
                               <div className="flex items-center justify-end gap-2">
                                 <Button

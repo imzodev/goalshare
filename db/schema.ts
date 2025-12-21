@@ -384,7 +384,7 @@ export const goalActionables = pgTable(
     category: text("category"),
     priority: integer("priority"),
     reminderMinutesBefore: integer("reminder_minutes_before"),
-    exDates: text("ex_dates"),
+    exDates: text("ex_dates"), // comma-separated dates to exclude from recurrence (e.g., "2025-12-25,2025-12-26")
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
   (t) => [index("goal_actionables_goal_idx").on(t.goalId), index("goal_actionables_milestone_idx").on(t.milestoneId)]
