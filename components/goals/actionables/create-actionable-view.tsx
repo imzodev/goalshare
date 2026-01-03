@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { UserGoalSummary } from "@/types/goals";
 import { useActionablesApi } from "@/hooks/use-actionables-api";
+import { cn } from "@/lib/utils";
 
 interface CreateActionableViewProps {
   goals: UserGoalSummary[];
@@ -27,6 +28,8 @@ interface ActionableFormData {
   title: string;
   description: string;
   frequency: "DAILY" | "WEEKLY" | "MONTHLY" | "ONCE";
+  interval: string;
+  days: string[];
   startDate: string;
   endDate: string;
 }
@@ -44,6 +47,8 @@ export function CreateActionableView({
     title: "",
     description: "",
     frequency: "DAILY",
+    interval: "1",
+    days: [],
     startDate: new Date().toISOString().split("T")[0] ?? "",
     endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
       .toISOString()
@@ -66,39 +71,50 @@ export function CreateActionableView({
   };
 
   const applySuggestion = (suggestion: any) => {
+    let days: string[] = [];
+    let interval = "1";
+    
+    if (suggestion.recurrence) {
+      const parts = suggestion.recurrence.split(";");
+      const map: Record<string, string> = {};
+      for (const part of parts) {
+        const [k, v] = part.split("=");
+        if (k && v) map[k.toUpperCase()] = v;
+      }
+      interval = map["INTERVAL"] ?? "1";
+      days = map["BYDAY"] ? map["BYDAY"].split(",") : [];
+    }
+
     setFormData({
       ...formData,
       title: suggestion.title || "",
       description: suggestion.description || "",
-      // Simple mapping for frequency, could be more robust based on recurrence rule parsing
       frequency: suggestion.recurrence?.includes("WEEKLY")
         ? "WEEKLY"
         : suggestion.recurrence?.includes("MONTHLY")
         ? "MONTHLY"
         : "DAILY",
+      interval,
+      days,
       startDate: suggestion.startDate || formData.startDate,
       endDate: suggestion.endDate || formData.endDate,
     });
   };
 
   const handleSave = async () => {
-    // Construct the object expected by saveSelectedSuggestions
-    // Since saveSelectedSuggestions expects an array and indices, we might need to use a lower level API or adapt.
-    // Actually, useActionablesApi has saveSelectedSuggestions which takes the list and indices.
-    // But here we want to save a SINGLE actionable from the form data, not necessarily from the suggestions list directly.
-    // We should probably use a direct "createActionable" function.
-    // However, `useActionablesApi` only exposes `saveSelectedSuggestions` (plural) and `updateActionable`.
-    // We can simulate it by passing our form data as a "suggestion" and selecting it.
-    
-    // Let's create a temporary suggestion object from formData
-    const recurrenceRule =
-      formData.frequency === "DAILY"
-        ? "FREQ=DAILY;INTERVAL=1"
-        : formData.frequency === "WEEKLY"
-        ? "FREQ=WEEKLY;INTERVAL=1"
-        : formData.frequency === "MONTHLY"
-        ? "FREQ=MONTHLY;INTERVAL=1"
-        : undefined; // ONCE
+    let recurrenceRule: string | undefined;
+
+    if (formData.frequency !== "ONCE") {
+      const parts = [`FREQ=${formData.frequency}`];
+      const intVal = parseInt(formData.interval, 10);
+      if (!isNaN(intVal) && intVal > 1) {
+        parts.push(`INTERVAL=${intVal}`);
+      }
+      if (formData.frequency === "WEEKLY" && formData.days.length > 0) {
+        parts.push(`BYDAY=${formData.days.join(",")}`);
+      }
+      recurrenceRule = parts.join(";");
+    }
 
     const newActionable = {
       title: formData.title,
@@ -119,6 +135,15 @@ export function CreateActionableView({
     if (success) {
       onSuccess();
     }
+  };
+
+  const toggleDay = (code: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      days: prev.days.includes(code)
+        ? prev.days.filter((d) => d !== code)
+        : [...prev.days, code],
+    }));
   };
 
   return (
@@ -254,6 +279,58 @@ export function CreateActionableView({
                   <SelectItem value="ONCE">Una vez</SelectItem>
                 </SelectContent>
               </Select>
+
+              {(formData.frequency === "WEEKLY" || formData.frequency === "MONTHLY") && (
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Cada</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={formData.interval}
+                      onChange={(e) => setFormData({ ...formData, interval: e.target.value })}
+                      className="w-20 bg-muted/30 h-8"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {formData.frequency === "WEEKLY" ? "semana(s)" : "mes(es)"}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {formData.frequency === "WEEKLY" && (
+                <div className="mt-2 space-y-2">
+                  <span className="text-sm font-medium block">Días de la semana</span>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      { code: "MO", label: "Lu" },
+                      { code: "TU", label: "Ma" },
+                      { code: "WE", label: "Mi" },
+                      { code: "TH", label: "Ju" },
+                      { code: "FR", label: "Vi" },
+                      { code: "SA", label: "Sa" },
+                      { code: "SU", label: "Do" },
+                    ].map((d) => {
+                      const active = formData.days.includes(d.code);
+                      return (
+                        <button
+                          key={d.code}
+                          type="button"
+                          className={cn(
+                            "rounded-md border px-2 py-1 text-xs transition-colors",
+                            active 
+                              ? "bg-primary text-primary-foreground border-primary" 
+                              : "bg-background hover:bg-muted"
+                          )}
+                          onClick={() => toggleDay(d.code)}
+                        >
+                          {d.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
