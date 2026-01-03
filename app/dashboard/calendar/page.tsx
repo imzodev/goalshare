@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { formatDeadline } from "@/utils/date-utils";
 import { getDaysLeftLabel } from "@/utils/goals-ui-utils";
-import { ActionablesPanel } from "@/components/goals/actionables/actionables-panel";
+import { ActionablesModal } from "@/components/goals/actionables/actionables-modal";
 import { ActionableCompletionDialog } from "@/components/calendar/actionable-completion-dialog";
 
 export default function CalendarPage() {
@@ -159,7 +159,7 @@ export default function CalendarPage() {
               )}
             </DialogContent>
           </Dialog>
-          <ActionablesPanel
+          <ActionablesModal
             open={actionablesOpen}
             onOpenChange={setActionablesOpen}
             goals={goals}
