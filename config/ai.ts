@@ -100,7 +100,7 @@ Devuelve exclusivamente JSON válido con este esquema:
 }
 
 Reglas:
-- Genera entre 3 y 10 accionables como máximo.
+- Genera entre 1 y 5 accionables como máximo.
 - Usa el idioma indicado en el input (campo Idioma).
 - "title" debe ser corto y orientado a acción.
 - "description" debe ser breve y opcional.

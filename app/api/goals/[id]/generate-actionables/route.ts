@@ -12,6 +12,7 @@ import type { AgentPayload } from "@/types/ai";
  * No persiste nada en la base de datos; solo devuelve sugerencias para que el
  * cliente las revise y eventualmente las cree vía los endpoints de accionables.
  */
+// TODO: Hacer la validacion de parametros enviados desde el frontend
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient();
@@ -40,6 +41,15 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     const actionablesService = new ActionablesService();
     const existing = await actionablesService.listForGoal(userId, goalId);
 
+    // Read optional body for custom instructions
+    let count = 3; // default
+    try {
+      const body = await _req.json();
+      if (body.count) count = Math.max(1, Math.min(5, Number(body.count)));
+    } catch {
+      // ignore JSON parse error (body might be empty)
+    }
+
     const locale = "es";
     const traceId = `ai-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -53,6 +63,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     }
     lines.push(`Idioma: ${locale}`);
     lines.push("Contexto: Esta meta pertenece al usuario autenticado en GoalShare.");
+    
     if (existing.length > 0) {
       lines.push("Accionables ya existentes para esta meta (NO debes repetirlos ni generar variantes casi iguales):");
       for (const a of existing) {
@@ -65,7 +76,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     }
     lines.push("Tarea: actionables");
     lines.push(
-      "Instrucciones: Genera una lista de accionables recurrentes segun el esquema JSON indicado por el sistema. " +
+      `Instrucciones: Genera una lista de ${count} accionables recurrentes segun el esquema JSON indicado por el sistema. ` +
         "No repitas ningun accionable existente ni generes items con titulo o descripcion muy parecidos (near-duplicates). " +
         "Si una idea ya esta cubierta por un accionable existente, inventa otra distinta."
     );

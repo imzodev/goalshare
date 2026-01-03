@@ -63,11 +63,15 @@ export function useActionablesApi(goalId: string | "", onChanged?: () => void) {
     }
   }, [goalId]);
 
-  const generateSuggestions = useCallback(async () => {
+  const generateSuggestions = useCallback(async (count: number = 3) => {
     if (!goalId) return;
     try {
       setLoadingSuggestions(true);
-      const res = await fetch(`/api/goals/${goalId}/generate-actionables`, { method: "POST" });
+      const res = await fetch(`/api/goals/${goalId}/generate-actionables`, { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count })
+      });
       if (!res.ok) {
         console.error("generate-actionables failed", await res.json().catch(() => undefined));
         return;
