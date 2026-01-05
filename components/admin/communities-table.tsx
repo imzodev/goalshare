@@ -8,6 +8,8 @@ import { format } from "date-fns";
 import { ChevronLeft, ChevronRight, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { toast } from "sonner";
+import { deleteCommunity } from "@/app/actions/admin-communities-mutations";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +51,7 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
@@ -59,9 +62,20 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
   };
 
   const handleDelete = async () => {
-    // Placeholder for delete functionality
-    console.log("Deleting community", deleteId);
-    setDeleteId(null);
+    if (!deleteId) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteCommunity(deleteId);
+      if (result.success) {
+        toast.success("Community deleted successfully");
+        setDeleteId(null);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete community");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -158,11 +172,11 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              Delete
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
