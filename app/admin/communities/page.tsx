@@ -1,5 +1,6 @@
 import { getCommunitiesList } from "@/app/actions/admin-communities";
 import { CommunitiesTable } from "@/components/admin/communities-table";
+import { CreateCommunityDialog } from "@/components/admin/create-community-dialog";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,9 +24,12 @@ export default async function AdminCommunitiesPage({ searchParams }: Communities
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Community Management</h1>
-        <p className="text-muted-foreground">View and manage all communities on the platform.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Community Management</h1>
+          <p className="text-muted-foreground">View and manage all communities on the platform.</p>
+        </div>
+        <CreateCommunityDialog />
       </div>
       <CommunitiesTable communities={communities as any} pagination={pagination} />
     </div>
