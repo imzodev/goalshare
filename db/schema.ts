@@ -25,6 +25,7 @@ export const communityKindEnum = pgEnum("community_kind", ["domain", "topic", "c
 export const goalStatusEnum = pgEnum("goal_status", ["pending", "completed"]);
 export const goalTypeEnum = pgEnum("goal_type", ["metric", "milestone", "checkin", "manual"]);
 export const memberRoleEnum = pgEnum("member_role", ["member", "admin"]);
+export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
 export const friendshipStatusEnum = pgEnum("friendship_status", ["pending", "accepted", "blocked"]);
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "active",
@@ -90,6 +91,7 @@ export const profiles = pgTable(
     username: text("username").unique(),
     displayName: text("display_name"),
     imageUrl: text("image_url"),
+    role: userRoleEnum("role").notNull().default("user"),
     planId: text("plan_id")
       .notNull()
       .default("free")
