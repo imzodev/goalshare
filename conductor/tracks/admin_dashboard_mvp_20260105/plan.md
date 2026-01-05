@@ -20,7 +20,7 @@ Establish the secure foundation for the admin area, ensuring proper routing and 
   - [x] Subtask: Test: Verify layout responsiveness and theme toggle integration.
 - [ ] Task: Conductor - User Manual Verification 'Infrastructure & Security' (Protocol in workflow.md)
 
-## Phase 2: Dashboard Overview
+## Phase 2: Dashboard Overview [checkpoint: 7d720fc]
 
 Build the landing page for admins with high-level statistics.
 
