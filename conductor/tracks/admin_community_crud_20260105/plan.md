@@ -4,10 +4,10 @@
 
 Implement the necessary server actions to handle database mutations.
 
-- [ ] Task: Implement Delete Community Action
-  - [ ] Subtask: Create `app/actions/admin-communities-mutations.ts`.
-  - [ ] Subtask: Implement `deleteCommunity` action with admin validation.
-  - [ ] Subtask: Test: Verify deletion works and associated data handling (cascades).
+- [x] Task: Implement Delete Community Action (b81f9e4)
+  - [x] Subtask: Create `app/actions/admin-communities-mutations.ts`.
+  - [x] Subtask: Implement `deleteCommunity` action with admin validation.
+  - [x] Subtask: Test: Verify deletion works and associated data handling (cascades).
 - [ ] Task: Implement Create & Update Actions
   - [ ] Subtask: Add `createCommunity` action with Zod validation and unique slug check.
   - [ ] Subtask: Add `updateCommunity` action.
