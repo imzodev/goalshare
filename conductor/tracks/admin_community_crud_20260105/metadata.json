@@ -1,0 +1,8 @@
+{
+  "track_id": "admin_community_crud_20260105",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-05T16:00:00Z",
+  "updated_at": "2026-01-05T16:00:00Z",
+  "description": "Implement comprehensive CRUD (Create, Read, Update, Delete) operations for communities in the admin dashboard."
+}
