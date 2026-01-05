@@ -24,10 +24,10 @@ Connect the backend actions to the frontend components.
 - [x] Task: Create Community Form Component (e44e1c5)
   - [x] Subtask: Create `components/admin/community-form.tsx` using `react-hook-form` and `zod`.
   - [x] Subtask: Define form schema for name, slug, kind, and description.
-- [ ] Task: Implement Create Community Dialog
-  - [ ] Subtask: Add "Create Community" button to the `AdminCommunitiesPage`.
-  - [ ] Subtask: Implement the dialog/sheet containing the `CommunityForm`.
-  - [ ] Subtask: Wire up submission to `createCommunity` action.
+- [x] Task: Implement Create Community Dialog (3c53a0e)
+  - [x] Subtask: Add "Create Community" button to the `AdminCommunitiesPage`.
+  - [x] Subtask: Implement the dialog/sheet containing the `CommunityForm`.
+  - [x] Subtask: Wire up submission to `createCommunity` action.
 - [ ] Task: Implement Edit Community Flow
   - [ ] Subtask: Add "Edit" action to the table row dropdown.
   - [ ] Subtask: Implement edit dialog/sheet, pre-filling data from the selected row.
