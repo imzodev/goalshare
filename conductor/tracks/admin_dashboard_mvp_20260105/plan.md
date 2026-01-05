@@ -8,11 +8,11 @@ Establish the secure foundation for the admin area, ensuring proper routing and 
   - [x] Subtask: Update `db/schema.ts` to include a `role` enum ('user', 'admin') in the `users` table (default: 'user').
   - [x] Subtask: Generate and run the Drizzle migration (`bun run db:generate` & `bun run db:migrate`).
   - [x] Subtask: Create a seed script or manual instruction to promote a specific user to 'admin' for testing.
-- [ ] Task: Configure Admin Routes & Middleware
-  - [ ] Subtask: Define `/admin` route group in Next.js App Router.
-  - [ ] Subtask: Update `middleware.ts` to protect `/admin` routes (allow only specific role/ID).
-  - [ ] Subtask: Create `admin-auth.ts` utility to verify admin status in Server Components/Actions.
-  - [ ] Subtask: Test: Verify non-admins are redirected and admins can access the route.
+- [x] Task: Configure Admin Routes & Middleware (562c5f5)
+  - [x] Subtask: Define `/admin` route group in Next.js App Router.
+  - [x] Subtask: Update `middleware.ts` to protect `/admin` routes (allow only specific role/ID).
+  - [x] Subtask: Create `admin-auth.ts` utility to verify admin status in Server Components/Actions.
+  - [x] Subtask: Test: Verify non-admins are redirected and admins can access the route.
 - [ ] Task: Create Admin Layout Shell
   - [ ] Subtask: Implement `app/admin/layout.tsx`.
   - [ ] Subtask: Create `AdminSidebar` component using shadcn/ui.
