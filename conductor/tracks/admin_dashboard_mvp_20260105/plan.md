@@ -4,10 +4,10 @@
 
 Establish the secure foundation for the admin area, ensuring proper routing and access control.
 
-- [ ] Task: Update Database Schema for Admin Roles
-  - [ ] Subtask: Update `db/schema.ts` to include a `role` enum ('user', 'admin') in the `users` table (default: 'user').
-  - [ ] Subtask: Generate and run the Drizzle migration (`bun run db:generate` & `bun run db:migrate`).
-  - [ ] Subtask: Create a seed script or manual instruction to promote a specific user to 'admin' for testing.
+- [x] Task: Update Database Schema for Admin Roles (305e4a5)
+  - [x] Subtask: Update `db/schema.ts` to include a `role` enum ('user', 'admin') in the `users` table (default: 'user').
+  - [x] Subtask: Generate and run the Drizzle migration (`bun run db:generate` & `bun run db:migrate`).
+  - [x] Subtask: Create a seed script or manual instruction to promote a specific user to 'admin' for testing.
 - [ ] Task: Configure Admin Routes & Middleware
   - [ ] Subtask: Define `/admin` route group in Next.js App Router.
   - [ ] Subtask: Update `middleware.ts` to protect `/admin` routes (allow only specific role/ID).
