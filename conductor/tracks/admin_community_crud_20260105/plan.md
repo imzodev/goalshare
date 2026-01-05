@@ -28,8 +28,8 @@ Connect the backend actions to the frontend components.
   - [x] Subtask: Add "Create Community" button to the `AdminCommunitiesPage`.
   - [x] Subtask: Implement the dialog/sheet containing the `CommunityForm`.
   - [x] Subtask: Wire up submission to `createCommunity` action.
-- [ ] Task: Implement Edit Community Flow
-  - [ ] Subtask: Add "Edit" action to the table row dropdown.
-  - [ ] Subtask: Implement edit dialog/sheet, pre-filling data from the selected row.
-  - [ ] Subtask: Wire up submission to `updateCommunity` action.
+- [x] Task: Implement Edit Community Flow (0c05b99)
+  - [x] Subtask: Add "Edit" action to the table row dropdown.
+  - [x] Subtask: Implement edit dialog/sheet, pre-filling data from the selected row.
+  - [x] Subtask: Wire up submission to `updateCommunity` action.
 - [ ] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
