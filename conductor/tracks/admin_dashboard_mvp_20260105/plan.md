@@ -31,7 +31,7 @@ Build the landing page for admins with high-level statistics.
   - [x] Subtask: Test: Verify stats load correctly and skeleton states appear during loading.
 - [ ] Task: Conductor - User Manual Verification 'Dashboard Overview' (Protocol in workflow.md)
 
-## Phase 3: User Management
+## Phase 3: User Management [checkpoint: b45ed49]
 
 Enable admins to view and manage the user base.
 
