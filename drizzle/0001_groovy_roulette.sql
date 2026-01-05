@@ -1,0 +1,96 @@
+-- CREATE TYPE "public"."goal_type" AS ENUM('metric', 'milestone', 'checkin', 'manual');--> statement-breakpoint
+CREATE TYPE "public"."user_role" AS ENUM('user', 'admin');--> statement-breakpoint
+-- CREATE TABLE "goalshare_coaching_messages" (
+-- 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+-- 	"goal_id" uuid NOT NULL,
+-- 	"role" text NOT NULL,
+-- 	"content" text NOT NULL,
+-- 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "goalshare_goal_actionable_completions" (
+-- 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+-- 	"actionable_id" uuid NOT NULL,
+-- 	"occurrence_start" timestamp with time zone NOT NULL,
+-- 	"notes" text,
+-- 	"completed_at" timestamp with time zone DEFAULT now() NOT NULL,
+-- 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "goalshare_goal_actionables" (
+-- 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+-- 	"goal_id" uuid NOT NULL,
+-- 	"milestone_id" uuid,
+-- 	"title" text NOT NULL,
+-- 	"description" text,
+-- 	"recurrence" text,
+-- 	"start_date" date,
+-- 	"end_date" date,
+-- 	"start_time" time,
+-- 	"duration_minutes" integer,
+-- 	"timezone" text,
+-- 	"is_paused" boolean,
+-- 	"paused_until" timestamp with time zone,
+-- 	"is_archived" boolean,
+-- 	"color" text,
+-- 	"category" text,
+-- 	"priority" integer,
+-- 	"reminder_minutes_before" integer,
+-- 	"ex_dates" text,
+-- 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "goalshare_plan_permissions" (
+-- 	"plan_id" text NOT NULL,
+-- 	"permission_key" text NOT NULL,
+-- 	"bool_value" boolean,
+-- 	"int_value" integer,
+-- 	"text_value" text,
+-- 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+-- 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+-- 	CONSTRAINT "plan_permissions_pk" PRIMARY KEY("plan_id","permission_key")
+-- );
+-- --> statement-breakpoint
+-- CREATE TABLE "goalshare_subscription_plans" (
+-- 	"id" text PRIMARY KEY NOT NULL,
+-- 	"display_name" text NOT NULL,
+-- 	"description" text,
+-- 	"stripe_price_id" text,
+-- 	"billing_period" text,
+-- 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+-- );
+-- --> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" ALTER COLUMN "kind" SET DATA TYPE text;--> statement-breakpoint
+-- DROP TYPE "public"."entry_kind";--> statement-breakpoint
+-- CREATE TYPE "public"."entry_kind" AS ENUM('note', 'checkin', 'milestone_update', 'progress_update', 'metric_update');--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" ALTER COLUMN "kind" SET DATA TYPE "public"."entry_kind" USING "kind"::"public"."entry_kind";--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" ADD COLUMN "progress_snapshot" integer;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_milestones" ADD COLUMN "weight" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goals" ADD COLUMN "goal_type" "goal_type" DEFAULT 'manual' NOT NULL;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goals" ADD COLUMN "target_value" numeric;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goals" ADD COLUMN "target_unit" text;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goals" ADD COLUMN "current_value" numeric DEFAULT '0';--> statement-breakpoint
+-- ALTER TABLE "goalshare_goals" ADD COLUMN "current_progress" integer DEFAULT 0;--> statement-breakpoint
+ALTER TABLE "goalshare_profiles" ADD COLUMN "role" "user_role" DEFAULT 'user' NOT NULL;--> statement-breakpoint
+-- ALTER TABLE "goalshare_profiles" ADD COLUMN "plan_id" text DEFAULT 'free' NOT NULL;--> statement-breakpoint
+-- ALTER TABLE "goalshare_subscriptions" ADD COLUMN "plan_id" text NOT NULL;--> statement-breakpoint
+-- ALTER TABLE "goalshare_coaching_messages" ADD CONSTRAINT "goalshare_coaching_messages_goal_id_goalshare_goals_id_fk" FOREIGN KEY ("goal_id") REFERENCES "public"."goalshare_goals"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_actionable_completions" ADD CONSTRAINT "goalshare_goal_actionable_completions_actionable_id_goalshare_goal_actionables_id_fk" FOREIGN KEY ("actionable_id") REFERENCES "public"."goalshare_goal_actionables"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_actionables" ADD CONSTRAINT "goalshare_goal_actionables_goal_id_goalshare_goals_id_fk" FOREIGN KEY ("goal_id") REFERENCES "public"."goalshare_goals"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_actionables" ADD CONSTRAINT "goalshare_goal_actionables_milestone_id_goalshare_goal_milestones_id_fk" FOREIGN KEY ("milestone_id") REFERENCES "public"."goalshare_goal_milestones"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "goalshare_plan_permissions" ADD CONSTRAINT "goalshare_plan_permissions_plan_id_goalshare_subscription_plans_id_fk" FOREIGN KEY ("plan_id") REFERENCES "public"."goalshare_subscription_plans"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+-- CREATE INDEX "coaching_messages_goal_created_idx" ON "goalshare_coaching_messages" USING btree ("goal_id","created_at");--> statement-breakpoint
+-- CREATE INDEX "goal_actionable_completions_actionable_idx" ON "goalshare_goal_actionable_completions" USING btree ("actionable_id");--> statement-breakpoint
+-- CREATE UNIQUE INDEX "goal_actionable_completions_actionable_occurrence_unique" ON "goalshare_goal_actionable_completions" USING btree ("actionable_id","occurrence_start");--> statement-breakpoint
+-- CREATE INDEX "goal_actionables_goal_idx" ON "goalshare_goal_actionables" USING btree ("goal_id");--> statement-breakpoint
+-- CREATE INDEX "goal_actionables_milestone_idx" ON "goalshare_goal_actionables" USING btree ("milestone_id");--> statement-breakpoint
+-- CREATE UNIQUE INDEX "subscription_plans_stripe_price_unique" ON "goalshare_subscription_plans" USING btree ("stripe_price_id") WHERE "goalshare_subscription_plans"."stripe_price_id" is not null;--> statement-breakpoint
+-- ALTER TABLE "goalshare_profiles" ADD CONSTRAINT "goalshare_profiles_plan_id_goalshare_subscription_plans_id_fk" FOREIGN KEY ("plan_id") REFERENCES "public"."goalshare_subscription_plans"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+-- ALTER TABLE "goalshare_subscriptions" ADD CONSTRAINT "goalshare_subscriptions_plan_id_goalshare_subscription_plans_id_fk" FOREIGN KEY ("plan_id") REFERENCES "public"."goalshare_subscription_plans"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+-- CREATE INDEX "goals_type_idx" ON "goalshare_goals" USING btree ("goal_type");--> statement-breakpoint
+-- CREATE UNIQUE INDEX "subscriptions_user_active_unique" ON "goalshare_subscriptions" USING btree ("user_id") WHERE "goalshare_subscriptions"."status" in ('active', 'trialing', 'incomplete');--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" DROP COLUMN "progress_value";--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" DROP COLUMN "metric_value";--> statement-breakpoint
+-- ALTER TABLE "goalshare_goal_entries" DROP COLUMN "metric_unit";--> statement-breakpoint
+-- ALTER TABLE "goalshare_profiles" DROP COLUMN "plan";--> statement-breakpoint
+-- DROP TYPE "public"."plan";
