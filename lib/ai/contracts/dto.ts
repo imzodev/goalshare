@@ -34,6 +34,32 @@ export const MilestonesResponseSchema = z.object({
 });
 export type MilestonesResponse = z.infer<typeof MilestonesResponseSchema>;
 
+/** Actionables */
+export const ActionableItemSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  /** RRULE string, e.g. "FREQ=WEEKLY;BYDAY=MO,WE" */
+  recurrence: z.string().optional(),
+  /** Date-only start date in YYYY-MM-DD */
+  startDate: DateOnlySchema.optional(),
+  /** Date-only end date in YYYY-MM-DD */
+  endDate: DateOnlySchema.optional(),
+});
+
+export const ActionablesRequestSchema = z.object({
+  goal: z.string().min(1, "Goal is required"),
+  context: z.record(z.string(), z.any()).optional(),
+  locale: LocaleSchema.optional(),
+  traceId: TraceIdSchema,
+});
+export type ActionablesRequest = z.infer<typeof ActionablesRequestSchema>;
+
+export const ActionablesResponseSchema = z.object({
+  actionables: z.array(ActionableItemSchema),
+  traceId: z.string().optional(),
+});
+export type ActionablesResponse = z.infer<typeof ActionablesResponseSchema>;
+
 /** SMART rewriting */
 export const SmartRequestSchema = z.object({
   goalText: z.string().min(1),

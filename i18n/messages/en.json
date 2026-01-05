@@ -408,6 +408,7 @@
       "category": "Category"
     },
     "milestones": {
+      "title": "Milestones",
       "titlePlaceholder": "Milestone {index}",
       "weeksToCompleteSingle": "1 week to complete",
       "weeksToCompleteMultiple": "{count} weeks to complete",

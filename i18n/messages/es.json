@@ -408,6 +408,7 @@
       "category": "Categoría"
     },
     "milestones": {
+      "title": "Hitos",
       "titlePlaceholder": "Hito {index}",
       "weeksToCompleteSingle": "1 semana para completar",
       "weeksToCompleteMultiple": "{count} semanas para completar",

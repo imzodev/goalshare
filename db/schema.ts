@@ -9,6 +9,7 @@ import {
   text,
   uuid,
   integer,
+  time,
   date,
   timestamp,
   unique,
@@ -356,6 +357,57 @@ export const coachingMessages = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
   (t) => [index("coaching_messages_goal_created_idx").on(t.goalId, t.createdAt)]
+);
+
+export const goalActionables = pgTable(
+  "goalshare_goal_actionables",
+  {
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    goalId: uuid("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
+    milestoneId: uuid("milestone_id").references(() => goalMilestones.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    recurrence: text("recurrence"),
+    startDate: date("start_date"),
+    endDate: date("end_date"),
+    startTime: time("start_time"),
+    durationMinutes: integer("duration_minutes"),
+    timezone: text("timezone"),
+    isPaused: boolean("is_paused"),
+    pausedUntil: timestamp("paused_until", { withTimezone: true, mode: "date" }),
+    isArchived: boolean("is_archived"),
+    color: text("color"),
+    category: text("category"),
+    priority: integer("priority"),
+    reminderMinutesBefore: integer("reminder_minutes_before"),
+    exDates: text("ex_dates"), // comma-separated dates to exclude from recurrence (e.g., "2025-12-25,2025-12-26")
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [index("goal_actionables_goal_idx").on(t.goalId), index("goal_actionables_milestone_idx").on(t.milestoneId)]
+);
+
+export const goalActionableCompletions = pgTable(
+  "goalshare_goal_actionable_completions",
+  {
+    id: uuid("id")
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    actionableId: uuid("actionable_id")
+      .notNull()
+      .references(() => goalActionables.id, { onDelete: "cascade" }),
+    occurrenceStart: timestamp("occurrence_start", { withTimezone: true, mode: "date" }).notNull(),
+    notes: text("notes"),
+    completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("goal_actionable_completions_actionable_idx").on(t.actionableId),
+    uniqueIndex("goal_actionable_completions_actionable_occurrence_unique").on(t.actionableId, t.occurrenceStart),
+  ]
 );
 
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;

@@ -1,21 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CoachingChat } from "@/components/coaching/coaching-chat";
+import { MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Clock, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { Calendar, Clock, MoreHorizontal, Edit, Trash2, ChevronDown, Loader2 } from "lucide-react";
 import { formatDeadline, formatRelativeTimeI18n } from "@/utils/date-utils";
 import { getDaysLeftLabelI18n } from "@/utils/goals-ui-utils";
 import type { UserGoalSummary } from "@/types/goals";
 import { useTranslations } from "next-intl";
 import { getGoalTypeKey, getGoalStatusKey } from "@/utils/i18n-helpers";
+import { useGoalMilestones } from "@/hooks/use-goal-milestones";
 
 const colorPalette = [
   "from-blue-500/50 via-blue-500/20 to-transparent",
@@ -36,14 +40,11 @@ interface GoalCardProps {
   onDelete?: (goal: UserGoalSummary) => void;
 }
 
-import { CoachingChat } from "@/components/coaching/coaching-chat";
-import { useState } from "react";
-import { MessageCircle } from "lucide-react";
-
 export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelete }: GoalCardProps) {
   const t = useTranslations("goals");
   const tLabels = useTranslations("goals.labels");
   const tCommon = useTranslations("common.actions");
+  const tStates = useTranslations("common.states");
   const tTime = useTranslations("common.time");
 
   const [chatOpen, setChatOpen] = useState(false);
@@ -62,6 +63,9 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
   const lastUpdateLabel = formatRelativeTimeI18n(goal.lastUpdateAt, (key, values) =>
     tTime(key.replace("common.time.", ""), values)
   );
+
+  const [milestonesOpen, setMilestonesOpen] = useState(false);
+  const { milestones, loading: milestonesLoading, error: milestonesError, loaded, load } = useGoalMilestones(goal.id);
 
   const renderActions = () => {
     if (!onEdit && !onDelete) return null;
@@ -226,6 +230,72 @@ export function GoalCard({ goal, index, layout = "multi-column", onEdit, onDelet
               <MessageCircle className="h-4 w-4" />
               Coach
             </Button>
+          </div>
+
+          <div className="mt-2 border-t pt-3 space-y-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                const nextOpen = !milestonesOpen;
+                setMilestonesOpen(nextOpen);
+                if (nextOpen && !loaded) {
+                  load();
+                }
+              }}
+            >
+              <ChevronDown className={`h-3 w-3 transition-transform ${milestonesOpen ? "rotate-180" : "rotate-0"}`} />
+              <span>{t("milestones.title", { count: milestones.length || 0 })}</span>
+            </Button>
+
+            {milestonesOpen && (
+              <div className="space-y-2 text-xs text-muted-foreground">
+                {milestonesLoading && (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>{tStates("loading")}</span>
+                  </div>
+                )}
+
+                {milestonesError && !milestonesLoading && (
+                  <p className="text-xs text-red-500 dark:text-red-400">{milestonesError}</p>
+                )}
+
+                {!milestonesLoading && !milestonesError && milestones.length === 0 && (
+                  <p className="text-xs text-muted-foreground">{t("milestones.empty")}</p>
+                )}
+
+                {!milestonesLoading && !milestonesError && milestones.length > 0 && (
+                  <ul className="space-y-1.5">
+                    {milestones.map((m, idx) => (
+                      <li
+                        key={`${m.title}-${idx}`}
+                        className="flex items-start justify-between gap-2 rounded-md bg-muted/60 px-2 py-1.5"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{m.title}</p>
+                          {(m.dueDate || m.description) && (
+                            <p className="text-[11px] text-muted-foreground truncate">
+                              {m.dueDate}
+                              {m.dueDate && m.description ? " · " : ""}
+                              {!m.dueDate && m.description
+                                ? m.description
+                                : m.dueDate && m.description
+                                  ? m.description
+                                  : null}
+                            </p>
+                          )}
+                        </div>
+                        <Badge variant="secondary" className="text-[10px] px-2 py-0.5 shrink-0">
+                          {m.weight}%
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

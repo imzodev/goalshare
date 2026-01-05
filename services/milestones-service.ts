@@ -29,4 +29,22 @@ export class MilestonesService {
       return inserted;
     });
   }
+
+  async listMilestonesForGoal(userId: string, goalId: string) {
+    if (!userId || !goalId) throw new Error("userId y goalId son requeridos");
+
+    return withUserContext(userId, async (dbCtx) => {
+      const [existing] = await dbCtx.select().from(goals).where(eq(goals.id, goalId)).limit(1);
+      if (!existing) throw new Error("Meta no encontrada");
+      if (existing.ownerId !== userId) throw new Error("No tienes permisos para ver milestones de esta meta");
+
+      const rows = await dbCtx
+        .select()
+        .from(goalMilestones)
+        .where(eq(goalMilestones.goalId, goalId))
+        .orderBy(goalMilestones.sortOrder);
+
+      return rows;
+    });
+  }
 }

@@ -1,14 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { parseJsonOr415 } from "@/lib/http/guards";
-import { MilestoneItemSchema } from "@/lib/ai";
-import { MilestonesService } from "@/services/milestones-service";
-
-const PersistMilestonesSchema = z.object({
-  items: z.array(MilestoneItemSchema).min(1),
-});
+import { ActionablesService } from "@/services/actionables-service";
+import { PersistActionablesSchema } from "@/types/actionables";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,7 +18,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     const userId = user.id;
-
     const { id: goalId } = await params;
     if (!goalId) {
       return NextResponse.json({ error: "ID de meta requerido" }, { status: 400 });
@@ -31,19 +25,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const jsonOrRes = await parseJsonOr415<Record<string, unknown>>(req);
     if (jsonOrRes instanceof NextResponse) return jsonOrRes;
-    const parsed = PersistMilestonesSchema.safeParse(jsonOrRes);
+    const parsed = PersistActionablesSchema.safeParse(jsonOrRes);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
     const { items } = parsed.data;
 
-    const service = new MilestonesService();
+    const service = new ActionablesService();
     try {
-      const inserted = await service.createMilestonesForGoal(userId, goalId, items);
-      return NextResponse.json({ milestones: inserted }, { status: 201 });
+      const inserted = await service.createForGoal(userId, goalId, items);
+      return NextResponse.json({ actionables: inserted }, { status: 201 });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error al crear milestones";
+      const msg = e instanceof Error ? e.message : "Error al crear accionables";
       const code = msg.includes("permisos") ? 403 : msg.includes("no encontrada") ? 404 : 400;
       return NextResponse.json({ error: msg }, { status: code });
     }
@@ -53,7 +47,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 }
 
-// Lista milestones de una meta (lectura para lazy loading)
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient();
@@ -72,19 +65,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "ID de meta requerido" }, { status: 400 });
     }
 
-    const service = new MilestonesService();
+    const service = new ActionablesService();
 
     try {
-      const rows = await service.listMilestonesForGoal(userId, goalId);
-      const milestones = rows.map((m) => ({
-        title: m.title,
-        description: m.description ?? undefined,
-        dueDate: m.targetDate ? String(m.targetDate) : undefined,
-        weight: m.weight ?? 0,
-      }));
-      return NextResponse.json({ milestones }, { status: 200 });
+      const rows = await service.listForGoal(userId, goalId);
+      return NextResponse.json({ actionables: rows }, { status: 200 });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error al obtener milestones";
+      const msg = e instanceof Error ? e.message : "Error al obtener accionables";
       const code = msg.includes("permisos") ? 403 : msg.includes("no encontrada") ? 404 : 400;
       return NextResponse.json({ error: msg }, { status: code });
     }
