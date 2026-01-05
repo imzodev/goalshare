@@ -35,12 +35,12 @@ Build the landing page for admins with high-level statistics.
 
 Enable admins to view and manage the user base.
 
-- [ ] Task: Implement Users Table
-  - [ ] Subtask: Create `UsersTable` component using shadcn/ui `Table`.
-  - [ ] Subtask: Implement `getUsersList` Server Action with pagination and search support.
-  - [ ] Subtask: Add `Input` component for search filtering.
-  - [ ] Subtask: Create `app/admin/users/page.tsx` and integrate the table.
-  - [ ] Subtask: Test: Verify search functionality and pagination.
+- [x] Task: Implement Users Table (aa6eda0)
+  - [x] Subtask: Create `UsersTable` component using shadcn/ui `Table`.
+  - [x] Subtask: Implement `getUsersList` Server Action with pagination and search support.
+  - [x] Subtask: Add `Input` component for search filtering.
+  - [x] Subtask: Create `app/admin/users/page.tsx` and integrate the table.
+  - [x] Subtask: Test: Verify search functionality and pagination.
 - [ ] Task: Conductor - User Manual Verification 'User Management' (Protocol in workflow.md)
 
 ## Phase 4: Community Management
