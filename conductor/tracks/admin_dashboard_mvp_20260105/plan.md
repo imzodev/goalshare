@@ -1,6 +1,6 @@
 # Plan: Build Admin Dashboard MVP
 
-## Phase 1: Infrastructure & Security
+## Phase 1: Infrastructure & Security [checkpoint: 911b0f2]
 
 Establish the secure foundation for the admin area, ensuring proper routing and access control.
 
