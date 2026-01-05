@@ -7,8 +7,12 @@ export function isAiRoute(pathname: string): boolean {
 }
 
 export function isProtectedRoute(pathname: string): boolean {
-  const protectedRoutes = ["/dashboard"];
+  const protectedRoutes = ["/dashboard", "/admin"];
   return protectedRoutes.some((r) => pathname.startsWith(r));
+}
+
+export function isAdminRoute(pathname: string): boolean {
+  return pathname.startsWith("/admin");
 }
 
 export function isAuthRoute(pathname: string): boolean {

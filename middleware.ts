@@ -2,7 +2,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { defaultRateLimiter } from "./utils/ai-ops/rate-limit";
 // AI rate limiting handled via handler helper
 import { buildCorsHeaders, handlePreflight, enforceCsrf } from "@/utils/middleware/http";
-import { isApiRoute, isAiRoute, isProtectedRoute, isAuthRoute } from "@/utils/middleware/routes";
+import { isApiRoute, isAiRoute, isProtectedRoute, isAuthRoute, isAdminRoute } from "@/utils/middleware/routes";
 import { handleAiRequest, handleGeneralApiRequest } from "@/utils/middleware/handlers";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/config/env";
@@ -17,7 +17,7 @@ import { ROUTES } from "@/config/constants";
 
 export async function middleware(req: NextRequest) {
   // Update Supabase session
-  const { supabaseResponse, user, planId } = await updateSession(req);
+  const { supabaseResponse, user, planId, role } = await updateSession(req);
 
   const userId = user?.id;
   const url = new URL(req.url);
@@ -30,6 +30,14 @@ export async function middleware(req: NextRequest) {
     loginUrl.searchParams.set("redirect", pathname + (search || ""));
     const redirectResp = NextResponse.redirect(loginUrl);
     // Mantener cabeceras/cookies de supabaseResponse
+    for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
+    return redirectResp;
+  }
+
+  // Protección de rutas ADMIN: redirigir si no es admin
+  if (isAdminRoute(pathname) && role !== "admin") {
+    const dashboardUrl = new URL(ROUTES.DASHBOARD, req.url);
+    const redirectResp = NextResponse.redirect(dashboardUrl);
     for (const [key, value] of supabaseResponse.headers) redirectResp.headers.set(key, value);
     return redirectResp;
   }
