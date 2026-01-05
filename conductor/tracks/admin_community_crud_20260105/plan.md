@@ -8,10 +8,10 @@ Implement the necessary server actions to handle database mutations.
   - [x] Subtask: Create `app/actions/admin-communities-mutations.ts`.
   - [x] Subtask: Implement `deleteCommunity` action with admin validation.
   - [x] Subtask: Test: Verify deletion works and associated data handling (cascades).
-- [ ] Task: Implement Create & Update Actions
-  - [ ] Subtask: Add `createCommunity` action with Zod validation and unique slug check.
-  - [ ] Subtask: Add `updateCommunity` action.
-  - [ ] Subtask: Test: Verify creation and updates work, including error handling for duplicates.
+- [x] Task: Implement Create & Update Actions (bc40660)
+  - [x] Subtask: Add `createCommunity` action with Zod validation and unique slug check.
+  - [x] Subtask: Add `updateCommunity` action.
+  - [x] Subtask: Test: Verify creation and updates work, including error handling for duplicates.
 - [ ] Task: Conductor - User Manual Verification 'Server Actions & Backend' (Protocol in workflow.md)
 
 ## Phase 2: UI Implementation
