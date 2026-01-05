@@ -1,6 +1,6 @@
 # Plan: Full Admin Community Management
 
-## Phase 1: Server Actions & Backend
+## Phase 1: Server Actions & Backend [checkpoint: 66b021f]
 
 Implement the necessary server actions to handle database mutations.
 
