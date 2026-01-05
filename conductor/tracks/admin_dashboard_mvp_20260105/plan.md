@@ -13,11 +13,11 @@ Establish the secure foundation for the admin area, ensuring proper routing and 
   - [x] Subtask: Update `middleware.ts` to protect `/admin` routes (allow only specific role/ID).
   - [x] Subtask: Create `admin-auth.ts` utility to verify admin status in Server Components/Actions.
   - [x] Subtask: Test: Verify non-admins are redirected and admins can access the route.
-- [ ] Task: Create Admin Layout Shell
-  - [ ] Subtask: Implement `app/admin/layout.tsx`.
-  - [ ] Subtask: Create `AdminSidebar` component using shadcn/ui.
-  - [ ] Subtask: Create `AdminHeader` component with mobile menu trigger (Sheet).
-  - [ ] Subtask: Test: Verify layout responsiveness and theme toggle integration.
+- [x] Task: Create Admin Layout Shell (c9193e4)
+  - [x] Subtask: Implement `app/admin/layout.tsx`.
+  - [x] Subtask: Create `AdminSidebar` component using shadcn/ui.
+  - [x] Subtask: Create `AdminHeader` component with mobile menu trigger (Sheet).
+  - [x] Subtask: Test: Verify layout responsiveness and theme toggle integration.
 - [ ] Task: Conductor - User Manual Verification 'Infrastructure & Security' (Protocol in workflow.md)
 
 ## Phase 2: Dashboard Overview
