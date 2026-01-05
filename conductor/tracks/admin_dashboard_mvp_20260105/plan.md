@@ -47,10 +47,10 @@ Enable admins to view and manage the user base.
 
 Provide tools to oversee user-created communities.
 
-- [ ] Task: Implement Communities Table
-  - [ ] Subtask: Create `CommunitiesTable` component using shadcn/ui `Table`.
-  - [ ] Subtask: Implement `getCommunitiesList` Server Action.
-  - [ ] Subtask: Add "Delete Community" action with shadcn/ui `Dialog` for confirmation.
-  - [ ] Subtask: Create `app/admin/communities/page.tsx`.
-  - [ ] Subtask: Test: Verify community deletion flow and permission checks.
+- [x] Task: Implement Communities Table (fc0e33c)
+  - [x] Subtask: Create `CommunitiesTable` component using shadcn/ui `Table`.
+  - [x] Subtask: Implement `getCommunitiesList` Server Action.
+  - [x] Subtask: Add "Delete Community" action with shadcn/ui `Dialog` for confirmation.
+  - [x] Subtask: Create `app/admin/communities/page.tsx`.
+  - [x] Subtask: Test: Verify community deletion flow and permission checks.
 - [ ] Task: Conductor - User Manual Verification 'Community Management' (Protocol in workflow.md)
