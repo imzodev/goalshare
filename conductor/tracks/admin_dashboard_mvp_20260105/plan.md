@@ -24,11 +24,11 @@ Establish the secure foundation for the admin area, ensuring proper routing and 
 
 Build the landing page for admins with high-level statistics.
 
-- [ ] Task: Create Metrics Cards
-  - [ ] Subtask: Create `MetricCard` component using shadcn/ui `Card`.
-  - [ ] Subtask: Implement `getAdminDashboardStats` Server Action to fetch counts (Users, Goals, Communities).
-  - [ ] Subtask: Assemble `app/admin/page.tsx` with a grid of metric cards.
-  - [ ] Subtask: Test: Verify stats load correctly and skeleton states appear during loading.
+- [x] Task: Create Metrics Cards (b47ac9a)
+  - [x] Subtask: Create `MetricCard` component using shadcn/ui `Card`.
+  - [x] Subtask: Implement `getAdminDashboardStats` Server Action to fetch counts (Users, Goals, Communities).
+  - [x] Subtask: Assemble `app/admin/page.tsx` with a grid of metric cards.
+  - [x] Subtask: Test: Verify stats load correctly and skeleton states appear during loading.
 - [ ] Task: Conductor - User Manual Verification 'Dashboard Overview' (Protocol in workflow.md)
 
 ## Phase 3: User Management
