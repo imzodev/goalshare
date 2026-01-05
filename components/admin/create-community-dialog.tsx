@@ -15,11 +15,18 @@ import { CommunityForm } from "./community-form";
 import { createCommunity } from "@/app/actions/admin-communities-mutations";
 import { toast } from "sonner";
 
+interface CommunityFormValues {
+  name: string;
+  slug: string;
+  kind: "domain" | "topic" | "cohort";
+  description?: string;
+}
+
 export function CreateCommunityDialog() {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: CommunityFormValues) => {
     setIsLoading(true);
     try {
       const result = await createCommunity(values);

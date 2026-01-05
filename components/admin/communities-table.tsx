@@ -1,15 +1,14 @@
-"use client";
-
 import * as React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight, MoreHorizontal, Trash } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreHorizontal, Trash, Edit } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { deleteCommunity } from "@/app/actions/admin-communities-mutations";
+import { EditCommunityDialog } from "./edit-community-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +50,7 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [editCommunity, setEditCommunity] = React.useState<Community | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handlePageChange = (newPage: number) => {
@@ -117,6 +117,10 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => setEditCommunity(community)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit Community
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600"
                           onClick={() => setDeleteId(community.id)}
@@ -162,6 +166,12 @@ export function CommunitiesTable({ communities, pagination }: CommunitiesTablePr
           </Button>
         </div>
       </div>
+
+      <EditCommunityDialog
+        community={editCommunity}
+        open={!!editCommunity}
+        onOpenChange={(open) => !open && setEditCommunity(null)}
+      />
 
       <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <DialogContent>
