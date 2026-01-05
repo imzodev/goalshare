@@ -18,9 +18,9 @@ Implement the necessary server actions to handle database mutations.
 
 Connect the backend actions to the frontend components.
 
-- [ ] Task: Wire up Delete Functionality
-  - [ ] Subtask: Update `CommunitiesTable` to use the `deleteCommunity` action.
-  - [ ] Subtask: Add success/error toast notifications.
+- [x] Task: Wire up Delete Functionality (0d1900a)
+  - [x] Subtask: Update `CommunitiesTable` to use the `deleteCommunity` action.
+  - [x] Subtask: Add success/error toast notifications.
 - [ ] Task: Create Community Form Component
   - [ ] Subtask: Create `components/admin/community-form.tsx` using `react-hook-form` and `zod`.
   - [ ] Subtask: Define form schema for name, slug, kind, and description.
