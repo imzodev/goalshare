@@ -25,7 +25,7 @@ Integrate the actions into the existing Users Table.
   - [x] Subtask: Update `components/admin/users-table.tsx` to handle the "Edit" button click.
   - [x] Subtask: Create `components/admin/edit-user-dialog.tsx` wrapping the form.
   - [x] Subtask: Wire up submission to `updateUser` action.
-- [ ] Task: Wire up Delete User Functionality
-  - [ ] Subtask: Add "Delete User" action to the table row dropdown.
-  - [ ] Subtask: Implement confirmation dialog and wire up to `deleteUser` action.
+- [x] Task: Wire up Delete User Functionality (96969f4)
+  - [x] Subtask: Add "Delete User" action to the table row dropdown.
+  - [x] Subtask: Implement confirmation dialog and wire up to `deleteUser` action.
 - [ ] Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)
