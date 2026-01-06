@@ -4,14 +4,14 @@
 
 Implement the mutation logic for user management.
 
-- [ ] Task: Implement Update User Action
-  - [ ] Subtask: Create `app/actions/admin-users-mutations.ts`.
-  - [ ] Subtask: Implement `updateUser` action with Zod validation and admin check.
-  - [ ] Subtask: Add safety check to prevent self-demotion or self-deletion.
-  - [ ] Subtask: Test: Verify role changes and profile updates work correctly.
-- [ ] Task: Implement Delete User Action
-  - [ ] Subtask: Implement `deleteUser` action in `app/actions/admin-users-mutations.ts`.
-  - [ ] Subtask: Test: Verify user deletion and cascade handling.
+- [x] Task: Implement Update User Action (2e8d7f3)
+  - [x] Subtask: Create `app/actions/admin-users-mutations.ts`.
+  - [x] Subtask: Implement `updateUser` action with Zod validation and admin check.
+  - [x] Subtask: Add safety check to prevent self-demotion or self-deletion.
+  - [x] Subtask: Test: Verify role changes and profile updates work correctly.
+- [x] Task: Implement Delete User Action (2e8d7f3)
+  - [x] Subtask: Implement `deleteUser` action in `app/actions/admin-users-mutations.ts`.
+  - [x] Subtask: Test: Verify user deletion and cascade handling.
 - [ ] Task: Conductor - User Manual Verification 'Server Actions & Backend' (Protocol in workflow.md)
 
 ## Phase 2: UI Implementation
