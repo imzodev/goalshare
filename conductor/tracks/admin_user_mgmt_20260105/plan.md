@@ -14,7 +14,7 @@ Implement the mutation logic for user management.
   - [x] Subtask: Test: Verify user deletion and cascade handling.
 - [ ] Task: Conductor - User Manual Verification 'Server Actions & Backend' (Protocol in workflow.md)
 
-## Phase 2: UI Implementation
+## Phase 2: UI Implementation [checkpoint: e4e6fb6]
 
 Integrate the actions into the existing Users Table.
 
