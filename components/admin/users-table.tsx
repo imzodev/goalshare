@@ -12,6 +12,7 @@ import { useTransition } from "react";
 import { Search, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { EditUserDialog } from "./edit-user-dialog";
+import { deleteUser } from "@/app/actions/admin-users-mutations";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface User {
   userId: string;
@@ -46,6 +55,8 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [editUser, setEditUser] = React.useState<User | null>(null);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleSearch = (term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -66,6 +77,23 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteUser(deleteId);
+      if (result.success) {
+        toast.success("User deleted successfully");
+        setDeleteId(null);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -135,7 +163,10 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
                           <Edit className="mr-2 h-4 w-4" />
                           Edit User
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={() => setDeleteId(user.userId)}
+                        >
                           <Trash className="mr-2 h-4 w-4" />
                           Delete User
                         </DropdownMenuItem>
@@ -179,6 +210,25 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
       </div>
 
       <EditUserDialog user={editUser} open={!!editUser} onOpenChange={(open) => !open && setEditUser(null)} />
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the user account and all associated data.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
