@@ -18,9 +18,9 @@ Implement the mutation logic for user management.
 
 Integrate the actions into the existing Users Table.
 
-- [ ] Task: Create User Edit Form Component
-  - [ ] Subtask: Create `components/admin/user-form.tsx` using `react-hook-form` and `zod`.
-  - [ ] Subtask: Include fields for display name, username, and a select for role.
+- [x] Task: Create User Edit Form Component (3b070a7)
+  - [x] Subtask: Create `components/admin/user-form.tsx` using `react-hook-form` and `zod`.
+  - [x] Subtask: Include fields for display name, username, and a select for role.
 - [ ] Task: Implement Edit User Dialog
   - [ ] Subtask: Update `components/admin/users-table.tsx` to handle the "Edit" button click.
   - [ ] Subtask: Create `components/admin/edit-user-dialog.tsx` wrapping the form.
