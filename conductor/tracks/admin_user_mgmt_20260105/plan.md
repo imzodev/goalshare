@@ -21,10 +21,10 @@ Integrate the actions into the existing Users Table.
 - [x] Task: Create User Edit Form Component (3b070a7)
   - [x] Subtask: Create `components/admin/user-form.tsx` using `react-hook-form` and `zod`.
   - [x] Subtask: Include fields for display name, username, and a select for role.
-- [ ] Task: Implement Edit User Dialog
-  - [ ] Subtask: Update `components/admin/users-table.tsx` to handle the "Edit" button click.
-  - [ ] Subtask: Create `components/admin/edit-user-dialog.tsx` wrapping the form.
-  - [ ] Subtask: Wire up submission to `updateUser` action.
+- [x] Task: Implement Edit User Dialog (d285cde)
+  - [x] Subtask: Update `components/admin/users-table.tsx` to handle the "Edit" button click.
+  - [x] Subtask: Create `components/admin/edit-user-dialog.tsx` wrapping the form.
+  - [x] Subtask: Wire up submission to `updateUser` action.
 - [ ] Task: Wire up Delete User Functionality
   - [ ] Subtask: Add "Delete User" action to the table row dropdown.
   - [ ] Subtask: Implement confirmation dialog and wire up to `deleteUser` action.
