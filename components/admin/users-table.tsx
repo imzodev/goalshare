@@ -9,7 +9,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, Edit, Trash } from "lucide-react";
+import { toast } from "sonner";
+import { EditUserDialog } from "./edit-user-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface User {
   userId: string;
@@ -36,6 +45,7 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [editUser, setEditUser] = React.useState<User | null>(null);
 
   const handleSearch = (term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -112,9 +122,25 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
                   </TableCell>
                   <TableCell className="text-sm">{format(new Date(user.createdAt), "MMM d, yyyy")}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => setEditUser(user)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit User
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete User
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
@@ -151,6 +177,8 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
           </Button>
         </div>
       </div>
+
+      <EditUserDialog user={editUser} open={!!editUser} onOpenChange={(open) => !open && setEditUser(null)} />
     </div>
   );
 }
