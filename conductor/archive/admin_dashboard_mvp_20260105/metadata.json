@@ -1,0 +1,8 @@
+{
+  "track_id": "admin_dashboard_mvp_20260105",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-05T12:00:00Z",
+  "updated_at": "2026-01-05T12:00:00Z",
+  "description": "Implement a secure admin dashboard to view user statistics, manage communities, and moderate reported content using shadcn/ui components."
+}

@@ -32,20 +32,24 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch planId from profiles via Supabase REST (RLS must allow user to read own profile)
+  // Fetch planId and role from profiles via Supabase REST (RLS must allow user to read own profile)
   let planId: string | undefined = undefined;
+  let role: string | undefined = undefined;
   if (user) {
     try {
       const { data } = await supabase
         .from("goalshare_profiles")
-        .select("plan_id")
+        .select("plan_id, role")
         .eq("user_id", user.id)
         .limit(1)
         .maybeSingle();
-      planId = (data as any)?.plan_id as string | undefined;
+      if (data) {
+        planId = (data as any).plan_id as string | undefined;
+        role = (data as any).role as string | undefined;
+      }
     } catch {}
   }
 
-  // Return response, user and planId for additional middleware logic
-  return { supabaseResponse, user, planId };
+  // Return response, user, planId and role for additional middleware logic
+  return { supabaseResponse, user, planId, role };
 }

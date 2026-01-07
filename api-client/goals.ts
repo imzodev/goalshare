@@ -1,4 +1,22 @@
-import type { MilestoneItem } from "@/types/goals";
+import type { MilestoneItem, UserGoalSummary } from "@/types/goals";
+
+export async function getGoals(): Promise<UserGoalSummary[]> {
+  console.log("Fetching goals...");
+  const res = await fetch("/api/goals", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    const msg = data?.error || "No se pudieron cargar las metas";
+    throw new Error(typeof msg === "string" ? msg : "No se pudieron cargar las metas");
+  }
+
+  return Array.isArray(data?.goals) ? data.goals : [];
+}
 
 export async function createGoal(payload: {
   title: string;
